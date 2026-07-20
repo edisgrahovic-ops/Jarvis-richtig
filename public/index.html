@@ -58,6 +58,15 @@
 
     header, main { position: relative; z-index: 1; }
 
+    /* Hinweis-Balken (Stimme aufm Handy freischalten) */
+    .voice-hint {
+      display: none; position: relative; z-index: 1; text-align: center;
+      font-size: 0.82rem; font-weight: 600; color: var(--amber);
+      padding: 9px 12px; background: rgba(255,190,77,0.08);
+      border-bottom: 1px solid var(--line-soft); cursor: pointer;
+    }
+    .voice-hint.show { display: block; }
+
     header {
       text-align: center; padding: 16px 12px 10px;
       border-bottom: 1px solid var(--line-soft);
@@ -212,6 +221,8 @@
     </div>
   </header>
 
+  <div class="voice-hint" id="voiceHint">🔊 Einmal tippen, um Jarvis' Stimme zu aktivieren</div>
+
   <main>
     <div class="reactor-wrap">
       <div class="reactor" id="reactor"></div>
@@ -357,17 +368,25 @@
     }
 
     // ---- Sprachausgabe (Text zu Sprache) ----
+    let resumeTimer = null;
     function speak(text) {
       if (!voiceEnabled || !("speechSynthesis" in window)) return;
-      window.speechSynthesis.cancel();
+      const synth = window.speechSynthesis;
+      synth.cancel();
       const u = new SpeechSynthesisUtterance(text);
       u.lang = "de-DE";
       if (jarvisVoice) u.voice = jarvisVoice;
       u.rate = 1.0;
       u.pitch = 0.85; // etwas tiefer -> maennlicher, ruhiger Jarvis-Ton
       u.onstart = () => reactor.classList.add("speaking");
-      u.onend = () => reactor.classList.remove("speaking");
-      window.speechSynthesis.speak(u);
+      u.onend = () => { reactor.classList.remove("speaking"); clearInterval(resumeTimer); };
+      synth.speak(u);
+      // Handy-Bug: TTS pausiert manchmal mitten im Satz -> regelmaessig weiterlaufen lassen
+      clearInterval(resumeTimer);
+      resumeTimer = setInterval(() => {
+        if (!synth.speaking) { clearInterval(resumeTimer); return; }
+        synth.pause(); synth.resume();
+      }, 6000);
     }
 
     // ---- Senden ----
@@ -450,11 +469,39 @@
       if (!voiceEnabled) window.speechSynthesis.cancel();
     };
 
+    // ---- Stimme auf dem Handy freischalten ----
+    // Handys/Tablets erlauben Sprachausgabe erst nach einer echten Nutzer-Aktion.
+    const GREET = "Systeme online, Sir. Jarvis steht zu Diensten. Ihr Dropshipping-Imperium wartet – womit darf ich beginnen?";
+    const voiceHint = document.getElementById("voiceHint");
+    const isTouch =
+      (window.matchMedia && window.matchMedia("(hover: none) and (pointer: coarse)").matches) ||
+      "ontouchstart" in window;
+    let voiceUnlocked = false;
+
+    function unlockVoice() {
+      if (voiceUnlocked || !("speechSynthesis" in window)) return;
+      voiceUnlocked = true;
+      if (voiceHint) voiceHint.classList.remove("show");
+      try {
+        window.speechSynthesis.resume();
+        // Auf dem Handy die Begruessung jetzt (bei der ersten Aktion) vorlesen.
+        if (isTouch && voiceEnabled) speak(GREET);
+      } catch (_) {}
+    }
+    ["pointerdown", "touchend", "keydown"].forEach((ev) =>
+      window.addEventListener(ev, unlockVoice, { once: true, passive: true })
+    );
+
     // ---- Begruessung ----
     setTimeout(() => {
-      const greet = "Systeme online, Sir. Jarvis steht zu Diensten. Ihr Dropshipping-Imperium wartet – womit darf ich beginnen?";
-      addMessage("jarvis", greet);
-      speak(greet);
+      addMessage("jarvis", GREET);
+      if (isTouch) {
+        // Handy: nicht automatisch sprechen (wird blockiert) -> Hinweis zeigen
+        if (voiceHint && voiceEnabled) voiceHint.classList.add("show");
+      } else {
+        // Desktop: darf direkt sprechen
+        speak(GREET);
+      }
     }, 500);
   </script>
 </body>
