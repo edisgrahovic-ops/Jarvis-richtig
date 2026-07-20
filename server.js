@@ -111,9 +111,13 @@ async function callGemini(contents) {
   // Zuerst euer eingestelltes Modell, dann ein stabiles Ausweich-Modell.
   const models = [...new Set([MODEL, "gemini-2.0-flash"])];
   let lastError = "Unbekannter Fehler";
+  let quotaProblem = false;
 
   for (const model of models) {
-    for (let attempt = 0; attempt < 3; attempt++) {
+    // Ueberlastung (503/500) darf mehrfach wiederholt werden, ein
+    // Kontingent-Problem (429) nicht – das bringt nichts und verbrennt Limits.
+    const maxAttempts = 3;
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
       const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
       // Zeitlimit pro Versuch: haengt Gemini, brechen wir nach 25s ab und
@@ -141,8 +145,14 @@ async function callGemini(contents) {
       const text = await res.text();
       lastError = `Gemini HTTP ${res.status} (${model}): ${text.slice(0, 200)}`;
 
+      // Kontingent-/Ratelimit-Problem: nicht am selben Modell haemmern,
+      // gleich das naechste Modell probieren.
+      if (res.status === 429) {
+        quotaProblem = true;
+        break;
+      }
       // Ueberlastet oder kurzzeitig weg? -> kurz warten und nochmal versuchen.
-      if ([429, 500, 503].includes(res.status)) {
+      if ([500, 503].includes(res.status)) {
         await sleep(700 * (attempt + 1));
         continue;
       }
@@ -150,6 +160,14 @@ async function callGemini(contents) {
       throw new Error(lastError);
     }
     // Dieses Modell blieb ueberlastet -> naechstes Modell probieren.
+  }
+
+  if (quotaProblem) {
+    throw new Error(
+      "QUOTA: Dein Gemini-Schluessel hat gerade kein freies Kontingent (Fehler 429). " +
+        "Meist liegt das am Schluesseltyp: Ein echter Gratis-Schluessel aus dem Google AI Studio beginnt mit 'AIza...'. " +
+        "Bitte auf https://aistudio.google.com/apikey einen neuen API-Schluessel im 'neuen Projekt' erstellen und eintragen.",
+    );
   }
 
   throw new Error(
@@ -236,6 +254,16 @@ app.post("/api/chat", async (req, res) => {
     });
   } catch (err) {
     console.error("Fehler im Chat-Endpunkt:", err);
+    // Kontingent-Problem freundlich erklaeren (kein roter Fehler).
+    if (String(err.message).startsWith("QUOTA:")) {
+      return res.json({
+        reply:
+          "🔑 Ich komme gerade nicht ans Denken – mein Gemini-Schluessel hat kein freies Kontingent. " +
+          "Ein echter Gratis-Schluessel aus dem Google AI Studio beginnt mit 'AIza…'. " +
+          "Bitte auf aistudio.google.com/apikey einen neuen API-Schluessel im 'neuen Projekt' erstellen und in den Einstellungen eintragen. Danach laufe ich wieder. 💪",
+        toolsUsed,
+      });
+    }
     return res.status(500).json({
       error: "Jarvis hatte gerade ein Problem beim Nachdenken.",
       detail: err.message,
