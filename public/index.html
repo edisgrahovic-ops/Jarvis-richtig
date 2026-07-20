@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#04121f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="JARVIS" />
+  <title>J.A.R.V.I.S.</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="dot" id="statusDot"></span>
+      <span>J.A.R.V.I.S.</span>
+    </div>
+    <div class="status" id="statusText">initialisiere…</div>
+  </header>
+
+  <main class="stage">
+    <div class="reactor" id="reactor" title="Antippen zum Sprechen">
+      <div class="ring ring-1"></div>
+      <div class="ring ring-2"></div>
+      <div class="ring ring-3"></div>
+      <div class="core"></div>
+      <canvas id="viz" width="300" height="300"></canvas>
+    </div>
+    <div class="hint" id="hint">Tippe auf den Reaktor oder das Mikrofon, um zu sprechen</div>
+  </main>
+
+  <section class="log" id="log" aria-live="polite"></section>
+
+  <form class="composer" id="composer">
+    <button type="button" class="icon-btn" id="micBtn" title="Sprechen" aria-label="Sprechen">
+      <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V22h2v-3.08A7 7 0 0 0 19 12h-2Z"/></svg>
+    </button>
+    <input type="text" id="input" placeholder="Gib Jarvis eine Aufgabe…" autocomplete="off" />
+    <button type="submit" class="icon-btn send" id="sendBtn" title="Senden" aria-label="Senden">
+      <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M3 20.5v-6l8-2.5-8-2.5v-6l19 8.5-19 8.5Z"/></svg>
+    </button>
+  </form>
+
+  <script src="app.js"></script>
+</body>
+</html>
