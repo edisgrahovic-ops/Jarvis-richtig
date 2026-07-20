@@ -21,19 +21,28 @@ Browser und lässt sich auf dem **Handy als App installieren** (PWA).
 Für die Sprachsteuerung am Handy wird **HTTPS** gebraucht. Der einfachste Weg ist
 [Render](https://render.com) – kostenlos und mit automatischem HTTPS.
 
-1. **Code auf GitHub** – ist bereits erledigt (dieses Repo).
-2. Bei <https://render.com> mit GitHub anmelden.
-3. **New → Web Service** → dieses Repository auswählen.
-   Dank der beiliegenden `render.yaml` sind Build/Start schon vorkonfiguriert
-   (`npm install` / `npm start`).
-4. Unter **Environment** die Variable setzen:
-   `ANTHROPIC_API_KEY = sk-ant-...` (dein Schlüssel von
-   <https://console.anthropic.com>).
-5. **Create Web Service** klicken. Nach ~1 Minute bekommst du eine Adresse wie
+### Am schnellsten: 1-Klick-Button
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/edisgrahovic-ops/Jarvis-richtig)
+
+1. Auf den Button klicken und bei Render mit GitHub anmelden.
+2. Render liest die `render.yaml` und richtet alles ein. Nur noch **einen** Wert
+   eintragen: `ANTHROPIC_API_KEY = sk-ant-...`
+   (dein Schlüssel von <https://console.anthropic.com>).
+3. **Apply / Create** klicken. Nach ~1 Minute bekommst du eine Adresse wie
    `https://jarvis-xxxx.onrender.com`.
-6. Diese Adresse am Handy öffnen und **als App installieren**:
+4. Diese Adresse am Handy öffnen und **als App installieren**:
    - **iPhone (Safari):** Teilen → „Zum Home-Bildschirm"
    - **Android (Chrome):** Menü ⋮ → „App installieren"
+
+### Oder von Hand
+
+1. Bei <https://render.com> mit GitHub anmelden.
+2. **New → Web Service** → dieses Repository auswählen (Build/Start sind über
+   `render.yaml` schon vorkonfiguriert).
+3. Unter **Environment**: `ANTHROPIC_API_KEY = sk-ant-...` setzen.
+4. **Create Web Service** → nach ~1 Minute ist Jarvis online.
+5. Adresse am Handy öffnen und als App installieren (siehe oben).
 
 > Fertig – Jarvis läuft jetzt überall auf deinem Handy, mit Sprache, Wetter,
 > Notizen, Erinnerungen und Timer.
