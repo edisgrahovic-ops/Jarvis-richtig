@@ -4,7 +4,7 @@ Ein KI-Assistent im Stil von Iron Mans "Jarvis" für euer Dropshipping-Business.
 Du kannst **mit ihm reden** (Sprache) oder tippen. Er hilft bei allen Fragen rund
 ums Business und kann euren **Shopify-Shop auslesen** und Vorschläge machen.
 
-> Gebaut von Edis & Freund. Gehirn: **Google Gemini** (kostenloses Kontingent). Läuft als Web-App im Browser.
+> Gebaut von Edis & Freund. Gehirn: **Groq** (kostenlos, ohne Kreditkarte) – alternativ Google Gemini. Läuft als Web-App im Browser.
 
 ---
 
@@ -28,16 +28,23 @@ npm install
 cp .env.example .env
 ```
 
-### 3. Kostenlosen Gemini-Schlüssel eintragen (damit Jarvis wirklich denkt)
-1. Geh auf **https://aistudio.google.com/apikey** und melde dich mit deinem Google-Konto an.
-2. Klick auf **"Create API key"** (bzw. "API-Schlüssel erstellen") → Schlüssel kopieren.
+### 3. Kostenlosen KI-Schlüssel eintragen (damit Jarvis wirklich denkt)
+
+**Empfohlen: Groq** (gratis, ohne Kreditkarte, weltweit):
+1. Geh auf **https://console.groq.com/keys** und melde dich an (Google/GitHub reicht).
+2. **"Create API Key"** → Namen vergeben → Schlüssel kopieren (beginnt mit `gsk_…`).
 3. Trage ihn in die Datei `.env` ein:
    ```
-   GEMINI_API_KEY=dein-gemini-schlüssel-hier
+   GROQ_API_KEY=gsk_dein-schlüssel-hier
    ```
 
+*Alternative Google Gemini:* Schlüssel unter https://aistudio.google.com/apikey (muss mit
+`AIza…` beginnen) und als `GEMINI_API_KEY=` eintragen. **Achtung:** In manchen Ländern hat
+Gemini kein Gratis-Kontingent – dann Groq nehmen.
+
+Jarvis wählt automatisch das Gehirn, für das ein Schlüssel vorhanden ist (Groq zuerst).
+
 > Ohne Schlüssel läuft Jarvis im **Demo-Modus** und erklärt nur, was er können wird.
-> Das Gemini-Kontingent ist zum Testen **kostenlos** – kein Zahlungsmittel nötig.
 
 ### 4. Starten
 ```bash
@@ -57,7 +64,7 @@ Wenn ihr Jarvis nicht nur lokal, sondern über einen **Link im Internet** nutzen
 1. Geht auf **https://render.com** und meldet euch mit **GitHub** an.
 2. Oben rechts **New → Blueprint**.
 3. Wählt das Repository **`Jarvis-richtig`** aus (Branch mit dem Code).
-4. Render erkennt die Datei `render.yaml`. Beim Feld **`GEMINI_API_KEY`** euren Gemini-Schlüssel eintragen.
+4. Render erkennt die Datei `render.yaml`. Beim Feld **`GROQ_API_KEY`** euren Groq-Schlüssel eintragen.
 5. **Apply / Deploy** klicken. Nach 1–2 Minuten bekommt ihr eine Adresse wie
    `https://jarvis-dropshipping-xyz.onrender.com` – **das ist euer Jarvis-Link.** 🎉
 

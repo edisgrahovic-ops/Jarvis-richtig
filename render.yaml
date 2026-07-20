@@ -4,7 +4,8 @@
 # So gehts (siehe README.md, Abschnitt "Jarvis online stellen"):
 #   1. Auf render.com mit GitHub anmelden
 #   2. New -> Blueprint -> dieses Repo waehlen
-#   3. Beim Feld GEMINI_API_KEY euren Gemini-Schluessel eintragen
+#   3. Beim Feld GROQ_API_KEY euren gratis Groq-Schluessel eintragen
+#      (Schluessel gibts unter https://console.groq.com/keys)
 #   4. Deploy -> nach ~1-2 Min bekommt ihr eine URL wie https://jarvis-xyz.onrender.com
 services:
   - type: web
@@ -14,7 +15,7 @@ services:
     buildCommand: npm install
     startCommand: npm start
     envVars:
-      - key: GEMINI_API_KEY
+      - key: GROQ_API_KEY
         sync: false          # Schluessel gebt ihr sicher im Render-Dashboard ein
-      - key: GEMINI_MODEL
-        value: gemini-flash-latest
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
