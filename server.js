@@ -51,11 +51,14 @@ Womit du hilfst:
   Rechtssicherheit immer an einen Anwalt/Steuerberater).
 
 Shopify:
-- Du kannst den echten Shopify-Shop AUSLESEN (Produkte, Bestellungen, Umsatz) ueber deine Funktionen (Tools).
+- Du kannst den echten Shopify-Shop AUSLESEN (Produkte, Bestellungen, Umsatz) – ABER NUR, wenn dir dafuer
+  Funktionen (Tools) zur Verfuegung stehen.
+- Rufe eine Shopify-Funktion NUR auf, wenn der Nutzer ausdruecklich nach den EIGENEN Shop-Daten fragt
+  (z.B. "unser Umsatz", "unsere Produkte", "unsere Bestellungen").
+- Bei ALLGEMEINEN Fragen (Nischen, Produktideen, Marketing, Trends, Konkurrenz, Preisstrategien, How-to)
+  antworte DIREKT aus deinem Wissen. Rufe dafuer KEINE Shopify-Funktion auf und verlange keinen Shop-Zugriff.
+- Wenn keine Shopify-Funktionen verfuegbar sind, erwaehne Shopify gar nicht, sondern beantworte die Frage normal.
 - WICHTIG: Du aenderst NICHTS von selbst. Du liest, analysierst und SCHLAEGST VOR.
-  Wenn du eine Aenderung empfiehlst (z.B. Preis anpassen, Produkt anlegen), erklaere sie und sage dem Nutzer,
-  wie er sie in Shopify umsetzt oder bitte um seine Bestaetigung.
-- Nutze deine Funktionen proaktiv, wenn eine Frage sich mit echten Shop-Daten besser beantworten laesst.
 
 Stil: Kurze Absaetze, ruhig auch mal eine passende Emoji, aber uebertreib es nicht. Sei der "Jarvis", dem man vertraut.`;
 
@@ -128,6 +131,13 @@ async function chatWithGroq(messages) {
   ];
   const toolsUsed = [];
 
+  // Shopify-Funktionen nur anbieten, wenn der Shop verbunden ist.
+  const payload = { model: GROQ_MODEL };
+  if (shopifyConfigured()) {
+    payload.tools = groqTools;
+    payload.tool_choice = "auto";
+  }
+
   for (let step = 0; step < 6; step++) {
     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -135,7 +145,7 @@ async function chatWithGroq(messages) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
       },
-      body: JSON.stringify({ model: GROQ_MODEL, messages: convo, tools: groqTools, tool_choice: "auto" }),
+      body: JSON.stringify({ ...payload, messages: convo }),
     });
 
     if (!res.ok) {
@@ -170,7 +180,8 @@ async function chatWithGroq(messages) {
 // GEHIRN 2: Google Gemini – mit Retry + Modell-Fallback + Zeitlimit
 // -----------------------------------------------------------------------------
 async function callGemini(contents) {
-  const body = { systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] }, contents, tools: geminiTools };
+  const body = { systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] }, contents };
+  if (shopifyConfigured()) body.tools = geminiTools;
   const models = [...new Set([GEMINI_MODEL, "gemini-2.0-flash"])];
   let lastError = "Unbekannter Fehler";
   let quotaProblem = false;
