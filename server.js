@@ -1,7 +1,8 @@
 import express from "express";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { tools, runTool, dueReminders } from "./tools.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -34,12 +35,13 @@ Persönlichkeit:
 - Du sprichst Deutsch, es sei denn der Nutzer schreibt in einer anderen Sprache.
 - Höflich, souverän, leicht britisch-trocken im Humor, extrem kompetent.
 - Du sprichst den Nutzer respektvoll an (gerne "Sir" oder mit Namen, wenn bekannt).
-- Antworten sind präzise und hilfreich, nicht unnötig lang. Da deine Antworten oft vorgelesen werden, formuliere natürlich und klar.
+- Antworten sind präzise und werden oft vorgelesen: formuliere natürlich, klar und nicht unnötig lang.
 
-Aufgaben:
-- Du hilfst bei Fragen, Planung, Ideen, Erklärungen, Rechnen, Programmierung und allem Weiteren.
-- Wenn du eine Aufgabe nicht real ausführen kannst (z.B. Smart-Home schalten), sag ehrlich, was du tun würdest, und wie es umgesetzt werden könnte.
-- Sei proaktiv: schlage sinnvolle nächste Schritte vor.`;
+Aktionen:
+- Du hast Werkzeuge, um WIRKLICH etwas zu tun: Wetter abrufen, im Web suchen, Notizen/Erinnerungen speichern und lesen, Timer stellen und rechnen.
+- Nutze diese Werkzeuge aktiv, statt zu sagen dass du etwas nicht kannst. Wenn eine Aufgabe ein Werkzeug braucht, rufe es auf.
+- Bei mehrdeutigen Aufträgen triff sinnvolle Annahmen und handle. Bestätige ausgeführte Aktionen kurz.
+- Fehlt dir ein Werkzeug für eine Aufgabe, sag ehrlich was du stattdessen tun kannst.`;
 
 const app = express();
 app.use(express.json({ limit: "1mb" }));
@@ -49,17 +51,44 @@ app.get("/api/health", (_req, res) => {
   res.json({ ok: true, model: MODEL, configured: Boolean(API_KEY) });
 });
 
-// Chat-Endpoint mit Streaming (Server-Sent Events)
+// Fällige Erinnerungen abholen (das Handy pollt hier und meldet sie).
+app.get("/api/reminders/due", (_req, res) => {
+  res.json({ due: dueReminders() });
+});
+
+async function callClaude(messages) {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-api-key": API_KEY,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: 1500,
+      system: SYSTEM_PROMPT,
+      tools,
+      messages,
+    }),
+  });
+  if (!res.ok) {
+    const t = await res.text().catch(() => "");
+    throw new Error(`Claude-API Fehler (${res.status}): ${t}`);
+  }
+  return res.json();
+}
+
+// Chat mit agentischer Tool-Schleife.
+// Antwort: { text, actions } - actions werden im Browser ausgeführt (z. B. Timer).
 app.post("/api/chat", async (req, res) => {
   if (!API_KEY) {
     return res.status(500).json({
-      error:
-        "Kein ANTHROPIC_API_KEY konfiguriert. Lege eine .env-Datei an (siehe .env.example).",
+      error: "Kein ANTHROPIC_API_KEY konfiguriert. Siehe .env.example.",
     });
   }
-
-  const history = Array.isArray(req.body?.messages) ? req.body.messages : [];
-  const messages = history
+  const incoming = Array.isArray(req.body?.messages) ? req.body.messages : [];
+  const messages = incoming
     .filter((m) => m && (m.role === "user" || m.role === "assistant") && m.content)
     .slice(-20)
     .map((m) => ({ role: m.role, content: String(m.content) }));
@@ -68,75 +97,44 @@ app.post("/api/chat", async (req, res) => {
     return res.status(400).json({ error: "Keine Nachricht erhalten." });
   }
 
-  res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
-  res.setHeader("Connection", "keep-alive");
-
-  const send = (event, data) =>
-    res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
-
+  const actions = [];
   try {
-    const upstream = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-api-key": API_KEY,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 1500,
-        system: SYSTEM_PROMPT,
-        stream: true,
-        messages,
-      }),
-    });
+    for (let step = 0; step < 6; step++) {
+      const data = await callClaude(messages);
+      messages.push({ role: "assistant", content: data.content });
 
-    if (!upstream.ok || !upstream.body) {
-      const errText = await upstream.text().catch(() => "");
-      send("error", { message: `Claude-API Fehler (${upstream.status}): ${errText}` });
-      return res.end();
-    }
-
-    const reader = upstream.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const parts = buffer.split("\n\n");
-      buffer = parts.pop() || "";
-      for (const part of parts) {
-        const dataLine = part.split("\n").find((l) => l.startsWith("data:"));
-        if (!dataLine) continue;
-        const payload = dataLine.slice(5).trim();
-        if (!payload || payload === "[DONE]") continue;
-        try {
-          const evt = JSON.parse(payload);
-          if (
-            evt.type === "content_block_delta" &&
-            evt.delta?.type === "text_delta"
-          ) {
-            send("delta", { text: evt.delta.text });
-          }
-        } catch {
-          /* ignore keep-alive/parse noise */
+      if (data.stop_reason === "tool_use") {
+        const toolResults = [];
+        for (const block of data.content) {
+          if (block.type !== "tool_use") continue;
+          const result = await runTool(block.name, block.input || {});
+          if (result.action) actions.push(result.action);
+          toolResults.push({
+            type: "tool_result",
+            tool_use_id: block.id,
+            content: result.content ?? "OK",
+          });
         }
+        messages.push({ role: "user", content: toolResults });
+        continue;
       }
+
+      const text = (data.content || [])
+        .filter((b) => b.type === "text")
+        .map((b) => b.text)
+        .join("")
+        .trim();
+      return res.json({ text: text || "…", actions });
     }
-    send("done", {});
-    res.end();
+    res.json({ text: "Ich habe zu viele Schritte gebraucht - bitte formuliere die Aufgabe etwas einfacher.", actions });
   } catch (err) {
-    send("error", { message: String(err?.message || err) });
-    res.end();
+    res.status(500).json({ error: String(err?.message || err) });
   }
 });
 
 app.listen(PORT, () => {
   console.log(`\n  J.A.R.V.I.S. online  ->  http://localhost:${PORT}`);
   if (!API_KEY) {
-    console.log("  ⚠  Kein ANTHROPIC_API_KEY gesetzt - lege eine .env-Datei an (siehe .env.example).");
+    console.log("  ⚠  Kein ANTHROPIC_API_KEY gesetzt - siehe .env.example.");
   }
 });

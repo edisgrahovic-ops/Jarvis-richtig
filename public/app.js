@@ -13,6 +13,14 @@ const hint = $("hint");
 const history = []; // { role: 'user'|'assistant', content }
 let busy = false;
 
+// Benachrichtigungs-Erlaubnis einmalig bei erster Interaktion anfragen
+let askedNotif = false;
+function ensureNotifPermission() {
+  if (askedNotif || !("Notification" in window)) return;
+  askedNotif = true;
+  if (Notification.permission === "default") Notification.requestPermission().catch(() => {});
+}
+
 // ---------- Status ----------
 function setStatus(state, text) {
   statusDot.className = "dot " + (state || "");
@@ -57,36 +65,25 @@ function speak(text) {
   speechSynthesis.speak(u);
 }
 
-// ---------- An Jarvis senden (Streaming) ----------
+// ---------- Denk-Anzeige ----------
+function addThinking() {
+  const el = document.createElement("div");
+  el.className = "msg jarvis thinking";
+  el.innerHTML = "<span class='typing'><i></i><i></i><i></i></span>";
+  log.appendChild(el);
+  log.scrollTop = log.scrollHeight;
+  return el;
+}
+
+// ---------- An Jarvis senden ----------
 async function sendToJarvis(text) {
   if (busy || !text.trim()) return;
   busy = true;
   hint.style.display = "none";
   addMsg("user", text);
   history.push({ role: "user", content: text });
-  setStatus("busy", "denkt nach…");
-
-  const bubble = addMsg("jarvis", "");
-  let full = "";
-  // während Streaming: nur Sätze vorlesen, sobald sie fertig sind
-  let spokenIndex = 0;
-
-  const flushSpeech = (final) => {
-    const pending = full.slice(spokenIndex);
-    const lastBoundary = Math.max(
-      pending.lastIndexOf(". "),
-      pending.lastIndexOf("! "),
-      pending.lastIndexOf("? "),
-      pending.lastIndexOf("\n")
-    );
-    if (final) {
-      if (pending.trim()) speak(pending);
-      spokenIndex = full.length;
-    } else if (lastBoundary > 40) {
-      speak(pending.slice(0, lastBoundary + 1));
-      spokenIndex += lastBoundary + 1;
-    }
-  };
+  setStatus("busy", "arbeitet…");
+  const thinking = addThinking();
 
   try {
     const res = await fetch("/api/chat", {
@@ -94,49 +91,21 @@ async function sendToJarvis(text) {
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ messages: history }),
     });
+    const data = await res.json().catch(() => ({}));
+    thinking.remove();
+    if (!res.ok) throw new Error(data.error || `Serverfehler ${res.status}`);
 
-    if (!res.ok || !res.body) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || `Serverfehler ${res.status}`);
-    }
+    const reply = data.text || "…";
+    addMsg("jarvis", reply);
+    history.push({ role: "assistant", content: reply });
+    speak(reply);
 
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
-    let firstToken = true;
+    // vom Server angeforderte Geräte-Aktionen ausführen
+    for (const action of data.actions || []) handleAction(action);
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const parts = buffer.split("\n\n");
-      buffer = parts.pop() || "";
-      for (const part of parts) {
-        const evLine = part.split("\n").find((l) => l.startsWith("event:"));
-        const dataLine = part.split("\n").find((l) => l.startsWith("data:"));
-        if (!evLine || !dataLine) continue;
-        const event = evLine.slice(6).trim();
-        let data = {};
-        try { data = JSON.parse(dataLine.slice(5).trim()); } catch { continue; }
-
-        if (event === "delta") {
-          if (firstToken) { setStatus("busy", "antwortet…"); firstToken = false; }
-          full += data.text;
-          bubble.textContent = full;
-          log.scrollTop = log.scrollHeight;
-          flushSpeech(false);
-        } else if (event === "done") {
-          flushSpeech(true);
-        } else if (event === "error") {
-          throw new Error(data.message || "Unbekannter Fehler");
-        }
-      }
-    }
-
-    history.push({ role: "assistant", content: full });
     setStatus("ok", "bereit");
   } catch (err) {
-    bubble.remove();
+    thinking.remove();
     addMsg("error", "⚠ " + err.message);
     setStatus("err", "Fehler");
     setTimeout(() => setStatus("ok", "bereit"), 3000);
@@ -145,9 +114,48 @@ async function sendToJarvis(text) {
   }
 }
 
+// ---------- Geräte-Aktionen (Timer usw.) ----------
+function handleAction(action) {
+  if (!action) return;
+  if (action.type === "timer") {
+    const label = action.label || "Timer";
+    setTimeout(() => {
+      notify("⏰ " + label, "Die Zeit ist um.");
+      speak(`Sir, der ${label} ist abgelaufen.`);
+      addMsg("jarvis", `⏰ ${label} abgelaufen.`);
+    }, action.seconds * 1000);
+  }
+}
+
+// ---------- Benachrichtigungen ----------
+function notify(title, body) {
+  try {
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification(title, { body, icon: "icon.svg" });
+      return;
+    }
+  } catch {}
+  // Fallback: hörbar + sichtbar
+}
+
+// ---------- Erinnerungen abfragen (Polling) ----------
+async function pollReminders() {
+  try {
+    const res = await fetch("/api/reminders/due");
+    const data = await res.json();
+    for (const r of data.due || []) {
+      notify("🔔 Erinnerung", r.text);
+      speak(`Sir, eine Erinnerung: ${r.text}`);
+      addMsg("jarvis", `🔔 Erinnerung: ${r.text}`);
+    }
+  } catch {}
+}
+setInterval(pollReminders, 30000);
+
 // ---------- Eingabe ----------
 composer.addEventListener("submit", (e) => {
   e.preventDefault();
+  ensureNotifPermission();
   const text = input.value.trim();
   if (!text) return;
   input.value = "";
@@ -208,8 +216,8 @@ function toggleListening() {
   listening ? stopListening() : startListening();
 }
 
-micBtn.addEventListener("click", toggleListening);
-reactor.addEventListener("click", toggleListening);
+micBtn.addEventListener("click", () => { ensureNotifPermission(); toggleListening(); });
+reactor.addEventListener("click", () => { ensureNotifPermission(); toggleListening(); });
 
 // ---------- Reaktor-Visualisierung ----------
 const viz = $("viz");
