@@ -16,7 +16,7 @@ import express from "express";
 import { runShopifyTool, shopifyConfigured } from "./shopify.js";
 
 const app = express();
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json({ limit: "12mb" })); // groesser, damit Bild-Uploads reinpassen
 app.use(express.static("public"));
 
 const PORT = process.env.PORT || 3000;
@@ -30,6 +30,7 @@ const PROVIDER = process.env.GROQ_API_KEY
   : "demo";
 
 const GROQ_MODEL = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+const GROQ_VISION_MODEL = process.env.GROQ_VISION_MODEL || "qwen/qwen3.6-27b"; // versteht Bilder
 const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-flash-latest";
 const ACTIVE_MODEL = PROVIDER === "groq" ? GROQ_MODEL : PROVIDER === "gemini" ? GEMINI_MODEL : "demo";
 
@@ -186,6 +187,114 @@ async function chatWithGroq(messages) {
   return { reply: "Ich habe zu viele Schritte gebraucht und breche ab. Frag mich gern konkreter. 🙂", toolsUsed };
 }
 
+// Denk-Bloecke mancher Modelle (<think>...</think>) aus der Antwort entfernen.
+function stripThink(text) {
+  return String(text || "")
+    .replace(/<think>[\s\S]*?<\/think>/gi, "")
+    .replace(/<\/?think>/gi, "")
+    .trim();
+}
+
+// Einfacher Groq-Aufruf (ohne Tool-Schleife) fuer Vision & Recherche.
+// Kein reasoning_format (nicht alle Modelle unterstuetzen es) – wir entfernen
+// etwaige <think>-Bloecke selbst mit stripThink().
+async function groqComplete(model, convo, { maxTokens = 2048 } = {}) {
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+    },
+    body: JSON.stringify({ model, messages: convo, max_tokens: maxTokens }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Groq HTTP ${res.status} (${model}): ${text.slice(0, 300)}`);
+  }
+  const data = await res.json();
+  return stripThink(data.choices?.[0]?.message?.content || "");
+}
+
+// GEHIRN (Bild): Screenshot/Foto analysieren.
+async function chatWithGroqVision(messages, imageDataUrl) {
+  const prior = messages.slice(0, -1).map((m) => ({ role: m.role, content: String(m.content ?? "") }));
+  const last = messages[messages.length - 1] || { content: "" };
+  const frage =
+    String(last.content ?? "").trim() ||
+    "Analysiere dieses Bild und sag mir, was es fuer mein Dropshipping-Business bedeutet.";
+
+  const convo = [
+    { role: "system", content: SYSTEM_PROMPT },
+    ...prior,
+    {
+      role: "user",
+      content: [
+        { type: "text", text: frage },
+        { type: "image_url", image_url: { url: imageDataUrl } },
+      ],
+    },
+  ];
+  const reply = await groqComplete(GROQ_VISION_MODEL, convo, { maxTokens: 2048 });
+  return { reply: reply || "(keine Antwort)", toolsUsed: ["bild_analyse"] };
+}
+
+// Echte Web-Suche via Tavily (gratis, optional). Gibt getrimmte Ergebnisse
+// zurueck oder null, wenn kein Schluessel gesetzt ist bzw. die Suche scheitert.
+async function webSearchTavily(query) {
+  if (!process.env.TAVILY_API_KEY) return null;
+  try {
+    const res = await fetch("https://api.tavily.com/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        api_key: process.env.TAVILY_API_KEY,
+        query,
+        max_results: 5,
+        search_depth: "basic",
+      }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const lines = (data.results || []).map((r) => `- ${r.title}: ${r.content}`).join("\n");
+    return lines.slice(0, 4000) || null;
+  } catch (_) {
+    return null;
+  }
+}
+
+// GEHIRN (Recherche): echte Web-Suche (wenn Tavily-Schluessel da), sonst
+// fundierte Antwort aus dem Wissen. Nutzt das schnelle Standardmodell.
+async function chatWithGroqResearch(messages) {
+  const last = messages[messages.length - 1] || { content: "" };
+  const query = String(last.content ?? "");
+  const results = await webSearchTavily(query);
+
+  const persona =
+    "Du bist Jarvis: hoeflich, trocken-sarkastisch, professionell, nennst den Nutzer 'Sir'. " +
+    "Du hilfst bei einem Dropshipping-Business. Antworte kompakt mit konkreten Beispielen und naechsten Schritten.";
+
+  let sys, userContent, mark;
+  if (results) {
+    sys = persona + " Stuetze dich auf die folgenden AKTUELLEN Web-Suchergebnisse und nenne konkrete Beispiele/Quellen.";
+    userContent = `Frage: ${query}\n\nAktuelle Web-Suchergebnisse:\n${results}`;
+    mark = "web_recherche";
+  } else {
+    sys =
+      persona +
+      " Hinweis: Es ist gerade keine Live-Websuche aktiv. Antworte fundiert aus deinem Wissen und weise am Ende " +
+      "mit einem Satz darauf hin, dass fuer topaktuelle Daten eine Websuche aktiviert werden kann.";
+    userContent = query;
+    mark = "recherche_wissen";
+  }
+
+  const convo = [
+    { role: "system", content: sys },
+    { role: "user", content: userContent },
+  ];
+  const reply = await groqComplete(GROQ_MODEL, convo, { maxTokens: 1024 });
+  return { reply: reply || "(keine Antwort)", toolsUsed: [mark] };
+}
+
 // -----------------------------------------------------------------------------
 // GEHIRN 2: Google Gemini – mit Retry + Modell-Fallback + Zeitlimit
 // -----------------------------------------------------------------------------
@@ -241,6 +350,37 @@ async function callGemini(contents) {
   throw new Error(`Gemini ist gerade ueberlastet. Letzter Hinweis: ${lastError}`);
 }
 
+// GEHIRN 2 (Bild): Bildanalyse mit Gemini (inline_data).
+async function chatWithGeminiVision(messages, imageDataUrl) {
+  const m = /^data:([^;]+);base64,(.*)$/.exec(imageDataUrl || "");
+  if (!m) return { reply: "Ich konnte das Bild nicht lesen, Sir.", toolsUsed: [] };
+  const prior = messages.slice(0, -1).map((x) => ({
+    role: x.role === "assistant" ? "model" : "user",
+    parts: [{ text: String(x.content ?? "") }],
+  }));
+  const last = messages[messages.length - 1] || { content: "" };
+  const frage =
+    String(last.content ?? "").trim() ||
+    "Analysiere dieses Bild und sag mir, was es fuer mein Dropshipping-Business bedeutet.";
+
+  const contents = [
+    ...prior,
+    { role: "user", parts: [{ text: frage }, { inline_data: { mime_type: m[1], data: m[2] } }] },
+  ];
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${process.env.GEMINI_API_KEY}`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] }, contents }),
+  });
+  if (!res.ok) throw new Error(`Gemini Vision HTTP ${res.status}: ${(await res.text()).slice(0, 200)}`);
+  const data = await res.json();
+  const parts = data.candidates?.[0]?.content?.parts || [];
+  const text = parts.filter((p) => typeof p.text === "string").map((p) => p.text).join("\n").trim();
+  return { reply: text || "(keine Antwort)", toolsUsed: ["bild_analyse"] };
+}
+
 async function chatWithGemini(messages) {
   const contents = messages.map((m) => ({
     role: m.role === "assistant" ? "model" : "user",
@@ -281,7 +421,7 @@ async function chatWithGemini(messages) {
 // Chat-Endpunkt
 // -----------------------------------------------------------------------------
 app.post("/api/chat", async (req, res) => {
-  const { messages } = req.body || {};
+  const { messages, image, research } = req.body || {};
   if (!Array.isArray(messages)) {
     return res.status(400).json({ error: "Feld 'messages' (Array) fehlt." });
   }
@@ -296,7 +436,20 @@ app.post("/api/chat", async (req, res) => {
   }
 
   try {
-    const result = PROVIDER === "groq" ? await chatWithGroq(messages) : await chatWithGemini(messages);
+    let result;
+    if (image) {
+      // Bild analysieren (aktuell ueber Groq-Vision).
+      if (PROVIDER === "groq") {
+        result = await chatWithGroqVision(messages, image);
+      } else {
+        result = await chatWithGeminiVision(messages, image);
+      }
+    } else if (research && PROVIDER === "groq") {
+      // Echte Web-Recherche.
+      result = await chatWithGroqResearch(messages);
+    } else {
+      result = PROVIDER === "groq" ? await chatWithGroq(messages) : await chatWithGemini(messages);
+    }
     return res.json(result);
   } catch (err) {
     console.error("Fehler im Chat-Endpunkt:", err);

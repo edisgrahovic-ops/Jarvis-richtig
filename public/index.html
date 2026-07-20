@@ -128,7 +128,20 @@
     button.icon.mic.active { border-color: var(--gold); color: var(--gold); animation: micpulse 1s infinite; }
     @keyframes micpulse { 0%,100% { box-shadow: 0 0 6px var(--gold); } 50% { box-shadow: 0 0 18px var(--gold); } }
     button.icon:disabled { opacity: 0.4; cursor: not-allowed; }
+    button.icon.research.active { border-color: var(--gold); color: var(--gold); box-shadow: 0 0 12px rgba(255,181,71,0.5); }
     .mute-toggle { font-size: 0.7rem; color: #7fb3c8; cursor: pointer; user-select: none; display:flex; align-items:center; gap:5px; }
+
+    /* Bild-Vorschau ueber dem Eingabefeld */
+    .preview { display: none; align-items: center; gap: 10px; padding: 8px 6px 0; }
+    .preview.show { display: flex; }
+    .preview img { width: 46px; height: 46px; object-fit: cover; border-radius: 8px; border: 1px solid var(--cyan); }
+    .preview .info { font-size: 0.75rem; color: var(--muted, #7fb3c8); flex: 1; }
+    .preview .remove { cursor: pointer; color: var(--danger); font-size: 1.1rem; padding: 0 6px; }
+    .research-hint { font-size: 0.68rem; color: var(--gold); padding: 6px 6px 0; display: none; }
+    .research-hint.show { display: block; }
+
+    /* Bild in einer Chat-Nachricht */
+    .msg img.attached { display: block; max-width: 220px; max-height: 220px; border-radius: 10px; margin-bottom: 6px; border: 1px solid rgba(53,214,255,0.3); }
   </style>
 </head>
 <body>
@@ -149,7 +162,17 @@
 
     <div id="chat"></div>
 
+    <div class="research-hint" id="researchHint">🔍 Recherche-Modus aktiv – Jarvis recherchiert deine nächste Frage.</div>
+    <div class="preview" id="preview">
+      <img id="previewImg" alt="Vorschau" />
+      <span class="info" id="previewInfo">Bild angehängt – Jarvis analysiert es mit deiner nächsten Nachricht.</span>
+      <span class="remove" id="previewRemove" title="Entfernen">✕</span>
+    </div>
+
     <div class="composer">
+      <input id="fileInput" type="file" accept="image/*" hidden />
+      <button class="icon" id="attachBtn" title="Bild/Screenshot hochladen">📎</button>
+      <button class="icon research" id="researchBtn" title="Recherche-Modus (Web/Wissen)">🔍</button>
       <button class="icon mic" id="micBtn" title="Sprechen">🎤</button>
       <input id="input" type="text" placeholder="Sprich mit Jarvis oder tippe deine Frage…" autocomplete="off" />
       <button class="icon" id="sendBtn" title="Senden">➤</button>
@@ -168,6 +191,70 @@
     let history = []; // { role, content } fuer die API
     let voiceEnabled = true;
 
+    // ---- Bild-Upload & Recherche-Modus ----
+    const fileInput = document.getElementById("fileInput");
+    const attachBtn = document.getElementById("attachBtn");
+    const researchBtn = document.getElementById("researchBtn");
+    const preview = document.getElementById("preview");
+    const previewImg = document.getElementById("previewImg");
+    const previewRemove = document.getElementById("previewRemove");
+    const researchHint = document.getElementById("researchHint");
+    let pendingImage = null; // data-URL des angehaengten Bildes
+    let researchMode = false;
+
+    // Bild clientseitig verkleinern (max 1024px, JPEG) -> kleine, schnelle Uploads
+    function resizeImage(file, maxDim = 1024) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const image = new Image();
+          image.onload = () => {
+            let { width, height } = image;
+            if (width > maxDim || height > maxDim) {
+              const s = maxDim / Math.max(width, height);
+              width = Math.round(width * s);
+              height = Math.round(height * s);
+            }
+            const canvas = document.createElement("canvas");
+            canvas.width = width; canvas.height = height;
+            canvas.getContext("2d").drawImage(image, 0, 0, width, height);
+            resolve(canvas.toDataURL("image/jpeg", 0.85));
+          };
+          image.onerror = reject;
+          image.src = reader.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function clearImage() {
+      pendingImage = null;
+      fileInput.value = "";
+      preview.classList.remove("show");
+    }
+
+    attachBtn.onclick = () => fileInput.click();
+    fileInput.onchange = async () => {
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) return;
+      try {
+        pendingImage = await resizeImage(file);
+        previewImg.src = pendingImage;
+        preview.classList.add("show");
+        input.focus();
+      } catch (_) {
+        addMessage("jarvis", "⚠️ Das Bild konnte ich leider nicht laden, Sir.");
+      }
+    };
+    previewRemove.onclick = clearImage;
+
+    researchBtn.onclick = () => {
+      researchMode = !researchMode;
+      researchBtn.classList.toggle("active", researchMode);
+      researchHint.classList.toggle("show", researchMode);
+    };
+
     // ---- Statusanzeige laden ----
     fetch("/api/status").then(r => r.json()).then(s => {
       document.getElementById("dot-ki").className = "dot " + (s.kiVerbunden ? "on" : "off");
@@ -175,14 +262,20 @@
     }).catch(() => {});
 
     // ---- Nachricht anzeigen ----
-    function addMessage(role, text, usedTools = false) {
+    function addMessage(role, text, usedTools = false, imageUrl = null) {
       const div = document.createElement("div");
       div.className = "msg " + (role === "user" ? "user" : "jarvis") + (usedTools ? " tools" : "");
       const tag = document.createElement("span");
       tag.className = "tag";
       tag.textContent = role === "user" ? "Du" : "Jarvis";
       div.appendChild(tag);
-      div.appendChild(document.createTextNode(text));
+      if (imageUrl) {
+        const img = document.createElement("img");
+        img.className = "attached";
+        img.src = imageUrl;
+        div.appendChild(img);
+      }
+      if (text) div.appendChild(document.createTextNode(text));
       chat.appendChild(div);
       chat.scrollTop = chat.scrollHeight;
       return div;
@@ -223,12 +316,20 @@
     // ---- Senden ----
     async function send(text) {
       text = (text || input.value).trim();
-      if (!text) return;
+      const img = pendingImage; // Bild dieser Nachricht
+      if (!text && !img) return;
       input.value = "";
-      addMessage("user", text);
-      history.push({ role: "user", content: text });
 
-      const thinking = addMessage("jarvis", "denkt nach…");
+      // Nutzer-Nachricht (mit Bild) anzeigen
+      const shownText = text || (img ? "(Bild zur Analyse)" : "");
+      addMessage("user", shownText, false, img);
+      history.push({ role: "user", content: text || "Analysiere das angehaengte Bild." });
+
+      // Bildvorschau zuruecksetzen (Bild geht nur mit dieser Nachricht mit)
+      clearImage();
+      const useResearch = researchMode;
+
+      const thinking = addMessage("jarvis", img ? "sieht sich das an…" : useResearch ? "recherchiert…" : "denkt nach…");
       thinking.classList.add("thinking");
       sendBtn.disabled = true;
 
@@ -236,7 +337,7 @@
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: history }),
+          body: JSON.stringify({ messages: history, image: img, research: useResearch }),
         });
         const data = await res.json();
         thinking.remove();

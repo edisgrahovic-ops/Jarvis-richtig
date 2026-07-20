@@ -10,9 +10,12 @@ ums Business und kann euren **Shopify-Shop auslesen** und Vorschläge machen.
 
 ## Was Jarvis kann
 
+- 🎩 **Persönlichkeit** – spricht dich mit „Sir" an, trocken-sarkastisch aber professionell (wie bei Iron Man), mit männlicher Stimme.
 - 🎤 **Reden & zuhören** – Sprachein- und -ausgabe direkt im Browser (am besten in Chrome).
 - 🧠 **Mitdenken** – beantwortet Fragen zu Produktrecherche, Nischen, Lieferanten, Marketing (TikTok/Meta Ads), Preisen, Kundenservice u.v.m.
-- 🛒 **Shopify lesen** – zeigt Produkte, Bestellungen und geschätzten Umsatz an und **schlägt Aktionen vor**.
+- 📎 **Bilder/Screenshots analysieren** – lade ein Foto hoch (z. B. ein Produkt oder eine Konkurrenz-Anzeige) und Jarvis erklärt, was er sieht.
+- 🔍 **Recherche-Modus** – schalte ihn ein, dann recherchiert Jarvis deine Frage (mit Tavily-Schlüssel live im Web, sonst aus seinem Wissen).
+- 🛒 **Shopify lesen** – zeigt Produkte, Bestellungen und geschätzten Umsatz an und **schlägt Aktionen vor** (nur wenn verbunden).
 - 🔒 **Sicher** – Jarvis ändert von sich aus **nichts** in eurem Shop. Er liest und empfiehlt, ihr entscheidet.
 
 ---
