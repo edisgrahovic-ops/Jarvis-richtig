@@ -18,8 +18,9 @@ app.use(express.static("public"));
 
 const PORT = process.env.PORT || 3000;
 
-// Gratis & schnell. Bei Problemen alternativ "gemini-2.0-flash" verwenden.
-const MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+// Gratis & schnell. "gemini-flash-latest" zeigt immer aufs aktuelle Flash-Modell.
+// Alternativen bei Problemen: "gemini-2.0-flash".
+const MODEL = process.env.GEMINI_MODEL || "gemini-flash-latest";
 
 // Demo-Modus, falls noch kein Schluessel gesetzt ist (Jarvis stuerzt nicht ab).
 const hasApiKey = Boolean(process.env.GEMINI_API_KEY);

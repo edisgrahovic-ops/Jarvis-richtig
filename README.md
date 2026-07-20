@@ -49,6 +49,23 @@ Auf "🎤" tippen und lossprechen – oder einfach tippen. 🚀
 
 ---
 
+## Jarvis online stellen (öffentlicher Link zum Teilen)
+
+Wenn ihr Jarvis nicht nur lokal, sondern über einen **Link im Internet** nutzen wollt
+(z. B. um ihn dem Freund zu schicken oder vom Handy zu öffnen) – kostenlos über **Render**:
+
+1. Geht auf **https://render.com** und meldet euch mit **GitHub** an.
+2. Oben rechts **New → Blueprint**.
+3. Wählt das Repository **`Jarvis-richtig`** aus (Branch mit dem Code).
+4. Render erkennt die Datei `render.yaml`. Beim Feld **`GEMINI_API_KEY`** euren Gemini-Schlüssel eintragen.
+5. **Apply / Deploy** klicken. Nach 1–2 Minuten bekommt ihr eine Adresse wie
+   `https://jarvis-dropshipping-xyz.onrender.com` – **das ist euer Jarvis-Link.** 🎉
+
+> Hinweis: Im Gratis-Tarif „schläft" der Server nach Inaktivität ein und braucht beim
+> ersten Aufruf ~30 Sekunden zum Aufwachen. Für den Start völlig okay.
+
+---
+
 ## Shopify verbinden (optional)
 
 Damit Jarvis euren echten Shop auslesen kann:

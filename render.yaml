@@ -1,0 +1,20 @@
+# render.yaml – Blueprint fuer kostenloses Hosting auf https://render.com
+# Damit bekommt ihr eine oeffentliche Jarvis-Adresse (Link), die ihr teilen koennt.
+#
+# So gehts (siehe README.md, Abschnitt "Jarvis online stellen"):
+#   1. Auf render.com mit GitHub anmelden
+#   2. New -> Blueprint -> dieses Repo waehlen
+#   3. Beim Feld GEMINI_API_KEY euren Gemini-Schluessel eintragen
+#   4. Deploy -> nach ~1-2 Min bekommt ihr eine URL wie https://jarvis-xyz.onrender.com
+services:
+  - type: web
+    name: jarvis-dropshipping
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false          # Schluessel gebt ihr sicher im Render-Dashboard ein
+      - key: GEMINI_MODEL
+        value: gemini-flash-latest
