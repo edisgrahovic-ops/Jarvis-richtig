@@ -17,15 +17,13 @@ function save(file, data) {
 }
 const nid = () => Math.random().toString(36).slice(2, 8);
 
-// ================= Werkzeug-Definitionen (für die Claude-API) =================
-export const tools = [
-  // Server-Werkzeug von Anthropic: echte Web-Suche (läuft auf Anthropic-Seite)
-  { type: "web_search_20250305", name: "web_search", max_uses: 5 },
-
+// ================= Neutrale Werkzeug-Definitionen =================
+// Anbieter-unabhängig; die Provider-Adapter wandeln das in ihr Format um.
+export const toolSpecs = [
   {
     name: "get_weather",
     description: "Ruft das aktuelle Wetter und die Vorhersage für einen Ort ab.",
-    input_schema: {
+    parameters: {
       type: "object",
       properties: { location: { type: "string", description: "Ort/Stadt, z. B. 'Berlin'" } },
       required: ["location"],
@@ -34,7 +32,7 @@ export const tools = [
   {
     name: "save_note",
     description: "Speichert eine Notiz oder einen To-Do-Eintrag dauerhaft.",
-    input_schema: {
+    parameters: {
       type: "object",
       properties: { text: { type: "string", description: "Inhalt der Notiz" } },
       required: ["text"],
@@ -43,12 +41,12 @@ export const tools = [
   {
     name: "list_notes",
     description: "Listet alle gespeicherten Notizen/To-Dos auf.",
-    input_schema: { type: "object", properties: {} },
+    parameters: { type: "object", properties: {} },
   },
   {
     name: "delete_note",
     description: "Löscht eine Notiz anhand ihrer ID (aus list_notes).",
-    input_schema: {
+    parameters: {
       type: "object",
       properties: { id: { type: "string" } },
       required: ["id"],
@@ -58,7 +56,7 @@ export const tools = [
     name: "add_reminder",
     description:
       "Legt eine Erinnerung an, die zu einem Zeitpunkt fällig wird. Gib den Zeitpunkt als ISO-8601 an (z. B. 2026-07-20T18:30:00). Berechne den Zeitpunkt aus der Nutzerangabe relativ zur aktuellen Zeit.",
-    input_schema: {
+    parameters: {
       type: "object",
       properties: {
         text: { type: "string", description: "Woran erinnert werden soll" },
@@ -70,12 +68,12 @@ export const tools = [
   {
     name: "list_reminders",
     description: "Listet alle anstehenden Erinnerungen auf.",
-    input_schema: { type: "object", properties: {} },
+    parameters: { type: "object", properties: {} },
   },
   {
     name: "set_timer",
     description: "Stellt einen Timer, der nach der angegebenen Dauer im Gerät klingelt.",
-    input_schema: {
+    parameters: {
       type: "object",
       properties: {
         seconds: { type: "number", description: "Dauer in Sekunden" },
@@ -87,7 +85,7 @@ export const tools = [
   {
     name: "calculate",
     description: "Berechnet einen mathematischen Ausdruck (z. B. '3 * (4 + 2)' oder '15% von 240').",
-    input_schema: {
+    parameters: {
       type: "object",
       properties: { expression: { type: "string" } },
       required: ["expression"],
@@ -96,7 +94,7 @@ export const tools = [
   {
     name: "get_current_time",
     description: "Gibt das aktuelle Datum und die Uhrzeit zurück.",
-    input_schema: { type: "object", properties: {} },
+    parameters: { type: "object", properties: {} },
   },
 ];
 
