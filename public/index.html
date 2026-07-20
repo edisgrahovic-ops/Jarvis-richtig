@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JARVIS · Dropshipping Assistent</title>
+  <style>
+    :root {
+      --cyan: #35d6ff;
+      --cyan-dim: #1a7f99;
+      --bg: #050b14;
+      --bg-panel: rgba(12, 26, 41, 0.72);
+      --gold: #ffb547;
+      --text: #d6f3ff;
+      --danger: #ff5f6d;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: radial-gradient(circle at 50% 0%, #0a1a2b 0%, var(--bg) 60%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    header {
+      text-align: center;
+      padding: 18px 12px 6px;
+      border-bottom: 1px solid rgba(53, 214, 255, 0.15);
+    }
+    header h1 {
+      font-size: 1.7rem;
+      letter-spacing: 0.5em;
+      font-weight: 300;
+      color: var(--cyan);
+      text-shadow: 0 0 18px rgba(53, 214, 255, 0.5);
+    }
+    header .sub {
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      color: var(--cyan-dim);
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+    .status-bar {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      font-size: 0.7rem;
+      margin-top: 8px;
+      color: #7fb3c8;
+    }
+    .status-bar span { display: flex; align-items: center; gap: 5px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #445; }
+    .dot.on { background: #2ee6a0; box-shadow: 0 0 8px #2ee6a0; }
+    .dot.off { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 820px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 12px 16px;
+      overflow: hidden;
+    }
+
+    /* Arc-Reaktor */
+    .reactor-wrap { display: flex; justify-content: center; padding: 6px 0 10px; }
+    .reactor {
+      width: 84px; height: 84px; border-radius: 50%;
+      border: 2px solid var(--cyan);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 24px rgba(53,214,255,0.35), inset 0 0 24px rgba(53,214,255,0.25);
+      position: relative;
+    }
+    .reactor::before {
+      content: ""; position: absolute; width: 46px; height: 46px;
+      border-radius: 50%; background: radial-gradient(circle, #bff4ff, var(--cyan) 55%, transparent 75%);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+    .reactor.speaking::before { animation: pulse 0.7s ease-in-out infinite; }
+    .reactor.listening { border-color: var(--gold); box-shadow: 0 0 24px rgba(255,181,71,0.5), inset 0 0 24px rgba(255,181,71,0.3); }
+    .reactor.listening::before { background: radial-gradient(circle, #ffe0a8, var(--gold) 55%, transparent 75%); animation: pulse 0.6s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { transform: scale(0.85); opacity: 0.85; } 50% { transform: scale(1.05); opacity: 1; } }
+
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 8px 4px;
+    }
+    #chat::-webkit-scrollbar { width: 6px; }
+    #chat::-webkit-scrollbar-thumb { background: var(--cyan-dim); border-radius: 3px; }
+
+    .msg { max-width: 82%; padding: 11px 15px; border-radius: 14px; line-height: 1.5; font-size: 0.95rem; white-space: pre-wrap; word-wrap: break-word; }
+    .msg.user { align-self: flex-end; background: linear-gradient(135deg, #17466b, #0d2f4a); border: 1px solid rgba(53,214,255,0.3); border-bottom-right-radius: 4px; }
+    .msg.jarvis { align-self: flex-start; background: var(--bg-panel); border: 1px solid rgba(53,214,255,0.2); border-bottom-left-radius: 4px; }
+    .msg .tag { font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--cyan-dim); margin-bottom: 4px; display: block; }
+    .msg.jarvis.tools .tag::after { content: " · Shopify gelesen"; color: var(--gold); }
+    .msg.thinking { color: var(--cyan-dim); font-style: italic; }
+
+    .composer {
+      display: flex; gap: 10px; align-items: center;
+      padding: 12px 4px 4px;
+      border-top: 1px solid rgba(53,214,255,0.15);
+    }
+    #input {
+      flex: 1; background: rgba(8,18,30,0.9); border: 1px solid rgba(53,214,255,0.3);
+      color: var(--text); padding: 13px 16px; border-radius: 24px; font-size: 0.95rem; outline: none;
+    }
+    #input:focus { border-color: var(--cyan); box-shadow: 0 0 12px rgba(53,214,255,0.3); }
+    button.icon {
+      width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--cyan);
+      background: rgba(12,26,41,0.9); color: var(--cyan); font-size: 1.2rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: 0.15s; flex-shrink: 0;
+    }
+    button.icon:hover { background: var(--cyan); color: var(--bg); box-shadow: 0 0 14px rgba(53,214,255,0.5); }
+    button.icon.mic.active { border-color: var(--gold); color: var(--gold); animation: micpulse 1s infinite; }
+    @keyframes micpulse { 0%,100% { box-shadow: 0 0 6px var(--gold); } 50% { box-shadow: 0 0 18px var(--gold); } }
+    button.icon:disabled { opacity: 0.4; cursor: not-allowed; }
+    .mute-toggle { font-size: 0.7rem; color: #7fb3c8; cursor: pointer; user-select: none; display:flex; align-items:center; gap:5px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>JARVIS</h1>
+    <div class="sub">Dropshipping Command Center</div>
+    <div class="status-bar">
+      <span><span class="dot" id="dot-ki"></span> KI-Gehirn</span>
+      <span><span class="dot" id="dot-shop"></span> Shopify</span>
+      <span class="mute-toggle" id="muteToggle"><span class="dot on" id="dot-voice"></span> Sprachausgabe</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="reactor-wrap">
+      <div class="reactor" id="reactor"></div>
+    </div>
+
+    <div id="chat"></div>
+
+    <div class="composer">
+      <button class="icon mic" id="micBtn" title="Sprechen">🎤</button>
+      <input id="input" type="text" placeholder="Sprich mit Jarvis oder tippe deine Frage…" autocomplete="off" />
+      <button class="icon" id="sendBtn" title="Senden">➤</button>
+    </div>
+  </main>
+
+  <script>
+    const chat = document.getElementById("chat");
+    const input = document.getElementById("input");
+    const sendBtn = document.getElementById("sendBtn");
+    const micBtn = document.getElementById("micBtn");
+    const reactor = document.getElementById("reactor");
+    const muteToggle = document.getElementById("muteToggle");
+    const dotVoice = document.getElementById("dot-voice");
+
+    let history = []; // { role, content } fuer die API
+    let voiceEnabled = true;
+
+    // ---- Statusanzeige laden ----
+    fetch("/api/status").then(r => r.json()).then(s => {
+      document.getElementById("dot-ki").className = "dot " + (s.kiVerbunden ? "on" : "off");
+      document.getElementById("dot-shop").className = "dot " + (s.shopifyVerbunden ? "on" : "off");
+    }).catch(() => {});
+
+    // ---- Nachricht anzeigen ----
+    function addMessage(role, text, usedTools = false) {
+      const div = document.createElement("div");
+      div.className = "msg " + (role === "user" ? "user" : "jarvis") + (usedTools ? " tools" : "");
+      const tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = role === "user" ? "Du" : "Jarvis";
+      div.appendChild(tag);
+      div.appendChild(document.createTextNode(text));
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+      return div;
+    }
+
+    // ---- Sprachausgabe (Text zu Sprache) ----
+    function speak(text) {
+      if (!voiceEnabled || !("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "de-DE";
+      u.rate = 1.05;
+      u.onstart = () => reactor.classList.add("speaking");
+      u.onend = () => reactor.classList.remove("speaking");
+      window.speechSynthesis.speak(u);
+    }
+
+    // ---- Senden ----
+    async function send(text) {
+      text = (text || input.value).trim();
+      if (!text) return;
+      input.value = "";
+      addMessage("user", text);
+      history.push({ role: "user", content: text });
+
+      const thinking = addMessage("jarvis", "denkt nach…");
+      thinking.classList.add("thinking");
+      sendBtn.disabled = true;
+
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: history }),
+        });
+        const data = await res.json();
+        thinking.remove();
+
+        if (data.error) {
+          addMessage("jarvis", "⚠️ " + (data.detail || data.error));
+          return;
+        }
+        const usedTools = (data.toolsUsed || []).length > 0;
+        addMessage("jarvis", data.reply, usedTools);
+        history.push({ role: "assistant", content: data.reply });
+        speak(data.reply);
+      } catch (err) {
+        thinking.remove();
+        addMessage("jarvis", "⚠️ Verbindungsfehler: " + err.message);
+      } finally {
+        sendBtn.disabled = false;
+      }
+    }
+
+    sendBtn.onclick = () => send();
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") send(); });
+
+    // ---- Spracheingabe (Sprache zu Text) ----
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognizing = false;
+    if (SR) {
+      const recog = new SR();
+      recog.lang = "de-DE";
+      recog.interimResults = false;
+      recog.onstart = () => { recognizing = true; micBtn.classList.add("active"); reactor.classList.add("listening"); };
+      recog.onend = () => { recognizing = false; micBtn.classList.remove("active"); reactor.classList.remove("listening"); };
+      recog.onerror = () => { recognizing = false; micBtn.classList.remove("active"); reactor.classList.remove("listening"); };
+      recog.onresult = (e) => {
+        const t = e.results[0][0].transcript;
+        input.value = t;
+        send(t);
+      };
+      micBtn.onclick = () => {
+        if (recognizing) { recog.stop(); return; }
+        window.speechSynthesis.cancel();
+        try { recog.start(); } catch (_) {}
+      };
+    } else {
+      micBtn.disabled = true;
+      micBtn.title = "Spracheingabe wird von diesem Browser nicht unterstuetzt (Chrome empfohlen)";
+    }
+
+    // ---- Sprachausgabe an/aus ----
+    muteToggle.onclick = () => {
+      voiceEnabled = !voiceEnabled;
+      dotVoice.className = "dot " + (voiceEnabled ? "on" : "");
+      if (!voiceEnabled) window.speechSynthesis.cancel();
+    };
+
+    // ---- Begruessung ----
+    setTimeout(() => {
+      const greet = "Systeme online. Ich bin Jarvis, euer Assistent fuers Dropshipping-Business. Womit legen wir los?";
+      addMessage("jarvis", greet);
+      speak(greet);
+    }, 500);
+  </script>
+</body>
+</html>
