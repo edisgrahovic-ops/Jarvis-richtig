@@ -188,13 +188,33 @@
       return div;
     }
 
+    // ---- Männliche deutsche Stimme aussuchen (best effort, je nach Geraet) ----
+    let jarvisVoice = null;
+    function pickVoice() {
+      const voices = window.speechSynthesis.getVoices();
+      const de = voices.filter((v) => /de(-|_)/i.test(v.lang));
+      // Bekannte maennliche deutsche Stimmen zuerst, sonst irgendeine mit "male".
+      const maleNames = ["male", "männlich", "markus", "conrad", "stefan", "yannick", "google deutsch"];
+      jarvisVoice =
+        de.find((v) => maleNames.some((n) => v.name.toLowerCase().includes(n))) ||
+        de.find((v) => !/female|weiblich|anna|petra|marlene|katja|vicki/i.test(v.name)) ||
+        de[0] ||
+        null;
+    }
+    if ("speechSynthesis" in window) {
+      pickVoice();
+      window.speechSynthesis.onvoiceschanged = pickVoice; // Stimmen laden oft verzoegert
+    }
+
     // ---- Sprachausgabe (Text zu Sprache) ----
     function speak(text) {
       if (!voiceEnabled || !("speechSynthesis" in window)) return;
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
       u.lang = "de-DE";
-      u.rate = 1.05;
+      if (jarvisVoice) u.voice = jarvisVoice;
+      u.rate = 1.0;
+      u.pitch = 0.85; // etwas tiefer -> maennlicher, ruhiger Jarvis-Ton
       u.onstart = () => reactor.classList.add("speaking");
       u.onend = () => reactor.classList.remove("speaking");
       window.speechSynthesis.speak(u);
@@ -274,7 +294,7 @@
 
     // ---- Begruessung ----
     setTimeout(() => {
-      const greet = "Systeme online. Ich bin Jarvis, euer Assistent fuers Dropshipping-Business. Womit legen wir los?";
+      const greet = "Systeme online, Sir. Jarvis steht zu Diensten. Ihr Dropshipping-Imperium wartet – womit darf ich beginnen?";
       addMessage("jarvis", greet);
       speak(greet);
     }, 500);
