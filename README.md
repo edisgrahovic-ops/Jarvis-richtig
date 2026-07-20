@@ -4,7 +4,7 @@ Ein KI-Assistent im Stil von Iron Mans "Jarvis" für euer Dropshipping-Business.
 Du kannst **mit ihm reden** (Sprache) oder tippen. Er hilft bei allen Fragen rund
 ums Business und kann euren **Shopify-Shop auslesen** und Vorschläge machen.
 
-> Gebaut von Edis & Freund. Gehirn: **Claude (Anthropic)**. Läuft als Web-App im Browser.
+> Gebaut von Edis & Freund. Gehirn: **Google Gemini** (kostenloses Kontingent). Läuft als Web-App im Browser.
 
 ---
 
@@ -28,14 +28,16 @@ npm install
 cp .env.example .env
 ```
 
-### 3. KI-Schlüssel eintragen (damit Jarvis wirklich denkt)
-1. Geh auf https://console.anthropic.com/ und erstelle einen **API Key**.
-2. Trage ihn in die Datei `.env` ein:
+### 3. Kostenlosen Gemini-Schlüssel eintragen (damit Jarvis wirklich denkt)
+1. Geh auf **https://aistudio.google.com/apikey** und melde dich mit deinem Google-Konto an.
+2. Klick auf **"Create API key"** (bzw. "API-Schlüssel erstellen") → Schlüssel kopieren.
+3. Trage ihn in die Datei `.env` ein:
    ```
-   ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxxx
+   GEMINI_API_KEY=dein-gemini-schlüssel-hier
    ```
 
 > Ohne Schlüssel läuft Jarvis im **Demo-Modus** und erklärt nur, was er können wird.
+> Das Gemini-Kontingent ist zum Testen **kostenlos** – kein Zahlungsmittel nötig.
 
 ### 4. Starten
 ```bash
@@ -70,7 +72,7 @@ Damit Jarvis euren echten Shop auslesen kann:
 
 | Datei | Zweck |
 |-------|-------|
-| `server.js` | Backend: verbindet Browser ↔ Claude ↔ Shopify |
+| `server.js` | Backend: verbindet Browser ↔ Gemini ↔ Shopify |
 | `shopify.js` | Nur-lesende Shopify-Anbindung (Produkte, Bestellungen, Umsatz) |
 | `public/index.html` | Das Jarvis-Interface (Design, Chat, Sprache) |
 | `.env` | Eure geheimen Schlüssel (wird **nicht** mit Git geteilt) |

@@ -1,7 +1,7 @@
 {
   "name": "jarvis-dropshipping",
   "version": "0.1.0",
-  "description": "Jarvis – dein KI-Assistent fuers Dropshipping-Business (Chat + Sprache + Shopify)",
+  "description": "Jarvis – dein KI-Assistent fuers Dropshipping-Business (Chat + Sprache + Shopify), Gehirn: Google Gemini",
   "type": "module",
   "main": "server.js",
   "scripts": {
@@ -9,7 +9,6 @@
     "dev": "node --watch server.js"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.68.0",
     "dotenv": "^17.0.0",
     "express": "^5.1.0"
   },
