@@ -96,27 +96,65 @@ const geminiTools = [
 ];
 
 // -----------------------------------------------------------------------------
-// Ein Aufruf an die Gemini-API.
+// Ein Aufruf an die Gemini-API – mit automatischem Wiederholen und Modell-
+// Wechsel, falls ein Modell gerade ueberlastet ist (HTTP 503/429/500).
 // -----------------------------------------------------------------------------
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 async function callGemini(contents) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${process.env.GEMINI_API_KEY}`;
   const body = {
     systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
     contents,
     tools: geminiTools,
   };
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+  // Zuerst euer eingestelltes Modell, dann ein stabiles Ausweich-Modell.
+  const models = [...new Set([MODEL, "gemini-2.0-flash"])];
+  let lastError = "Unbekannter Fehler";
 
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Gemini HTTP ${res.status}: ${text.slice(0, 400)}`);
+  for (const model of models) {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`;
+
+      // Zeitlimit pro Versuch: haengt Gemini, brechen wir nach 25s ab und
+      // versuchen es erneut / mit dem Ausweichmodell.
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 25000);
+      let res;
+      try {
+        res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+          signal: controller.signal,
+        });
+      } catch (err) {
+        clearTimeout(timer);
+        lastError = `Zeitueberschreitung/Netzwerk (${model}): ${err.message}`;
+        await sleep(700 * (attempt + 1));
+        continue;
+      }
+      clearTimeout(timer);
+
+      if (res.ok) return res.json();
+
+      const text = await res.text();
+      lastError = `Gemini HTTP ${res.status} (${model}): ${text.slice(0, 200)}`;
+
+      // Ueberlastet oder kurzzeitig weg? -> kurz warten und nochmal versuchen.
+      if ([429, 500, 503].includes(res.status)) {
+        await sleep(700 * (attempt + 1));
+        continue;
+      }
+      // Anderer Fehler (z.B. falscher Schluessel) -> sofort melden.
+      throw new Error(lastError);
+    }
+    // Dieses Modell blieb ueberlastet -> naechstes Modell probieren.
   }
-  return res.json();
+
+  throw new Error(
+    `Gemini ist gerade ueberlastet und hat auch nach mehreren Versuchen nicht geantwortet. Letzter Hinweis: ${lastError}`,
+  );
 }
 
 // -----------------------------------------------------------------------------
