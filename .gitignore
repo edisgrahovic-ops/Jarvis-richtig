@@ -1,0 +1,15 @@
+# Zugangsdaten – NIEMALS committen!
+.env
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Betriebssystem-Kram
+.DS_Store
+Thumbs.db
+
+# Deine echten Produktbilder müssen nicht ins Git-Repository.
+# (Der Ordner selbst bleibt dank .gitkeep erhalten.)
+images/*
+!images/.gitkeep
