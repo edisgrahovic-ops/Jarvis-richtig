@@ -1,1 +1,116 @@
-# Jarvis-richtig
+# 🤖 Jarvis – dein Dropshipping-Assistent
+
+Ein KI-Assistent im Stil von Iron Mans "Jarvis" für euer Dropshipping-Business.
+Du kannst **mit ihm reden** (Sprache) oder tippen. Er hilft bei allen Fragen rund
+ums Business und kann euren **Shopify-Shop auslesen** und Vorschläge machen.
+
+> Gebaut von Edis & Freund. Gehirn: **Groq** (kostenlos, ohne Kreditkarte) – alternativ Google Gemini. Läuft als Web-App im Browser.
+
+---
+
+## Was Jarvis kann
+
+- 🎩 **Persönlichkeit** – spricht dich mit „Sir" an, trocken-sarkastisch aber professionell (wie bei Iron Man), mit männlicher Stimme.
+- 🎤 **Reden & zuhören** – Sprachein- und -ausgabe direkt im Browser (am besten in Chrome).
+- 🧠 **Mitdenken** – beantwortet Fragen zu Produktrecherche, Nischen, Lieferanten, Marketing (TikTok/Meta Ads), Preisen, Kundenservice u.v.m.
+- 📎 **Bilder/Screenshots analysieren** – lade ein Foto hoch (z. B. ein Produkt oder eine Konkurrenz-Anzeige) und Jarvis erklärt, was er sieht.
+- 🔍 **Recherche-Modus** – schalte ihn ein, dann recherchiert Jarvis deine Frage (mit Tavily-Schlüssel live im Web, sonst aus seinem Wissen).
+- 🛒 **Shopify lesen** – zeigt Produkte, Bestellungen und geschätzten Umsatz an und **schlägt Aktionen vor** (nur wenn verbunden).
+- 🔒 **Sicher** – Jarvis ändert von sich aus **nichts** in eurem Shop. Er liest und empfiehlt, ihr entscheidet.
+
+---
+
+## In 5 Minuten startklar
+
+### 1. Voraussetzung
+[Node.js](https://nodejs.org) (Version 20 oder neuer) installieren.
+
+### 2. Projekt einrichten
+```bash
+npm install
+cp .env.example .env
+```
+
+### 3. Kostenlosen KI-Schlüssel eintragen (damit Jarvis wirklich denkt)
+
+**Empfohlen: Groq** (gratis, ohne Kreditkarte, weltweit):
+1. Geh auf **https://console.groq.com/keys** und melde dich an (Google/GitHub reicht).
+2. **"Create API Key"** → Namen vergeben → Schlüssel kopieren (beginnt mit `gsk_…`).
+3. Trage ihn in die Datei `.env` ein:
+   ```
+   GROQ_API_KEY=gsk_dein-schlüssel-hier
+   ```
+
+*Alternative Google Gemini:* Schlüssel unter https://aistudio.google.com/apikey (muss mit
+`AIza…` beginnen) und als `GEMINI_API_KEY=` eintragen. **Achtung:** In manchen Ländern hat
+Gemini kein Gratis-Kontingent – dann Groq nehmen.
+
+Jarvis wählt automatisch das Gehirn, für das ein Schlüssel vorhanden ist (Groq zuerst).
+
+> Ohne Schlüssel läuft Jarvis im **Demo-Modus** und erklärt nur, was er können wird.
+
+### 4. Starten
+```bash
+npm start
+```
+Dann im Browser öffnen: **http://localhost:3000**
+
+Auf "🎤" tippen und lossprechen – oder einfach tippen. 🚀
+
+---
+
+## Jarvis online stellen (öffentlicher Link zum Teilen)
+
+Wenn ihr Jarvis nicht nur lokal, sondern über einen **Link im Internet** nutzen wollt
+(z. B. um ihn dem Freund zu schicken oder vom Handy zu öffnen) – kostenlos über **Render**:
+
+1. Geht auf **https://render.com** und meldet euch mit **GitHub** an.
+2. Oben rechts **New → Blueprint**.
+3. Wählt das Repository **`Jarvis-richtig`** aus (Branch mit dem Code).
+4. Render erkennt die Datei `render.yaml`. Beim Feld **`GROQ_API_KEY`** euren Groq-Schlüssel eintragen.
+5. **Apply / Deploy** klicken. Nach 1–2 Minuten bekommt ihr eine Adresse wie
+   `https://jarvis-dropshipping-xyz.onrender.com` – **das ist euer Jarvis-Link.** 🎉
+
+> Hinweis: Im Gratis-Tarif „schläft" der Server nach Inaktivität ein und braucht beim
+> ersten Aufruf ~30 Sekunden zum Aufwachen. Für den Start völlig okay.
+
+---
+
+## Shopify verbinden (optional)
+
+Damit Jarvis euren echten Shop auslesen kann:
+
+1. In eurem Shopify-Admin: **Einstellungen → Apps und Vertriebskanäle → Apps entwickeln → App erstellen**.
+2. Bei **Admin-API-Integration** diese Lese-Rechte (Scopes) aktivieren:
+   `read_products`, `read_orders`
+3. App installieren und den **Admin API Access Token** (beginnt mit `shpat_`) kopieren.
+4. In die `.env` eintragen:
+   ```
+   SHOPIFY_STORE=euerladen.myshopify.com
+   SHOPIFY_TOKEN=shpat_xxxxxxxxxxxxxxxxx
+   ```
+5. Jarvis neu starten. Fertig – jetzt kann er z.B. "Wie war unser Umsatz diese Woche?" beantworten.
+
+> Wir vergeben absichtlich nur **Leserechte**. So kann Jarvis nichts kaputt machen.
+
+---
+
+## Aufbau des Projekts
+
+| Datei | Zweck |
+|-------|-------|
+| `server.js` | Backend: verbindet Browser ↔ Gemini ↔ Shopify |
+| `shopify.js` | Nur-lesende Shopify-Anbindung (Produkte, Bestellungen, Umsatz) |
+| `public/index.html` | Das Jarvis-Interface (Design, Chat, Sprache) |
+| `.env` | Eure geheimen Schlüssel (wird **nicht** mit Git geteilt) |
+
+---
+
+## Ideen für die nächsten Ausbaustufen
+
+- Produkt-/Nischen-Recherche automatisch mit Web-Suche
+- Jarvis darf Aktionen nach eurer Bestätigung auch selbst ausführen (mit "OK"-Klick)
+- Anbindung an Meta/TikTok Ads für Werbe-Auswertungen
+- Erinnerungen & tägliche Business-Zusammenfassung
+
+Sagt Jarvis (oder mir) einfach Bescheid, was als Nächstes kommen soll. 💪

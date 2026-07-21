@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JARVIS · Dropshipping Assistent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0704;
+      --bg-2: #150d06;
+      --panel: rgba(30, 19, 9, 0.55);
+      --panel-solid: #17100a;
+      --orange: #ff7a1a;
+      --orange-2: #ff9d3c;
+      --amber: #ffbe4d;
+      --orange-deep: #d9540a;
+      --line: rgba(255, 122, 26, 0.30);
+      --line-soft: rgba(255, 122, 26, 0.13);
+      --text: #f7ede1;
+      --muted: #b9a48f;
+      --danger: #ff5b4d;
+      --ok: #46e08a;
+      --font-display: "Orbitron", "Segoe UI", system-ui, sans-serif;
+      --font-ui: "Rajdhani", "Segoe UI", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--font-ui);
+      color: var(--text);
+      height: 100vh; height: 100dvh;
+      display: flex; flex-direction: column; overflow: hidden;
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(1100px 560px at 50% -12%, rgba(255, 122, 26, 0.16), transparent 60%),
+        radial-gradient(760px 420px at 92% 116%, rgba(217, 84, 10, 0.12), transparent 60%);
+    }
+    /* animiertes HUD-Gitter */
+    body::before {
+      content: ""; position: fixed; inset: -2px; pointer-events: none; z-index: 0;
+      background-image:
+        linear-gradient(rgba(255,122,26,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,122,26,0.06) 1px, transparent 1px);
+      background-size: 46px 46px;
+      -webkit-mask-image: radial-gradient(circle at 50% 26%, #000 0%, transparent 88%);
+      mask-image: radial-gradient(circle at 50% 26%, #000 0%, transparent 88%);
+      animation: gridmove 20s linear infinite;
+    }
+    /* dezente Scanlines */
+    body::after {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.22;
+      background: repeating-linear-gradient(0deg, rgba(0,0,0,0.5) 0 1px, transparent 1px 3px);
+    }
+    @keyframes gridmove { to { background-position: 46px 46px; } }
+
+    header, main { position: relative; z-index: 1; }
+
+    /* Hinweis-Balken (Stimme aufm Handy freischalten) */
+    .voice-hint {
+      display: none; position: relative; z-index: 1; text-align: center;
+      font-size: 0.82rem; font-weight: 600; color: var(--amber);
+      padding: 9px 12px; background: rgba(255,190,77,0.08);
+      border-bottom: 1px solid var(--line-soft); cursor: pointer;
+    }
+    .voice-hint.show { display: block; }
+
+    header {
+      text-align: center; padding: 16px 12px 10px;
+      border-bottom: 1px solid var(--line-soft);
+      background: linear-gradient(180deg, rgba(255,122,26,0.06), transparent);
+    }
+    .brand { display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .brand .bracket { font-family: var(--font-display); font-weight: 700; font-size: 1.4rem; color: var(--orange-deep); opacity: 0.8; }
+    header h1 {
+      font-family: var(--font-display); font-size: 1.9rem; font-weight: 900; letter-spacing: 0.34em;
+      background: linear-gradient(180deg, #ffd9a8, var(--orange) 55%, var(--orange-deep));
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 14px rgba(255, 122, 26, 0.55));
+      padding-left: 0.34em;
+    }
+    header .sub {
+      font-family: var(--font-ui); font-size: 0.74rem; font-weight: 600; letter-spacing: 0.42em;
+      color: var(--orange-2); margin-top: 6px; text-transform: uppercase; opacity: 0.85;
+    }
+    .status-bar {
+      display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 12px;
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+    }
+    .status-bar span {
+      display: flex; align-items: center; gap: 6px;
+      border: 1px solid var(--line-soft); border-radius: 3px; padding: 3px 10px;
+      background: rgba(255,122,26,0.04);
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #4a3320; box-shadow: 0 0 0 rgba(0,0,0,0); }
+    .dot.on { background: var(--ok); box-shadow: 0 0 9px var(--ok); }
+    .dot.off { background: var(--amber); box-shadow: 0 0 9px var(--amber); }
+
+    main {
+      flex: 1; min-height: 0; display: flex; flex-direction: column;
+      max-width: 860px; width: 100%; margin: 0 auto; padding: 14px 18px 16px; overflow: hidden;
+    }
+
+    /* Arc-Reaktor (orange, rotierender Ring) */
+    .reactor-wrap { display: flex; justify-content: center; padding: 8px 0 12px; }
+    .reactor {
+      width: 92px; height: 92px; border-radius: 50%; position: relative;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid rgba(255, 122, 26, 0.55);
+      box-shadow: 0 0 30px rgba(255, 122, 26, 0.35), inset 0 0 26px rgba(255, 122, 26, 0.28);
+    }
+    .reactor::before {
+      content: ""; position: absolute; width: 48px; height: 48px; border-radius: 50%;
+      background: radial-gradient(circle, #fff2df, var(--orange) 52%, transparent 74%);
+      box-shadow: 0 0 22px rgba(255, 158, 60, 0.8);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+    .reactor::after {
+      content: ""; position: absolute; inset: -9px; border-radius: 50%;
+      background: conic-gradient(from 0deg, transparent 0 10%, var(--orange) 10% 17%, transparent 17% 42%, var(--orange-2) 42% 50%, transparent 50% 75%, var(--orange) 75% 82%, transparent 82%);
+      -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
+      mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
+      animation: spin 6s linear infinite; opacity: 0.9;
+    }
+    .reactor.speaking::before { animation: pulse 0.7s ease-in-out infinite; }
+    .reactor.speaking::after { animation: spin 2s linear infinite; }
+    .reactor.listening { border-color: var(--amber); box-shadow: 0 0 30px rgba(255, 190, 77, 0.5), inset 0 0 26px rgba(255, 190, 77, 0.3); }
+    .reactor.listening::before { background: radial-gradient(circle, #fff6e6, var(--amber) 52%, transparent 74%); animation: pulse 0.6s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { transform: scale(0.82); opacity: 0.85; } 50% { transform: scale(1.06); opacity: 1; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Chat-Konsole mit HUD-Ecken */
+    #chat {
+      position: relative; flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch;
+      display: flex; flex-direction: column; gap: 12px; padding: 14px 12px;
+      border: 1px solid var(--line-soft); border-radius: 4px;
+      background: linear-gradient(180deg, rgba(255,122,26,0.03), rgba(0,0,0,0.12));
+    }
+    #chat::-webkit-scrollbar { width: 6px; }
+    #chat::-webkit-scrollbar-thumb { background: var(--orange-deep); border-radius: 3px; }
+    #chat::-webkit-scrollbar-track { background: transparent; }
+
+    .msg {
+      max-width: 84%; padding: 11px 15px; line-height: 1.5; font-size: 1rem;
+      white-space: pre-wrap; word-wrap: break-word; position: relative;
+    }
+    .msg.user {
+      align-self: flex-end; color: #1a0f04;
+      background: linear-gradient(135deg, var(--orange-2), var(--orange-deep));
+      border-radius: 12px 12px 3px 12px; box-shadow: 0 4px 16px rgba(217,84,10,0.25);
+    }
+    .msg.jarvis {
+      align-self: flex-start; background: var(--panel); border: 1px solid var(--line);
+      border-left: 3px solid var(--orange); border-radius: 3px 12px 12px 12px;
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    }
+    .msg .tag {
+      font-family: var(--font-display); font-size: 0.58rem; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--orange-2); margin-bottom: 5px; display: block;
+    }
+    .msg.user .tag { color: rgba(26,15,4,0.7); }
+    .msg.jarvis.tools .tag::after { content: " · Datenzugriff"; color: var(--amber); }
+    .msg.thinking { color: var(--muted); font-style: italic; }
+
+    .composer {
+      display: flex; gap: 9px; align-items: center; padding: 12px 2px 2px; margin-top: 4px;
+      border-top: 1px solid var(--line-soft);
+    }
+    #input {
+      flex: 1; min-width: 0; background: rgba(10, 6, 3, 0.85); border: 1px solid var(--line);
+      color: var(--text); padding: 13px 16px; border-radius: 4px; font-family: var(--font-ui);
+      font-size: 1rem; font-weight: 500; outline: none; transition: 0.15s;
+    }
+    #input::placeholder { color: var(--muted); }
+    #input:focus { border-color: var(--orange); box-shadow: 0 0 14px rgba(255,122,26,0.35); }
+    button.icon {
+      width: 48px; height: 48px; border-radius: 6px; border: 1px solid var(--line);
+      background: rgba(30, 19, 9, 0.7); color: var(--orange-2); font-size: 1.15rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: 0.15s; flex-shrink: 0;
+    }
+    button.icon:hover { background: var(--orange); color: #1a0f04; box-shadow: 0 0 16px rgba(255,122,26,0.55); border-color: var(--orange); }
+    button.icon:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+    button.icon#sendBtn { background: linear-gradient(135deg, var(--orange), var(--orange-deep)); color: #1a0f04; border-color: var(--orange); }
+    button.icon.mic.active { border-color: var(--amber); color: var(--amber); animation: micpulse 1s infinite; }
+    button.icon.research.active { border-color: var(--amber); color: var(--amber); box-shadow: 0 0 14px rgba(255,190,77,0.55); }
+    @keyframes micpulse { 0%,100% { box-shadow: 0 0 6px var(--amber); } 50% { box-shadow: 0 0 20px var(--amber); } }
+    button.icon:disabled { opacity: 0.4; cursor: not-allowed; }
+    .mute-toggle { cursor: pointer; user-select: none; }
+
+    /* Bild-Vorschau ueber dem Eingabefeld */
+    .preview { display: none; align-items: center; gap: 10px; padding: 10px 6px 0; }
+    .preview.show { display: flex; }
+    .preview img { width: 48px; height: 48px; object-fit: cover; border-radius: 4px; border: 1px solid var(--orange); }
+    .preview .info { font-size: 0.85rem; color: var(--muted); flex: 1; }
+    .preview .remove { cursor: pointer; color: var(--danger); font-size: 1.1rem; padding: 0 6px; }
+    .research-hint { font-size: 0.82rem; font-weight: 600; color: var(--amber); padding: 8px 6px 0; display: none; }
+    .research-hint.show { display: block; }
+
+    /* Bild in einer Chat-Nachricht */
+    .msg img.attached { display: block; max-width: 230px; max-height: 230px; border-radius: 4px; margin-bottom: 7px; border: 1px solid var(--line); }
+
+    @media (prefers-reduced-motion: reduce) {
+      body::before, .reactor::before, .reactor::after, button.icon.mic.active { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="bracket">&#91;</span>
+      <h1>JARVIS</h1>
+      <span class="bracket">&#93;</span>
+    </div>
+    <div class="sub">Dropshipping · Command Interface</div>
+    <div class="status-bar">
+      <span><span class="dot" id="dot-ki"></span> KI-Kern</span>
+      <span><span class="dot" id="dot-shop"></span> Shopify</span>
+      <span class="mute-toggle" id="muteToggle"><span class="dot on" id="dot-voice"></span> Voice</span>
+    </div>
+  </header>
+
+  <div class="voice-hint" id="voiceHint">🔊 Einmal tippen, um Jarvis' Stimme zu aktivieren</div>
+
+  <main>
+    <div class="reactor-wrap">
+      <div class="reactor" id="reactor"></div>
+    </div>
+
+    <div id="chat"></div>
+
+    <div class="research-hint" id="researchHint">🔍 Recherche-Modus aktiv – Jarvis recherchiert deine nächste Frage.</div>
+    <div class="preview" id="preview">
+      <img id="previewImg" alt="Vorschau" />
+      <span class="info" id="previewInfo">Bild angehängt – Jarvis analysiert es mit deiner nächsten Nachricht.</span>
+      <span class="remove" id="previewRemove" title="Entfernen">✕</span>
+    </div>
+
+    <div class="composer">
+      <input id="fileInput" type="file" accept="image/*" hidden />
+      <button class="icon" id="attachBtn" title="Bild/Screenshot hochladen">📎</button>
+      <button class="icon research" id="researchBtn" title="Recherche-Modus (Web/Wissen)">🔍</button>
+      <button class="icon mic" id="micBtn" title="Sprechen">🎤</button>
+      <input id="input" type="text" placeholder="Sprich mit Jarvis oder tippe deine Frage…" autocomplete="off" />
+      <button class="icon" id="sendBtn" title="Senden">➤</button>
+    </div>
+  </main>
+
+  <script>
+    const chat = document.getElementById("chat");
+    const input = document.getElementById("input");
+    const sendBtn = document.getElementById("sendBtn");
+    const micBtn = document.getElementById("micBtn");
+    const reactor = document.getElementById("reactor");
+    const muteToggle = document.getElementById("muteToggle");
+    const dotVoice = document.getElementById("dot-voice");
+
+    let history = []; // { role, content } fuer die API
+    let voiceEnabled = true;
+
+    // ---- Bild-Upload & Recherche-Modus ----
+    const fileInput = document.getElementById("fileInput");
+    const attachBtn = document.getElementById("attachBtn");
+    const researchBtn = document.getElementById("researchBtn");
+    const preview = document.getElementById("preview");
+    const previewImg = document.getElementById("previewImg");
+    const previewRemove = document.getElementById("previewRemove");
+    const researchHint = document.getElementById("researchHint");
+    let pendingImage = null; // data-URL des angehaengten Bildes
+    let researchMode = false;
+
+    // Bild clientseitig verkleinern (max 1024px, JPEG) -> kleine, schnelle Uploads
+    function resizeImage(file, maxDim = 1024) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const image = new Image();
+          image.onload = () => {
+            let { width, height } = image;
+            if (width > maxDim || height > maxDim) {
+              const s = maxDim / Math.max(width, height);
+              width = Math.round(width * s);
+              height = Math.round(height * s);
+            }
+            const canvas = document.createElement("canvas");
+            canvas.width = width; canvas.height = height;
+            canvas.getContext("2d").drawImage(image, 0, 0, width, height);
+            resolve(canvas.toDataURL("image/jpeg", 0.85));
+          };
+          image.onerror = reject;
+          image.src = reader.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function clearImage() {
+      pendingImage = null;
+      fileInput.value = "";
+      preview.classList.remove("show");
+    }
+
+    attachBtn.onclick = () => fileInput.click();
+    fileInput.onchange = async () => {
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) return;
+      try {
+        pendingImage = await resizeImage(file);
+        previewImg.src = pendingImage;
+        preview.classList.add("show");
+        input.focus();
+      } catch (_) {
+        addMessage("jarvis", "⚠️ Das Bild konnte ich leider nicht laden, Sir.");
+      }
+    };
+    previewRemove.onclick = clearImage;
+
+    researchBtn.onclick = () => {
+      researchMode = !researchMode;
+      researchBtn.classList.toggle("active", researchMode);
+      researchHint.classList.toggle("show", researchMode);
+    };
+
+    // ---- Statusanzeige laden ----
+    fetch("/api/status").then(r => r.json()).then(s => {
+      document.getElementById("dot-ki").className = "dot " + (s.kiVerbunden ? "on" : "off");
+      document.getElementById("dot-shop").className = "dot " + (s.shopifyVerbunden ? "on" : "off");
+    }).catch(() => {});
+
+    // ---- Nachricht anzeigen ----
+    function addMessage(role, text, usedTools = false, imageUrl = null) {
+      const div = document.createElement("div");
+      div.className = "msg " + (role === "user" ? "user" : "jarvis") + (usedTools ? " tools" : "");
+      const tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = role === "user" ? "Du" : "Jarvis";
+      div.appendChild(tag);
+      if (imageUrl) {
+        const img = document.createElement("img");
+        img.className = "attached";
+        img.src = imageUrl;
+        div.appendChild(img);
+      }
+      if (text) div.appendChild(document.createTextNode(text));
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+      return div;
+    }
+
+    // ---- Männliche deutsche Stimme aussuchen (best effort, je nach Geraet) ----
+    let jarvisVoice = null;
+    function pickVoice() {
+      const voices = window.speechSynthesis.getVoices();
+      const de = voices.filter((v) => /de(-|_)/i.test(v.lang));
+      // Bekannte maennliche deutsche Stimmen zuerst, sonst irgendeine mit "male".
+      const maleNames = ["male", "männlich", "markus", "conrad", "stefan", "yannick", "google deutsch"];
+      jarvisVoice =
+        de.find((v) => maleNames.some((n) => v.name.toLowerCase().includes(n))) ||
+        de.find((v) => !/female|weiblich|anna|petra|marlene|katja|vicki/i.test(v.name)) ||
+        de[0] ||
+        null;
+    }
+    if ("speechSynthesis" in window) {
+      pickVoice();
+      window.speechSynthesis.onvoiceschanged = pickVoice; // Stimmen laden oft verzoegert
+    }
+
+    // ---- Sprachausgabe (Text zu Sprache) ----
+    let resumeTimer = null;
+    function speak(text) {
+      if (!voiceEnabled || !("speechSynthesis" in window)) return;
+      const synth = window.speechSynthesis;
+      synth.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "de-DE";
+      if (jarvisVoice) u.voice = jarvisVoice;
+      u.rate = 1.0;
+      u.pitch = 0.85; // etwas tiefer -> maennlicher, ruhiger Jarvis-Ton
+      u.onstart = () => reactor.classList.add("speaking");
+      u.onend = () => { reactor.classList.remove("speaking"); clearInterval(resumeTimer); };
+      synth.speak(u);
+      // Handy-Bug: TTS pausiert manchmal mitten im Satz -> regelmaessig weiterlaufen lassen
+      clearInterval(resumeTimer);
+      resumeTimer = setInterval(() => {
+        if (!synth.speaking) { clearInterval(resumeTimer); return; }
+        synth.pause(); synth.resume();
+      }, 6000);
+    }
+
+    // ---- Senden ----
+    async function send(text) {
+      text = (text || input.value).trim();
+      const img = pendingImage; // Bild dieser Nachricht
+      if (!text && !img) return;
+      input.value = "";
+
+      // Nutzer-Nachricht (mit Bild) anzeigen
+      const shownText = text || (img ? "(Bild zur Analyse)" : "");
+      addMessage("user", shownText, false, img);
+      history.push({ role: "user", content: text || "Analysiere das angehaengte Bild." });
+
+      // Bildvorschau zuruecksetzen (Bild geht nur mit dieser Nachricht mit)
+      clearImage();
+      const useResearch = researchMode;
+
+      const thinking = addMessage("jarvis", img ? "sieht sich das an…" : useResearch ? "recherchiert…" : "denkt nach…");
+      thinking.classList.add("thinking");
+      sendBtn.disabled = true;
+
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: history, image: img, research: useResearch }),
+        });
+        const data = await res.json();
+        thinking.remove();
+
+        if (data.error) {
+          addMessage("jarvis", "⚠️ " + (data.detail || data.error));
+          return;
+        }
+        const usedTools = (data.toolsUsed || []).length > 0;
+        addMessage("jarvis", data.reply, usedTools);
+        history.push({ role: "assistant", content: data.reply });
+        speak(data.reply);
+      } catch (err) {
+        thinking.remove();
+        addMessage("jarvis", "⚠️ Verbindungsfehler: " + err.message);
+      } finally {
+        sendBtn.disabled = false;
+      }
+    }
+
+    sendBtn.onclick = () => send();
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") send(); });
+
+    // ---- Spracheingabe (Sprache zu Text) ----
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognizing = false;
+    if (SR) {
+      const recog = new SR();
+      recog.lang = "de-DE";
+      recog.interimResults = false;
+      recog.onstart = () => { recognizing = true; micBtn.classList.add("active"); reactor.classList.add("listening"); };
+      recog.onend = () => { recognizing = false; micBtn.classList.remove("active"); reactor.classList.remove("listening"); };
+      recog.onerror = () => { recognizing = false; micBtn.classList.remove("active"); reactor.classList.remove("listening"); };
+      recog.onresult = (e) => {
+        const t = e.results[0][0].transcript;
+        input.value = t;
+        send(t);
+      };
+      micBtn.onclick = () => {
+        if (recognizing) { recog.stop(); return; }
+        window.speechSynthesis.cancel();
+        try { recog.start(); } catch (_) {}
+      };
+    } else {
+      micBtn.disabled = true;
+      micBtn.title = "Spracheingabe wird von diesem Browser nicht unterstuetzt (Chrome empfohlen)";
+    }
+
+    // ---- Sprachausgabe an/aus ----
+    muteToggle.onclick = () => {
+      voiceEnabled = !voiceEnabled;
+      dotVoice.className = "dot " + (voiceEnabled ? "on" : "");
+      if (!voiceEnabled) window.speechSynthesis.cancel();
+    };
+
+    // ---- Stimme auf dem Handy freischalten ----
+    // Handys/Tablets erlauben Sprachausgabe erst nach einer echten Nutzer-Aktion.
+    const GREET = "Systeme online, Sir. Jarvis steht zu Diensten. Ihr Dropshipping-Imperium wartet – womit darf ich beginnen?";
+    const voiceHint = document.getElementById("voiceHint");
+    const isTouch =
+      (window.matchMedia && window.matchMedia("(hover: none) and (pointer: coarse)").matches) ||
+      "ontouchstart" in window;
+    let voiceUnlocked = false;
+
+    function unlockVoice() {
+      if (voiceUnlocked || !("speechSynthesis" in window)) return;
+      voiceUnlocked = true;
+      if (voiceHint) voiceHint.classList.remove("show");
+      try {
+        window.speechSynthesis.resume();
+        // Auf dem Handy die Begruessung jetzt (bei der ersten Aktion) vorlesen.
+        if (isTouch && voiceEnabled) speak(GREET);
+      } catch (_) {}
+    }
+    ["pointerdown", "touchend", "keydown"].forEach((ev) =>
+      window.addEventListener(ev, unlockVoice, { once: true, passive: true })
+    );
+
+    // ---- Begruessung ----
+    setTimeout(() => {
+      addMessage("jarvis", GREET);
+      if (isTouch) {
+        // Handy: nicht automatisch sprechen (wird blockiert) -> Hinweis zeigen
+        if (voiceHint && voiceEnabled) voiceHint.classList.add("show");
+      } else {
+        // Desktop: darf direkt sprechen
+        speak(GREET);
+      }
+    }, 500);
+  </script>
+</body>
+</html>
