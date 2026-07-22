@@ -113,11 +113,11 @@ Alle Stellen dort sind markiert mit:
 3. Lege beide Produkte an:
    - **Zip-Pullover mit Rucksack** – mit Varianten:
      - Option 1: **Farbe** → Werte: `Grau`, `Schwarz`
-     - Option 2: **Größe** → Werte: `XS`, `S`, `M`, `L`, `XL`
+     - Option 2: **Größe** → Werte: `S`, `M`, `L`, `XL`
    - **Nackenkissen mit Stauraum** (keine Varianten nötig)
 
    > ⚠️ **Wichtig:** Schreibe die Options-Werte **exakt** so wie auf der
-   > Webseite (`Grau`, `Schwarz`, `XS`…`XL`). Nur dann findet der Code die
+   > Webseite (`Grau`, `Schwarz`, `S`…`XL`). Nur dann findet der Code die
    > richtige Variante automatisch.
 
 ### Schritt 3.2 – Storefront-Access-Token erstellen
