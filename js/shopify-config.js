@@ -30,7 +30,7 @@ window.SHOPIFY_CONFIG = {
      Beispiel: "stowe-studio.myshopify.com"
   */
   // >>> HIER SHOPIFY-DATEN EINTRAGEN
-  domain: "",
+  domain: "stowestudio.myshopify.com",
 
 
   /* --------------------------------------------------------
