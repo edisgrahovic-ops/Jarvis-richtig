@@ -79,8 +79,8 @@ window.SHOPIFY_CONFIG = {
      (Wert in Euro, als Zahl.)
   */
   demoPreise: {
-    pullover: 89.00,
-    nackenkissen: 39.00
+    pullover: 49.90,
+    nackenkissen: 19.90
   }
 
 };

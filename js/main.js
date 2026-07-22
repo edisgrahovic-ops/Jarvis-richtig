@@ -264,6 +264,9 @@ function initShopify() {
     storefrontAccessToken: c.storefrontAccessToken
   });
 
+  // Die echten Preise direkt aus Shopify laden und in den Produktkarten anzeigen
+  ladeLivePreise();
+
   // Einen neuen, leeren Warenkorb bei Shopify anlegen
   shopifyClient.checkout.create().then(function (checkout) {
     shopifyCheckout = checkout;
@@ -318,6 +321,40 @@ function shopifyAddToCart(produktKey, varianteText) {
   });
 }
 
+
+/*
+  Holt die echten Preise aus Shopify und zeigt sie in den Produktkarten an.
+  So stimmt der angezeigte Preis immer mit Shopify überein – du musst ihn
+  nie wieder von Hand ändern. Wenn ein Produkt mehrere Preise hat
+  (z. B. je Größe), zeigen wir "ab X €".
+*/
+function ladeLivePreise() {
+  var c = window.SHOPIFY_CONFIG;
+  Object.keys(c.products).forEach(function (key) {
+    var id = c.products[key];
+    if (!id) return;
+    if (/^\d+$/.test(id)) id = "gid://shopify/Product/" + id;
+
+    shopifyClient.product.fetch(id).then(function (product) {
+      var karte = document.querySelector('.product-card[data-product="' + key + '"]');
+      if (!karte) return;
+      var preisEl = karte.querySelector(".product-card__price-now");
+      if (!preisEl) return;
+
+      // Günstigsten und teuersten Variantenpreis bestimmen
+      var preise = product.variants.map(function (v) {
+        return betragAusPreis(v.priceV2 || v.price);
+      });
+      var min = Math.min.apply(null, preise);
+      var max = Math.max.apply(null, preise);
+
+      preisEl.textContent = (min !== max ? "ab " : "") + formatiereEuro(min);
+    }).catch(function (err) {
+      // Klappt es nicht (z. B. offline), bleibt einfach der Platzhalter stehen.
+      console.warn("Preis konnte nicht aus Shopify geladen werden:", err);
+    });
+  });
+}
 
 /*
   Kleiner Helfer: holt den Zahlen-Betrag aus einem Shopify-Preis.
