@@ -267,6 +267,7 @@ function initShopify() {
   // Einen neuen, leeren Warenkorb bei Shopify anlegen
   shopifyClient.checkout.create().then(function (checkout) {
     shopifyCheckout = checkout;
+    rendereShopifyWarenkorb();   // Anzeige auf den (leeren) Shopify-Warenkorb setzen
   });
 }
 
@@ -275,7 +276,7 @@ function initShopify() {
   Wir brauchen dafür die "Variant-ID" der gewählten Farbe/Größe.
 
   WICHTIG: Damit Farbe/Größe korrekt zugeordnet werden, müssen die
-  Optionsnamen in Shopify exakt "Grau/Schwarz" bzw. "XS…XL" heißen.
+  Optionswerte in Shopify exakt "Grau/Schwarz" bzw. "S/M/L/XL" heißen.
   Details dazu stehen in der README.
 */
 function shopifyAddToCart(produktKey, varianteText) {
@@ -309,16 +310,101 @@ function shopifyAddToCart(produktKey, varianteText) {
     return shopifyClient.checkout.addLineItems(shopifyCheckout.id, lineItems);
   }).then(function (checkout) {
     shopifyCheckout = checkout;
-    // Zähler oben anhand des echten Shopify-Warenkorbs aktualisieren
-    var anzahl = 0;
-    checkout.lineItems.forEach(function (li) { anzahl += li.quantity; });
-    var badge = document.getElementById("cart-count");
-    badge.textContent = anzahl;
-    badge.classList.toggle("is-visible", anzahl > 0);
+    rendereShopifyWarenkorb();   // Warenkorb-Anzeige mit echten Daten füllen
     zeigeToast("Zum Warenkorb hinzugefügt");
   }).catch(function (err) {
     console.error("Shopify-Fehler:", err);
     zeigeToast("Es gab ein Problem. Bitte später erneut versuchen.");
+  });
+}
+
+
+/*
+  Kleiner Helfer: holt den Zahlen-Betrag aus einem Shopify-Preis.
+  Shopify liefert Preise mal als Text ("89.00"), mal als Objekt
+  ({ amount: "89.00", currencyCode: "EUR" }). Das fangen wir hier ab.
+*/
+function betragAusPreis(preis) {
+  if (preis == null) return 0;
+  if (typeof preis === "object") return parseFloat(preis.amount || 0);
+  return parseFloat(preis) || 0;
+}
+
+/*
+  Baut die Warenkorb-Anzeige (Zähler, Liste, Summe) aus dem ECHTEN
+  Shopify-Warenkorb auf. Wird nach jeder Änderung aufgerufen.
+*/
+function rendereShopifyWarenkorb() {
+  var itemsContainer = document.getElementById("cart-items");
+  var emptyHinweis = document.getElementById("cart-empty");
+  var countBadge = document.getElementById("cart-count");
+  var totalEl = document.getElementById("cart-total");
+
+  var lineItems = (shopifyCheckout && shopifyCheckout.lineItems) ? shopifyCheckout.lineItems : [];
+
+  // Anzahl gesamt
+  var anzahl = 0;
+  lineItems.forEach(function (li) { anzahl += li.quantity; });
+  countBadge.textContent = anzahl;
+  countBadge.classList.toggle("is-visible", anzahl > 0);
+
+  // Zwischensumme: bevorzugt direkt von Shopify, sonst selbst berechnen
+  var summe = betragAusPreis(shopifyCheckout && (shopifyCheckout.subtotalPriceV2 || shopifyCheckout.subtotalPrice));
+  if (!summe) {
+    lineItems.forEach(function (li) {
+      summe += li.quantity * betragAusPreis(li.variant && (li.variant.priceV2 || li.variant.price));
+    });
+  }
+  totalEl.textContent = formatiereEuro(summe);
+
+  // Leeren-Hinweis
+  emptyHinweis.style.display = lineItems.length === 0 ? "block" : "none";
+
+  // Liste aufbauen
+  itemsContainer.innerHTML = "";
+  lineItems.forEach(function (li) {
+    var el = document.createElement("div");
+    el.className = "cart-item";
+
+    // Variante (z. B. "Grau / S"); "Default Title" bei Produkten ohne Optionen ausblenden
+    var variante = (li.variant && li.variant.title && li.variant.title !== "Default Title") ? li.variant.title : "";
+    var variantenZeile = variante ? '<div class="cart-item__variant">' + variante + "</div>" : "";
+    var einzelpreis = betragAusPreis(li.variant && (li.variant.priceV2 || li.variant.price));
+
+    el.innerHTML =
+      '<div class="cart-item__info">' +
+        '<div class="cart-item__name">' + li.title + "</div>" +
+        variantenZeile +
+        '<div class="cart-item__qty">' +
+          '<button type="button" data-minus="' + li.id + '" aria-label="Weniger">−</button>' +
+          "<span>" + li.quantity + "</span>" +
+          '<button type="button" data-plus="' + li.id + '" aria-label="Mehr">+</button>' +
+        "</div>" +
+        '<button type="button" class="cart-item__remove" data-remove="' + li.id + '">Entfernen</button>' +
+      "</div>" +
+      '<div class="cart-item__price">' + formatiereEuro(li.quantity * einzelpreis) + "</div>";
+
+    itemsContainer.appendChild(el);
+  });
+}
+
+/*
+  Ändert die Menge eines Artikels im ECHTEN Shopify-Warenkorb.
+  Bei Menge 0 wird der Artikel entfernt.
+*/
+function shopifyAendereMenge(lineItemId, neueMenge) {
+  var anfrage;
+  if (neueMenge <= 0) {
+    anfrage = shopifyClient.checkout.removeLineItems(shopifyCheckout.id, [lineItemId]);
+  } else {
+    anfrage = shopifyClient.checkout.updateLineItems(shopifyCheckout.id, [{ id: lineItemId, quantity: neueMenge }]);
+  }
+  anfrage.then(function (checkout) {
+    shopifyCheckout = checkout;
+    rendereShopifyWarenkorb();
+  }).catch(function (err) {
+    console.error("Shopify-Fehler:", err);
+    zeigeToast("Es gab ein Problem beim Aktualisieren.");
   });
 }
 
@@ -497,14 +583,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 6) Klicks INNERHALB der Artikel-Liste (Menge +/- und Entfernen)
   //    Wir hören auf den Container und prüfen, was geklickt wurde.
+  //    Je nach Modus (Shopify oder Demo) rufen wir die passenden Funktionen.
   document.getElementById("cart-items").addEventListener("click", function (e) {
     var plus = e.target.getAttribute("data-plus");
     var minus = e.target.getAttribute("data-minus");
     var remove = e.target.getAttribute("data-remove");
 
-    if (plus) aendereMenge(plus, +1);
-    if (minus) aendereMenge(minus, -1);
-    if (remove) entferneArtikel(remove);
+    if (window.isShopifyConfigured() && shopifyCheckout) {
+      // ---- ECHTER Shopify-Warenkorb ----
+      // Aktuelle Menge des betroffenen Artikels heraussuchen
+      var id = plus || minus || remove;
+      var li = shopifyCheckout.lineItems.find(function (x) { return x.id === id; });
+      if (!li) return;
+
+      if (plus)   shopifyAendereMenge(id, li.quantity + 1);
+      if (minus)  shopifyAendereMenge(id, li.quantity - 1);
+      if (remove) shopifyAendereMenge(id, 0);
+    } else {
+      // ---- DEMO-Warenkorb ----
+      if (plus) aendereMenge(plus, +1);
+      if (minus) aendereMenge(minus, -1);
+      if (remove) entferneArtikel(remove);
+    }
   });
 
   // 7) Warenkorb mit der Taste "Escape" schließen (kleine Komfort-Funktion)

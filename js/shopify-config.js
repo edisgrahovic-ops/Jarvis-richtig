@@ -30,7 +30,9 @@ window.SHOPIFY_CONFIG = {
      Beispiel: "stowe-studio.myshopify.com"
   */
   // >>> HIER SHOPIFY-DATEN EINTRAGEN
-  domain: "stowestudio.myshopify.com",
+  // Hinweis: Das ist die technische "myshopify.com"-Domain deines Shops
+  // (dein Anzeigename ist "Stowe Studio", die API-Domain lautet aber so):
+  domain: "kin9zr-bk.myshopify.com",
 
 
   /* --------------------------------------------------------
@@ -45,7 +47,7 @@ window.SHOPIFY_CONFIG = {
      Shopify so vorgesehen und sicher.
   */
   // >>> HIER SHOPIFY-DATEN EINTRAGEN
-  storefrontAccessToken: "",
+  storefrontAccessToken: "7f0b1f438b12eef85fba1faeee78e840",
 
 
   /* --------------------------------------------------------
