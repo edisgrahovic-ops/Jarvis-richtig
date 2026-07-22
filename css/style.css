@@ -1,0 +1,1200 @@
+/*
+  ============================================================
+  STOWE STUDIO – Design (Stylesheet)
+  ============================================================
+  Hier steht das komplette "Aussehen" der Webseite:
+  Farben, Schriften, Abstände, Layout und Animationen.
+
+  Stil: hell, clean, minimalistisch, edel, leicht futuristisch.
+  Aufbau (von oben nach unten):
+    1. Variablen (Farben & Werte an einem Ort)
+    2. Grundeinstellungen (Reset & Basis)
+    3. Wiederverwendbare Bausteine (Buttons, Container ...)
+    4. Die einzelnen Abschnitte (Header, Hero, Produkte ...)
+    5. Animationen
+    6. Responsiv (Handy / Tablet)
+  ============================================================
+*/
+
+
+/* ============================================================
+   1. VARIABLEN
+   ------------------------------------------------------------
+   ":root" ist die "Wurzel" der Seite. Hier legen wir Farben und
+   Werte EINMAL fest. Ändere z. B. --color-accent hier, und die
+   Farbe ändert sich überall auf der Seite automatisch.
+   ============================================================ */
+:root {
+  /* Farben – dezente Grau-/Schwarz-Töne, passend zum Produkt */
+  --color-bg: #ffffff;            /* Haupt-Hintergrund: reines Weiß */
+  --color-bg-soft: #f6f6f4;       /* Sanfter grauer Hintergrund für Abschnitte */
+  --color-text: #1a1a1a;          /* Haupt-Textfarbe: fast schwarz */
+  --color-text-soft: #6b6b6b;     /* Grauer Text für Beschreibungen */
+  --color-accent: #111111;        /* Akzent (Buttons): tiefes Schwarz */
+  --color-line: #e6e6e3;          /* Feine Trennlinien */
+  --color-good: #2f7d5b;          /* Grün für "Vorteile" */
+  --color-bad: #b04a3f;           /* Gedämpftes Rot für "Nachteile" */
+
+  /* Abstände (damit alles einheitlich wirkt) */
+  --space-section: 96px;          /* Vertikaler Abstand zwischen Abschnitten */
+  --radius: 14px;                 /* Rundung von Ecken (Karten, Buttons) */
+  --radius-lg: 24px;              /* Größere Rundung */
+
+  /* Maximale Breite des Inhalts (damit Text nicht zu breit wird) */
+  --container: 1160px;
+
+  /* Schatten (dezent, edel) */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.07);
+
+  /* Übergangs-Geschwindigkeit für Animationen */
+  --transition: 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+/* ============================================================
+   2. GRUNDEINSTELLUNGEN (Reset & Basis)
+   ------------------------------------------------------------
+   Wir setzen zuerst ein paar Standardwerte zurück, damit die
+   Seite in allen Browsern gleich aussieht.
+   ============================================================ */
+
+/* "box-sizing" sorgt dafür, dass Innenabstände die Breite nicht sprengen */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Sanftes Scrollen, wenn man auf einen Anker-Link klickt */
+html {
+  scroll-behavior: smooth;
+  /* Abstand nach oben, damit der sticky Header nicht den Titel verdeckt */
+  scroll-padding-top: 90px;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.6;
+  font-weight: 400;
+  /* Schrift wird weicher/schöner gerendert */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Bilder passen sich immer ihrer Box an und werden nie breiter */
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Links ohne Unterstrich, erben die Textfarbe */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Überschriften: etwas engere Buchstaben, edler Look */
+h1, h2, h3, h4 {
+  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+
+/* ============================================================
+   3. WIEDERVERWENDBARE BAUSTEINE
+   ============================================================ */
+
+/* Container: zentriert den Inhalt und begrenzt die Breite */
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 24px;   /* Seitlicher Abstand, damit auf dem Handy nichts klebt */
+}
+
+/* Schmalerer Container (z. B. für FAQ, damit Text gut lesbar bleibt) */
+.container--narrow {
+  max-width: 760px;
+}
+
+/* Standard-Abstand für jeden Abschnitt */
+.section {
+  padding: var(--space-section) 0;
+}
+
+/* Kopfbereich eines Abschnitts (Eyebrow + Titel + Lead-Text), zentriert */
+.section__head {
+  max-width: 640px;
+  margin: 0 auto 56px;
+  text-align: center;
+}
+
+/* Kleine Kennzeichnung über der Überschrift (z. B. "Unsere Produkte") */
+.section__eyebrow {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-soft);
+  margin-bottom: 16px;
+}
+
+/* Abschnitts-Überschrift */
+.section__title {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);  /* Wächst mit der Bildschirmbreite */
+  margin-bottom: 18px;
+}
+
+/* Einleitungs-Text unter der Überschrift */
+.section__lead {
+  color: var(--color-text-soft);
+  font-size: 1.05rem;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border: 1px solid transparent;
+  border-radius: 100px;   /* Voll abgerundet ("Pillen-Form") */
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform var(--transition), background var(--transition), box-shadow var(--transition);
+  white-space: nowrap;
+}
+
+/* Kleiner "Anheb"-Effekt beim Drüberfahren mit der Maus */
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Haupt-Button: schwarz gefüllt */
+.btn--primary {
+  background: var(--color-accent);
+  color: #fff;
+}
+.btn--primary:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Sekundär-Button: nur Umrandung */
+.btn--ghost {
+  background: transparent;
+  color: var(--color-text);
+  border-color: var(--color-line);
+}
+.btn--ghost:hover {
+  border-color: var(--color-text);
+}
+
+/* Heller Button (für dunkle Hintergründe, z. B. Bundle-Bereich) */
+.btn--light {
+  background: #fff;
+  color: var(--color-text);
+}
+
+/* Button über die volle Breite (z. B. in Produktkarten) */
+.btn--full {
+  width: 100%;
+}
+
+
+/* ============================================================
+   4. DIE EINZELNEN ABSCHNITTE
+   ============================================================ */
+
+/* ---------- 1. HEADER ---------- */
+.header {
+  position: sticky;   /* Bleibt beim Scrollen oben kleben */
+  top: 0;
+  z-index: 100;       /* Liegt über anderen Inhalten */
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);   /* Leichter Milchglas-Effekt (futuristisch) */
+  border-bottom: 1px solid var(--color-line);
+}
+
+.header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+}
+
+/* Logo (Bild + Text nebeneinander) */
+.header__logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.header__logo-img {
+  height: 32px;
+  width: auto;
+}
+.header__logo-text {
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  font-size: 1.05rem;
+}
+
+/* Navigation (Menü) */
+.nav {
+  display: flex;
+  gap: 32px;
+}
+.nav__link {
+  font-size: 0.95rem;
+  color: var(--color-text-soft);
+  transition: color var(--transition);
+  position: relative;
+}
+.nav__link:hover {
+  color: var(--color-text);
+}
+
+/* Rechte Seite des Headers */
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Warenkorb-Button */
+.cart-btn {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text);
+  padding: 8px;
+  display: flex;
+  align-items: center;
+}
+.cart-btn__icon {
+  width: 24px;
+  height: 24px;
+}
+/* Die kleine Zahl (Anzahl der Artikel) am Warenkorb */
+.cart-btn__count {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  transform: scale(0);   /* Startet unsichtbar (0 Artikel) */
+  transition: transform var(--transition);
+}
+/* Wird sichtbar, sobald mindestens 1 Artikel drin ist (per JS-Klasse) */
+.cart-btn__count.is-visible {
+  transform: scale(1);
+}
+
+/* Menü-Button (Hamburger) – nur auf dem Handy sichtbar */
+.nav-toggle {
+  display: none;   /* Auf großen Bildschirmen ausgeblendet */
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.nav-toggle span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--color-text);
+  transition: transform var(--transition), opacity var(--transition);
+}
+
+
+/* ---------- 2. HERO ---------- */
+.hero {
+  padding: 72px 0 96px;
+  overflow: hidden;
+}
+.hero__inner {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;   /* Zwei Spalten: Text links, Bild rechts */
+  gap: 56px;
+  align-items: center;
+}
+.hero__eyebrow {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-soft);
+  padding: 6px 14px;
+  border: 1px solid var(--color-line);
+  border-radius: 100px;
+  margin-bottom: 24px;
+}
+.hero__title {
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  margin-bottom: 24px;
+}
+/* Der farbige/graue Teil der Hero-Überschrift */
+.hero__title-accent {
+  color: var(--color-text-soft);
+}
+.hero__subtitle {
+  font-size: 1.15rem;
+  color: var(--color-text-soft);
+  max-width: 480px;
+  margin-bottom: 32px;
+}
+.hero__buttons {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+/* Vertrauens-Hinweise unter den Buttons */
+.hero__trust {
+  list-style: none;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.hero__trust li {
+  font-size: 0.9rem;
+  color: var(--color-text-soft);
+}
+/* Hero-Bild mit abgerundeten Ecken und leichtem Schatten */
+.hero__image img {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  /* Falls das Bild fehlt, füllt ein grauer Hintergrund die Fläche */
+  background: var(--color-bg-soft);
+  aspect-ratio: 4 / 5;   /* Feste Form, damit das Layout nicht springt */
+  object-fit: cover;
+}
+
+
+/* ---------- 3. PROBLEM / LÖSUNG ---------- */
+.problem {
+  background: var(--color-bg-soft);
+}
+.problem__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.problem__card {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 36px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-line);
+}
+.problem__card-title {
+  font-size: 1.25rem;
+  margin-bottom: 20px;
+}
+.problem__list {
+  list-style: none;
+}
+.problem__list li {
+  position: relative;
+  padding-left: 28px;
+  margin-bottom: 14px;
+  color: var(--color-text-soft);
+}
+/* Rotes ✗ vor den "Nachteilen" */
+.problem__card--bad .problem__list li::before {
+  content: "✕";
+  position: absolute;
+  left: 0;
+  color: var(--color-bad);
+  font-weight: 700;
+}
+/* Grünes ✓ vor den "Vorteilen" */
+.problem__card--good .problem__list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--color-good);
+  font-weight: 700;
+}
+
+
+/* ---------- 4. PRODUKTE ---------- */
+.products__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+.product-card {
+  background: #fff;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+/* Bild-Bereich der Produktkarte */
+.product-card__media {
+  position: relative;
+  background: var(--color-bg-soft);
+}
+.product-card__media img {
+  width: 100%;
+  aspect-ratio: 1 / 1;   /* Quadratisches Produktbild */
+  object-fit: cover;
+}
+/* Kleines Etikett oben links auf dem Bild (z. B. "Bestseller") */
+.product-card__badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 100px;
+}
+.product-card__badge--alt {
+  background: #fff;
+  color: var(--color-text);
+  border: 1px solid var(--color-line);
+}
+/* Text-Bereich der Produktkarte */
+.product-card__body {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;   /* Nimmt den restlichen Platz ein, damit Buttons unten bündig sind */
+}
+.product-card__name {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+.product-card__desc {
+  color: var(--color-text-soft);
+  font-size: 0.98rem;
+  margin-bottom: 20px;
+}
+/* Preis-Bereich */
+.product-card__price {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.product-card__price-now {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+.product-card__price-note {
+  font-size: 0.85rem;
+  color: var(--color-text-soft);
+}
+.product-card__meta {
+  font-size: 0.9rem;
+  color: var(--color-text-soft);
+  margin-bottom: 20px;
+}
+
+/* Auswahl-Bereiche (Farbe / Größe) */
+.option {
+  margin-bottom: 18px;
+}
+.option__label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.option__choices {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+/* Ein einzelner Auswahl-Knopf ("Chip") */
+.chip {
+  padding: 8px 16px;
+  border: 1px solid var(--color-line);
+  background: #fff;
+  border-radius: 100px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition), color var(--transition);
+}
+.chip:hover {
+  border-color: var(--color-text);
+}
+/* Der aktuell ausgewählte Chip ist schwarz gefüllt */
+.chip.is-active {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-accent);
+}
+/* Der "In den Warenkorb"-Button klebt unten in der Karte */
+.product-card .add-to-cart {
+  margin-top: auto;
+}
+
+
+/* ---------- 5. BUNDLE-HIGHLIGHT ---------- */
+.bundle__box {
+  background: var(--color-accent);
+  color: #fff;
+  border-radius: var(--radius-lg);
+  padding: 72px 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+/* Dezenter Lichtschein im Hintergrund (futuristischer Touch) */
+.bundle__box::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(255,255,255,0.12), transparent 70%);
+  pointer-events: none;
+}
+.bundle__badge {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 6px 16px;
+  border-radius: 100px;
+  margin-bottom: 24px;
+  position: relative;
+}
+.bundle__title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin-bottom: 20px;
+  position: relative;
+}
+.bundle__text {
+  color: rgba(255,255,255,0.75);
+  max-width: 520px;
+  margin: 0 auto 32px;
+  position: relative;
+}
+.bundle__hint {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.55);
+  margin-top: 18px;
+  position: relative;
+}
+
+
+/* ---------- 6. SO FUNKTIONIERT'S ---------- */
+.how__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+.how__step {
+  text-align: center;
+  padding: 12px;
+}
+/* Runder Kreis um das Icon */
+.how__icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: var(--color-bg-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.how__icon svg {
+  width: 28px;
+  height: 28px;
+  color: var(--color-text);
+}
+.how__num {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-soft);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.how__title {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+.how__text {
+  color: var(--color-text-soft);
+  font-size: 0.95rem;
+}
+
+
+/* ---------- 7. ANWENDUNG AM FLUGHAFEN ---------- */
+.airport__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+.airport__list {
+  list-style: none;
+  margin: 28px 0;
+}
+.airport__list li {
+  position: relative;
+  padding-left: 28px;
+  margin-bottom: 14px;
+  color: var(--color-text-soft);
+}
+.airport__list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--color-good);
+  font-weight: 700;
+}
+.airport__list strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+/* Große Spar-Zahl als Blickfang */
+.airport__save {
+  display: inline-flex;
+  flex-direction: column;
+  background: var(--color-bg-soft);
+  border-radius: var(--radius);
+  padding: 20px 28px;
+  margin-top: 8px;
+}
+.airport__save-num {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.airport__save-label {
+  font-size: 0.9rem;
+  color: var(--color-text-soft);
+}
+.airport__note {
+  font-size: 0.8rem;
+  color: var(--color-text-soft);
+  margin-top: 14px;
+}
+.airport__image img {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  background: var(--color-bg-soft);
+}
+
+
+/* ---------- 8. PRODUKTDETAILS ---------- */
+.details__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+.details__card {
+  background: var(--color-bg-soft);
+  border-radius: var(--radius);
+  padding: 32px;
+}
+.details__title {
+  font-size: 1.15rem;
+  margin-bottom: 12px;
+}
+.details__text {
+  color: var(--color-text-soft);
+  font-size: 0.95rem;
+}
+
+
+/* ---------- 9. FAQ ---------- */
+.faq__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+/* Ein FAQ-Eintrag. <details>/<summary> klappen von selbst auf. */
+.faq__item {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  padding: 4px 24px;
+  background: #fff;
+  transition: box-shadow var(--transition);
+}
+.faq__item[open] {
+  box-shadow: var(--shadow-sm);
+}
+/* Die Frage (klickbar) */
+.faq__q {
+  font-weight: 500;
+  font-size: 1.05rem;
+  padding: 18px 0;
+  cursor: pointer;
+  list-style: none;   /* Standard-Dreieck ausblenden */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+/* Standard-Marker (Dreieck) in verschiedenen Browsern ausblenden */
+.faq__q::-webkit-details-marker {
+  display: none;
+}
+/* Eigenes "+" Zeichen rechts, das sich beim Öffnen zu "–" dreht */
+.faq__q::after {
+  content: "+";
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: var(--color-text-soft);
+  transition: transform var(--transition);
+}
+.faq__item[open] .faq__q::after {
+  transform: rotate(45deg);   /* "+" wird zu "×"/"–" Optik */
+}
+/* Die Antwort */
+.faq__a {
+  padding: 0 0 20px;
+  color: var(--color-text-soft);
+}
+
+
+/* ---------- 10. ÜBER STOWE STUDIO ---------- */
+.about {
+  background: var(--color-bg-soft);
+}
+.about__inner {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 56px;
+  align-items: center;
+}
+.about__image img {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: #fff;
+}
+.about__text {
+  color: var(--color-text-soft);
+  margin-bottom: 18px;
+}
+
+
+/* ---------- 11. FOOTER ---------- */
+.footer {
+  background: var(--color-accent);
+  color: rgba(255,255,255,0.7);
+  padding-top: 64px;
+}
+.footer__inner {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px;
+  padding-bottom: 48px;
+}
+.footer__logo {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #fff;
+  display: inline-block;
+  margin-bottom: 16px;
+}
+.footer__tagline {
+  font-size: 0.95rem;
+  max-width: 320px;
+}
+.footer__heading {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  letter-spacing: 0.03em;
+}
+.footer__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.footer__list a {
+  font-size: 0.92rem;
+  transition: color var(--transition);
+}
+.footer__list a:hover {
+  color: #fff;
+}
+/* Untere Zeile (Copyright) */
+.footer__bottom {
+  border-top: 1px solid rgba(255,255,255,0.12);
+  padding: 24px 0;
+  font-size: 0.85rem;
+}
+
+
+/* ---------- MINI-WARENKORB (Drawer) ---------- */
+/* Dunkler Schleier hinter dem Warenkorb */
+.cart-overlay {
+  position: fixed;
+  inset: 0;   /* Deckt den ganzen Bildschirm ab */
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition), visibility var(--transition);
+  z-index: 200;
+}
+.cart-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+/* Der Warenkorb selbst – schiebt von rechts herein */
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 400px;
+  max-width: 90vw;   /* Auf dem Handy nicht zu breit */
+  background: #fff;
+  z-index: 201;
+  transform: translateX(100%);   /* Startet außerhalb des Bildschirms */
+  transition: transform var(--transition);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -10px 0 40px rgba(0,0,0,0.1);
+}
+.cart-drawer.is-open {
+  transform: translateX(0);   /* Schiebt herein */
+}
+.cart-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  border-bottom: 1px solid var(--color-line);
+}
+.cart-drawer__title {
+  font-size: 1.2rem;
+}
+.cart-drawer__close {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-text-soft);
+}
+/* Bereich mit den Artikeln (scrollbar, falls viele) */
+.cart-drawer__items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+/* Ein einzelner Artikel im Warenkorb */
+.cart-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.cart-item__info {
+  flex: 1;
+}
+.cart-item__name {
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+.cart-item__variant {
+  font-size: 0.82rem;
+  color: var(--color-text-soft);
+}
+.cart-item__price {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+/* Mengen-Steuerung (– Anzahl +) */
+.cart-item__qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  border: 1px solid var(--color-line);
+  border-radius: 100px;
+  padding: 4px 10px;
+}
+.cart-item__qty button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--color-text);
+  line-height: 1;
+}
+.cart-item__remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--color-text-soft);
+  text-decoration: underline;
+  margin-top: 8px;
+  display: inline-block;
+}
+/* Hinweis "Warenkorb leer" */
+.cart-drawer__empty {
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--color-text-soft);
+}
+/* Unterer Bereich mit Summe + Checkout */
+.cart-drawer__foot {
+  border-top: 1px solid var(--color-line);
+  padding: 24px;
+}
+.cart-drawer__total {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+.cart-drawer__promo {
+  font-size: 0.85rem;
+  color: var(--color-text-soft);
+  background: var(--color-bg-soft);
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+}
+
+
+/* ---------- TOAST (kleine Hinweis-Box) ---------- */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--color-accent);
+  color: #fff;
+  padding: 14px 24px;
+  border-radius: 100px;
+  font-size: 0.9rem;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition), transform var(--transition), visibility var(--transition);
+  z-index: 300;
+  max-width: 90vw;
+  text-align: center;
+}
+.toast.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+
+/* ============================================================
+   5. ANIMATIONEN (Fade-in beim Scrollen)
+   ------------------------------------------------------------
+   Elemente mit der Klasse "reveal" starten leicht durchsichtig
+   und verschoben. Sobald sie sichtbar werden, fügt das
+   JavaScript die Klasse "is-visible" hinzu und sie faden sanft ein.
+   ============================================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/*
+  Barrierefreiheit: Wenn jemand in seinem System "weniger Bewegung"
+  eingestellt hat, schalten wir die Animationen aus.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+
+/* ============================================================
+   6. RESPONSIV (Handy & Tablet)
+   ------------------------------------------------------------
+   "@media" bedeutet: Diese Regeln gelten nur bei bestimmten
+   Bildschirmbreiten. Wir passen das Layout für kleinere Geräte an.
+   ============================================================ */
+
+/* --- Tablet und kleiner (unter 900px) --- */
+@media (max-width: 900px) {
+
+  /* Hero: Text und Bild untereinander statt nebeneinander */
+  .hero__inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  /* Bild zuerst nach unten schieben (Text soll oben stehen) */
+  .hero__image {
+    order: -1;
+    max-width: 460px;
+  }
+
+  /* Diese Bereiche werden einspaltig */
+  .airport__inner,
+  .about__inner {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .about__image {
+    order: -1;
+  }
+
+  /* Drei Schritte werden untereinander */
+  .how__grid {
+    grid-template-columns: 1fr;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  /* Footer: zwei Spalten statt vier */
+  .footer__inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+}
+
+
+/* --- Handy (unter 720px) --- */
+@media (max-width: 720px) {
+
+  /* Weniger Abstand zwischen Abschnitten auf dem Handy */
+  :root {
+    --space-section: 64px;
+  }
+
+  /* NAVIGATION: Menü wird zum aufklappbaren Panel */
+  .nav {
+    position: fixed;
+    top: 72px;
+    left: 0;
+    right: 0;
+    background: #fff;
+    flex-direction: column;
+    gap: 0;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--color-line);
+    box-shadow: var(--shadow-md);
+    /* Startet ausgeblendet */
+    transform: translateY(-10px);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform var(--transition), opacity var(--transition), visibility var(--transition);
+  }
+  /* Wird per JS-Klasse "is-open" sichtbar */
+  .nav.is-open {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+  .nav__link {
+    padding: 14px 24px;
+    width: 100%;
+  }
+
+  /* Hamburger-Button anzeigen */
+  .nav-toggle {
+    display: flex;
+  }
+  /* Hamburger wird zum "X", wenn das Menü offen ist */
+  .nav-toggle.is-open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .nav-toggle.is-open span:nth-child(2) {
+    opacity: 0;
+  }
+  .nav-toggle.is-open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* Produkte, Problem-Karten und Details: eine Spalte */
+  .products__grid,
+  .problem__grid,
+  .details__grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Logo-Text auf sehr kleinen Geräten etwas kleiner */
+  .header__logo-text {
+    font-size: 0.95rem;
+  }
+
+  /* Bundle-Box: weniger Innenabstand */
+  .bundle__box {
+    padding: 48px 24px;
+  }
+}
+
+
+/* --- Sehr kleine Handys (unter 400px) --- */
+@media (max-width: 400px) {
+  /* Buttons im Hero über volle Breite, damit sie gut tippbar sind */
+  .hero__buttons {
+    flex-direction: column;
+  }
+  .hero__buttons .btn {
+    width: 100%;
+  }
+}

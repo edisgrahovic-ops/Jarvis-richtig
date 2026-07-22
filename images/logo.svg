@@ -1,0 +1,11 @@
+<!--
+  Platzhalter-Logo für Stowe Studio.
+  Ersetze diese Datei später durch dein echtes Logo (gleicher Dateiname
+  "logo.svg" – oder passe den Pfad im index.html an, z. B. auf "logo.png").
+  Es ist ein einfaches, minimalistisches Zeichen (ein "S" in einem Kreis).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" role="img" aria-label="Stowe Studio">
+  <circle cx="16" cy="16" r="15" fill="none" stroke="#111111" stroke-width="1.5"/>
+  <path d="M20.5 11.5c-1-1.4-2.6-2-4.5-2-2.6 0-4.3 1.3-4.3 3.2 0 4.4 9.3 2.3 9.3 6.9 0 2.1-1.9 3.4-4.8 3.4-2.1 0-3.8-.7-4.9-2.2"
+        fill="none" stroke="#111111" stroke-width="1.8" stroke-linecap="round"/>
+</svg>

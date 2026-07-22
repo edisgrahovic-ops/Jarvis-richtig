@@ -1,0 +1,721 @@
+<!--
+  ============================================================
+  STOWE STUDIO – Verkaufs-Webseite (Shop)
+  ============================================================
+  Diese Datei ist das "Gerüst" der Webseite. Sie enthält alle
+  sichtbaren Abschnitte (Header, Hero, Produkte, FAQ usw.).
+
+  Das Aussehen kommt aus:   css/style.css
+  Das Verhalten kommt aus:  js/main.js + js/shopify-config.js
+
+  Tipp für Anfänger: HTML besteht aus "Tags" wie <div> ... </div>.
+  Ein Tag mit <!-- --> drumherum ist ein Kommentar und wird
+  NICHT auf der Seite angezeigt – nur zur Erklärung für dich.
+  ============================================================
+-->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <!-- Zeichensatz: sorgt dafür, dass Umlaute (ä, ö, ü) korrekt angezeigt werden -->
+  <meta charset="UTF-8">
+
+  <!-- Sorgt dafür, dass die Seite auf dem Handy richtig skaliert (Mobile-first) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Titel, der oben im Browser-Tab steht -->
+  <title>Stowe Studio – Reisen ohne Gepäckgebühren</title>
+
+  <!-- Kurze Beschreibung für Google (SEO) -->
+  <meta name="description" content="Stowe Studio: Clevere Reisekleidung mit integriertem Stauraum. Spare teure Gepäckgebühren – trage deine Kleidung einfach am Körper.">
+
+  <!-- Verbindung zur Design-Datei (CSS) -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Schöne Schriftart von Google Fonts (Inter = clean & modern) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <!--
+    ==========================================================
+    1. HEADER (Kopfbereich)
+    ==========================================================
+    Enthält: Logo, Navigation (Menü) und das Warenkorb-Symbol.
+    Der Header bleibt beim Scrollen oben "kleben" (sticky).
+  -->
+  <header class="header" id="header">
+    <div class="container header__inner">
+
+      <!-- LOGO: Platzhalter. Ersetze später "images/logo.svg" durch dein echtes Logo. -->
+      <a href="#top" class="header__logo" aria-label="Stowe Studio Startseite">
+        <img src="images/logo.svg" alt="Stowe Studio Logo" class="header__logo-img">
+        <span class="header__logo-text">STOWE STUDIO</span>
+      </a>
+
+      <!-- NAVIGATION (Menü). Auf dem Handy klappt es über den Button unten auf. -->
+      <nav class="nav" id="nav">
+        <a href="#produkte" class="nav__link">Produkte</a>
+        <a href="#bundle" class="nav__link">Angebot</a>
+        <a href="#funktion" class="nav__link">So funktioniert's</a>
+        <a href="#faq" class="nav__link">FAQ</a>
+        <a href="#ueber-uns" class="nav__link">Über uns</a>
+      </nav>
+
+      <!-- Rechte Seite: Warenkorb + Menü-Button (nur auf dem Handy sichtbar) -->
+      <div class="header__actions">
+
+        <!-- WARENKORB-SYMBOL. Die Zahl zeigt die Anzahl der Artikel. -->
+        <button class="cart-btn" id="cart-btn" aria-label="Warenkorb öffnen">
+          <!-- Einfaches Warenkorb-Icon als SVG (keine externe Datei nötig) -->
+          <svg class="cart-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M6 6h15l-1.5 9h-12z"></path>
+            <circle cx="9" cy="20" r="1.2"></circle>
+            <circle cx="18" cy="20" r="1.2"></circle>
+            <path d="M6 6L5 3H2"></path>
+          </svg>
+          <!-- Der Zähler. Startet bei 0 und wird per JavaScript aktualisiert. -->
+          <span class="cart-btn__count" id="cart-count">0</span>
+        </button>
+
+        <!-- MENÜ-BUTTON (Hamburger). Nur auf kleinen Bildschirmen sichtbar. -->
+        <button class="nav-toggle" id="nav-toggle" aria-label="Menü öffnen" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- Unsichtbarer Ankerpunkt ganz oben, damit "nach oben"-Links funktionieren -->
+  <span id="top"></span>
+
+
+  <!--
+    ==========================================================
+    2. HERO (Der große Willkommens-Bereich ganz oben)
+    ==========================================================
+    Starke Überschrift + Unterzeile + Button "Jetzt entdecken".
+  -->
+  <section class="hero">
+    <div class="container hero__inner">
+      <div class="hero__content reveal">
+        <!-- Kleine Kennzeichnung ("Eyebrow") über der Überschrift -->
+        <span class="hero__eyebrow">Clevere Reisekleidung aus Deutschland</span>
+
+        <h1 class="hero__title">
+          Reisen ohne<br>
+          <span class="hero__title-accent">Gepäckgebühren.</span>
+        </h1>
+
+        <p class="hero__subtitle">
+          Trage deine Kleidung einfach am Körper – im integrierten Stauraum
+          unserer Reisekleidung. So sparst du dir teures Aufgabegepäck und
+          reist leichter als je zuvor.
+        </p>
+
+        <!-- Zwei Buttons: Hauptaktion + sekundäre Aktion -->
+        <div class="hero__buttons">
+          <a href="#produkte" class="btn btn--primary">Jetzt entdecken</a>
+          <a href="#funktion" class="btn btn--ghost">So funktioniert's</a>
+        </div>
+
+        <!-- Kleine Vertrauens-Hinweise unter den Buttons -->
+        <ul class="hero__trust">
+          <li>✓ Handgepäck-tauglich</li>
+          <li>✓ Spare Gebühren</li>
+          <li>✓ Faltbar &amp; leicht</li>
+        </ul>
+      </div>
+
+      <!-- Großes Hero-Bild (Platzhalter). Ersetze "images/hero.jpg". -->
+      <div class="hero__image reveal">
+        <img src="images/hero.jpg" alt="Reisende Person mit Stowe Studio Reisekleidung am Flughafen">
+      </div>
+    </div>
+  </section>
+
+
+  <!--
+    ==========================================================
+    3. PROBLEM / LÖSUNG
+    ==========================================================
+    Kurz erklären, warum Gepäckgebühren nerven und wie wir das lösen.
+  -->
+  <section class="section problem" id="problem">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__eyebrow">Das Problem</span>
+        <h2 class="section__title">Gepäckgebühren rauben dir Geld &amp; Nerven</h2>
+        <p class="section__lead">
+          Aufgabegepäck kostet bei vielen Airlines schnell 40–70 € – pro Strecke.
+          Dazu Warten am Gepäckband und die Sorge, dass der Koffer verloren geht.
+          Wir finden: Das muss nicht sein.
+        </p>
+      </div>
+
+      <!-- Zwei Spalten: links "vorher", rechts "mit Stowe Studio" -->
+      <div class="problem__grid">
+        <div class="problem__card problem__card--bad reveal">
+          <h3 class="problem__card-title">Ohne Stowe Studio</h3>
+          <ul class="problem__list">
+            <li>Teure Gebühren für Aufgabegepäck</li>
+            <li>Langes Warten am Gepäckband</li>
+            <li>Risiko, dass der Koffer verloren geht</li>
+            <li>Schleppen von schweren Koffern</li>
+          </ul>
+        </div>
+
+        <div class="problem__card problem__card--good reveal">
+          <h3 class="problem__card-title">Mit Stowe Studio</h3>
+          <ul class="problem__list">
+            <li>Kleidung im integrierten Stauraum dabei</li>
+            <li>Direkt zum Ausgang – kein Warten</li>
+            <li>Dein Gepäck bleibt immer bei dir</li>
+            <li>Leicht, faltbar und bequem</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!--
+    ==========================================================
+    4. PRODUKTE
+    ==========================================================
+    Beide Produkte mit Foto, Name, Beschreibung, Preis und Button.
+    Beim Pullover: Auswahl für Farbe (Grau/Schwarz) und Größe.
+
+    WICHTIG: Die Attribute "data-product" markieren, welches Produkt
+    gemeint ist. Das JavaScript (main.js) liest diese Werte aus.
+  -->
+  <section class="section products" id="produkte">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__eyebrow">Unsere Produkte</span>
+        <h2 class="section__title">Zwei Produkte. Ein Ziel: Leichter reisen.</h2>
+        <p class="section__lead">
+          Durchdacht designt, hochwertig verarbeitet – und mit clever
+          integriertem Stauraum für deine Kleidung.
+        </p>
+      </div>
+
+      <div class="products__grid">
+
+        <!-- ---------- PRODUKT 1: ZIP-PULLOVER ---------- -->
+        <article class="product-card reveal" data-product="pullover">
+          <div class="product-card__media">
+            <!-- Platzhalter-Foto. Ersetze "images/pullover-1.jpg". -->
+            <img src="images/pullover-1.jpg" alt="Stowe Studio Zip-Pullover mit integriertem Rucksack">
+            <span class="product-card__badge">Bestseller</span>
+          </div>
+
+          <div class="product-card__body">
+            <h3 class="product-card__name">Zip-Pullover mit Rucksack</h3>
+            <p class="product-card__desc">
+              Bequemer Zip-Pullover mit clever integriertem Rucksack auf dem
+              Rücken. Verstaue Kleidung, Laptop &amp; Reise-Essentials – und
+              trage alles bequem am Körper.
+            </p>
+
+            <!-- Preis (Platzhalter – später anpassen) -->
+            <div class="product-card__price">
+              <span class="product-card__price-now">89,00 €</span>
+              <span class="product-card__price-note">inkl. MwSt.</span>
+            </div>
+
+            <!-- AUSWAHL: Farbe -->
+            <div class="option">
+              <label class="option__label">Farbe</label>
+              <div class="option__choices" data-option="farbe">
+                <!-- data-value = der Wert, der später an Shopify übergeben wird -->
+                <button type="button" class="chip is-active" data-value="Grau">Grau</button>
+                <button type="button" class="chip" data-value="Schwarz">Schwarz</button>
+              </div>
+            </div>
+
+            <!-- AUSWAHL: Größe -->
+            <div class="option">
+              <label class="option__label">Größe</label>
+              <div class="option__choices" data-option="groesse">
+                <button type="button" class="chip" data-value="XS">XS</button>
+                <button type="button" class="chip is-active" data-value="S">S</button>
+                <button type="button" class="chip" data-value="M">M</button>
+                <button type="button" class="chip" data-value="L">L</button>
+                <button type="button" class="chip" data-value="XL">XL</button>
+              </div>
+            </div>
+
+            <!-- IN DEN WARENKORB. Das JavaScript liest data-product + Auswahl. -->
+            <button class="btn btn--primary btn--full add-to-cart" data-product="pullover">
+              In den Warenkorb
+            </button>
+          </div>
+        </article>
+
+        <!-- ---------- PRODUKT 2: NACKENKISSEN ---------- -->
+        <article class="product-card reveal" data-product="nackenkissen">
+          <div class="product-card__media">
+            <!-- Platzhalter-Foto. Ersetze "images/nackenkissen-1.jpg". -->
+            <img src="images/nackenkissen-1.jpg" alt="Stowe Studio Nackenkissen mit Zip-Stauraum">
+            <span class="product-card__badge product-card__badge--alt">Praktisch</span>
+          </div>
+
+          <div class="product-card__body">
+            <h3 class="product-card__name">Nackenkissen mit Stauraum</h3>
+            <p class="product-card__desc">
+              Bequemes Reise-Nackenkissen, das sich per Zip öffnen lässt.
+              Verstaue zusätzliche Kleidung im Inneren – und nutze es unterwegs
+              als kuscheliges Kissen für deinen Nacken.
+            </p>
+
+            <!-- Preis (Platzhalter – später anpassen) -->
+            <div class="product-card__price">
+              <span class="product-card__price-now">39,00 €</span>
+              <span class="product-card__price-note">inkl. MwSt.</span>
+            </div>
+
+            <!-- Das Nackenkissen hat keine Farb-/Größenauswahl (Einheitsgröße) -->
+            <p class="product-card__meta">Einheitsgröße · Farbe: Grau</p>
+
+            <button class="btn btn--primary btn--full add-to-cart" data-product="nackenkissen">
+              In den Warenkorb
+            </button>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!--
+    ==========================================================
+    5. BUNDLE-HIGHLIGHT (Das große Angebot)
+    ==========================================================
+    "2 Pullover kaufen – Nackenkissen gratis".
+    WICHTIG: Der Rabatt wird NICHT hier im Code berechnet, sondern
+    später automatisch in Shopify eingestellt. Hier bewerben wir ihn nur.
+  -->
+  <section class="section bundle" id="bundle">
+    <div class="container">
+      <div class="bundle__box reveal">
+        <span class="bundle__badge">Aktion</span>
+        <h2 class="bundle__title">2 Pullover kaufen –<br>Nackenkissen gratis</h2>
+        <p class="bundle__text">
+          Sichere dir jetzt zwei Zip-Pullover und erhalte ein Nackenkissen mit
+          Stauraum automatisch geschenkt dazu. Perfekt für Paare oder als Geschenk.
+        </p>
+        <a href="#produkte" class="btn btn--light">Angebot sichern</a>
+        <p class="bundle__hint">
+          Der Rabatt wird automatisch im Warenkorb abgezogen.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!--
+    ==========================================================
+    6. SO FUNKTIONIERT'S
+    ==========================================================
+    Integrierter Rucksack + Zip-Nackenkissen anschaulich mit Schritten/Icons.
+  -->
+  <section class="section how" id="funktion">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__eyebrow">So funktioniert's</span>
+        <h2 class="section__title">In 3 einfachen Schritten gebührenfrei reisen</h2>
+      </div>
+
+      <div class="how__grid">
+
+        <!-- Schritt 1 -->
+        <div class="how__step reveal">
+          <div class="how__icon">
+            <!-- Icon: Kleidung/Packen -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="4" y="7" width="16" height="13" rx="2"></rect>
+              <path d="M9 7V5a3 3 0 0 1 6 0v2"></path>
+            </svg>
+          </div>
+          <span class="how__num">01</span>
+          <h3 class="how__title">Kleidung einpacken</h3>
+          <p class="how__text">
+            Öffne den Zip am Rücken des Pullovers oder am Nackenkissen und
+            verstaue deine Kleidung platzsparend im integrierten Stauraum.
+          </p>
+        </div>
+
+        <!-- Schritt 2 -->
+        <div class="how__step reveal">
+          <div class="how__icon">
+            <!-- Icon: Person/Anziehen -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="7" r="3.5"></circle>
+              <path d="M5 21c0-4 3-7 7-7s7 3 7 7"></path>
+            </svg>
+          </div>
+          <span class="how__num">02</span>
+          <h3 class="how__title">Bequem tragen</h3>
+          <p class="how__text">
+            Ziehe den Pullover an oder lege dir das Nackenkissen um. Alles sitzt
+            bequem und du hast die Hände frei – ganz ohne extra Koffer.
+          </p>
+        </div>
+
+        <!-- Schritt 3 -->
+        <div class="how__step reveal">
+          <div class="how__icon">
+            <!-- Icon: Flugzeug -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"></path>
+            </svg>
+          </div>
+          <span class="how__num">03</span>
+          <h3 class="how__title">Gebühren sparen</h3>
+          <p class="how__text">
+            Geh direkt durch die Sicherheitskontrolle zum Gate – ganz ohne
+            Aufgabegepäck. Kein Warten, keine Gebühren, weniger Stress.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!--
+    ==========================================================
+    7. ANWENDUNG AM FLUGHAFEN
+    ==========================================================
+    Zeigt, wie viel Kleidung reinpasst und wie man Gebühren spart.
+  -->
+  <section class="section airport" id="flughafen">
+    <div class="container airport__inner">
+
+      <!-- Text links -->
+      <div class="airport__content reveal">
+        <span class="section__eyebrow">Am Flughafen</span>
+        <h2 class="section__title">So viel passt rein – so viel sparst du</h2>
+        <p class="section__lead">
+          Der integrierte Stauraum fasst mehr, als du denkst. Beispiel für einen
+          Wochenend-Trip mit Handgepäck plus Stowe Studio:
+        </p>
+
+        <!-- Liste, wie viel reinpasst -->
+        <ul class="airport__list">
+          <li><strong>Pullover-Rucksack:</strong> 2–3 T-Shirts, Unterwäsche &amp; Kulturbeutel</li>
+          <li><strong>Nackenkissen:</strong> 1 zusätzliches Outfit oder dünner Pullover</li>
+          <li><strong>Ergebnis:</strong> Ein komplettes Wochenende ohne Aufgabegepäck</li>
+        </ul>
+
+        <!-- Spar-Rechnung als Blickfang -->
+        <div class="airport__save">
+          <span class="airport__save-num">bis zu 140 €</span>
+          <span class="airport__save-label">Ersparnis pro Hin- &amp; Rückflug*</span>
+        </div>
+        <p class="airport__note">
+          *Beispielwert. Tatsächliche Gebühren variieren je nach Airline und Route.
+        </p>
+      </div>
+
+      <!-- Bild rechts (Platzhalter) -->
+      <div class="airport__image reveal">
+        <img src="images/flughafen-1.jpg" alt="Reisende Person am Flughafen spart Gepäckgebühren mit Stowe Studio">
+      </div>
+    </div>
+  </section>
+
+
+  <!--
+    ==========================================================
+    8. PRODUKTDETAILS
+    ==========================================================
+    Material, Größen, Farben, Pflegehinweise (Platzhaltertexte).
+  -->
+  <section class="section details" id="details">
+    <div class="container">
+      <div class="section__head reveal">
+        <span class="section__eyebrow">Produktdetails</span>
+        <h2 class="section__title">Alle Infos auf einen Blick</h2>
+      </div>
+
+      <div class="details__grid">
+
+        <div class="details__card reveal">
+          <h3 class="details__title">Material</h3>
+          <p class="details__text">
+            Hochwertige, atmungsaktive Baumwoll-Mischung (Platzhalter).
+            Angenehm weich, formstabil und langlebig. Der Stauraum ist mit
+            reißfestem, leichtem Innenfutter verstärkt.
+          </p>
+        </div>
+
+        <div class="details__card reveal">
+          <h3 class="details__title">Größen</h3>
+          <p class="details__text">
+            Pullover erhältlich in XS bis XL. Die Passform ist regulär
+            geschnitten. Nackenkissen in praktischer Einheitsgröße
+            (Platzhalter – bitte Maßtabelle ergänzen).
+          </p>
+        </div>
+
+        <div class="details__card reveal">
+          <h3 class="details__title">Farben</h3>
+          <p class="details__text">
+            Pullover in zeitlosem Grau und elegantem Schwarz. Nackenkissen in
+            passendem Grau. Dezente Töne, die zu jedem Reise-Outfit passen.
+          </p>
+        </div>
+
+        <div class="details__card reveal">
+          <h3 class="details__title">Pflegehinweise</h3>
+          <p class="details__text">
+            Maschinenwäsche bei 30 °C, nicht bleichen, nicht im Trockner
+            trocknen (Platzhalter). Reißverschlüsse vor der Wäsche schließen,
+            um die Lebensdauer zu verlängern.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!--
+    ==========================================================
+    9. FAQ (Häufige Fragen – aufklappbar)
+    ==========================================================
+    Jede Frage öffnet sich per Klick. Die Logik dazu steckt in main.js.
+    Wir nutzen die HTML-Tags <details> und <summary> – die klappen
+    von sich aus auf, wir machen sie nur schöner und animiert.
+  -->
+  <section class="section faq" id="faq">
+    <div class="container container--narrow">
+      <div class="section__head reveal">
+        <span class="section__eyebrow">FAQ</span>
+        <h2 class="section__title">Häufig gestellte Fragen</h2>
+      </div>
+
+      <div class="faq__list">
+
+        <details class="faq__item reveal">
+          <summary class="faq__q">Ist das im Flugzeug erlaubt?</summary>
+          <div class="faq__a">
+            <p>
+              Ja. Getragene Kleidung und ein Nackenkissen zählen bei praktisch
+              allen Airlines nicht als Gepäckstück. Bitte informiere dich
+              dennoch immer vorab über die aktuellen Bestimmungen deiner Airline
+              (Platzhaltertext).
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item reveal">
+          <summary class="faq__q">Welche Größe soll ich wählen?</summary>
+          <div class="faq__a">
+            <p>
+              Unsere Pullover fallen regulär aus. Im Zweifel empfehlen wir deine
+              gewohnte Größe. Eine detaillierte Maßtabelle findest du in Kürze
+              hier (Platzhaltertext).
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item reveal">
+          <summary class="faq__q">Wie viel kann ich verstauen?</summary>
+          <div class="faq__a">
+            <p>
+              Im Pullover-Rucksack finden problemlos 2–3 T-Shirts, Unterwäsche
+              und ein Kulturbeutel Platz. Das Nackenkissen fasst ein zusätzliches
+              leichtes Outfit (Platzhaltertext).
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item reveal">
+          <summary class="faq__q">Wie lange dauert der Versand?</summary>
+          <div class="faq__a">
+            <p>
+              Innerhalb Deutschlands liefern wir in der Regel innerhalb von 2–4
+              Werktagen (Platzhaltertext). Du erhältst nach dem Kauf eine
+              Sendungsverfolgung per E-Mail.
+            </p>
+          </div>
+        </details>
+
+        <details class="faq__item reveal">
+          <summary class="faq__q">Kann ich zurückgeben oder umtauschen?</summary>
+          <div class="faq__a">
+            <p>
+              Selbstverständlich. Du hast 14 Tage Widerrufsrecht. Ungetragene
+              Artikel kannst du einfach zurücksenden – die Details findest du in
+              unserer Widerrufsbelehrung (Platzhaltertext).
+            </p>
+          </div>
+        </details>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!--
+    ==========================================================
+    10. ÜBER STOWE STUDIO
+    ==========================================================
+    Kurze Markengeschichte (Platzhaltertext).
+  -->
+  <section class="section about" id="ueber-uns">
+    <div class="container about__inner">
+      <div class="about__image reveal">
+        <img src="images/ueber-uns.jpg" alt="Das Team von Stowe Studio">
+      </div>
+      <div class="about__content reveal">
+        <span class="section__eyebrow">Über uns</span>
+        <h2 class="section__title">Die Idee hinter Stowe Studio</h2>
+        <p class="about__text">
+          Stowe Studio wurde aus einem einfachen Ärgernis heraus gegründet: den
+          ständig steigenden Gepäckgebühren beim Fliegen (Platzhaltertext).
+          Wir dachten uns – warum nicht die Kleidung selbst zum Stauraum machen?
+        </p>
+        <p class="about__text">
+          Heute entwickeln wir clevere, edel designte Reisekleidung, die dir hilft,
+          leichter, günstiger und entspannter zu reisen. Durchdacht bis ins
+          Detail, hergestellt mit Liebe zum Handwerk (Platzhaltertext).
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!--
+    ==========================================================
+    11. FOOTER (Fußbereich)
+    ==========================================================
+    Kontakt + Pflicht-Links (in Deutschland vorgeschrieben):
+    Impressum, Datenschutz, AGB, Widerrufsbelehrung.
+    Die Links sind Platzhalter (#) – hier später deine echten Seiten verlinken.
+  -->
+  <footer class="footer">
+    <div class="container footer__inner">
+
+      <!-- Spalte 1: Marke -->
+      <div class="footer__col">
+        <a href="#top" class="footer__logo">STOWE STUDIO</a>
+        <p class="footer__tagline">
+          Clevere Reisekleidung, damit du ohne Gepäckgebühren leichter reist.
+        </p>
+      </div>
+
+      <!-- Spalte 2: Kontakt -->
+      <div class="footer__col">
+        <h4 class="footer__heading">Kontakt</h4>
+        <ul class="footer__list">
+          <li><a href="mailto:hallo@stowestudio.de">hallo@stowestudio.de</a></li>
+          <li><a href="tel:+490000000000">+49 000 0000000</a></li>
+        </ul>
+      </div>
+
+      <!-- Spalte 3: Rechtliches (Pflicht-Links in Deutschland) -->
+      <div class="footer__col">
+        <h4 class="footer__heading">Rechtliches</h4>
+        <ul class="footer__list">
+          <!-- >>> Später deine echten Seiten hier verlinken -->
+          <li><a href="#">Impressum</a></li>
+          <li><a href="#">Datenschutzerklärung</a></li>
+          <li><a href="#">AGB</a></li>
+          <li><a href="#">Widerrufsbelehrung</a></li>
+        </ul>
+      </div>
+
+      <!-- Spalte 4: Menü -->
+      <div class="footer__col">
+        <h4 class="footer__heading">Entdecken</h4>
+        <ul class="footer__list">
+          <li><a href="#produkte">Produkte</a></li>
+          <li><a href="#bundle">Angebot</a></li>
+          <li><a href="#funktion">So funktioniert's</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Untere Zeile mit Copyright -->
+    <div class="footer__bottom">
+      <div class="container">
+        <p>© 2026 Stowe Studio. Alle Rechte vorbehalten.</p>
+      </div>
+    </div>
+  </footer>
+
+
+  <!--
+    ==========================================================
+    MINI-WARENKORB (Schiebt von rechts herein)
+    ==========================================================
+    Zeigt die hinzugefügten Artikel und den Checkout-Button.
+    Wird per JavaScript geöffnet/geschlossen und gefüllt.
+  -->
+  <div class="cart-overlay" id="cart-overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-hidden="true">
+    <div class="cart-drawer__head">
+      <h3 class="cart-drawer__title">Dein Warenkorb</h3>
+      <button class="cart-drawer__close" id="cart-close" aria-label="Warenkorb schließen">&times;</button>
+    </div>
+
+    <!-- Hierhin schreibt das JavaScript die Artikel -->
+    <div class="cart-drawer__items" id="cart-items">
+      <!-- Wird per JS gefüllt. Wenn leer, erscheint der Hinweis unten. -->
+    </div>
+
+    <!-- Hinweis, wenn der Warenkorb leer ist -->
+    <p class="cart-drawer__empty" id="cart-empty">Dein Warenkorb ist noch leer.</p>
+
+    <div class="cart-drawer__foot">
+      <div class="cart-drawer__total">
+        <span>Zwischensumme</span>
+        <span id="cart-total">0,00 €</span>
+      </div>
+      <!-- Bundle-Hinweis als Erinnerung -->
+      <p class="cart-drawer__promo">
+        💡 Tipp: 2 Pullover kaufen – Nackenkissen gratis!
+      </p>
+      <button class="btn btn--primary btn--full" id="checkout-btn">
+        Zur Kasse
+      </button>
+    </div>
+  </aside>
+
+
+  <!--
+    ==========================================================
+    HINWEIS-BOX (Toast)
+    ==========================================================
+    Kleine Meldung unten, z. B. "Zum Warenkorb hinzugefügt" oder
+    der Demo-Modus-Hinweis. Wird per JavaScript ein-/ausgeblendet.
+  -->
+  <div class="toast" id="toast"></div>
+
+
+  <!--
+    ==========================================================
+    JAVASCRIPT einbinden
+    ==========================================================
+    Reihenfolge ist wichtig:
+    1. shopify-config.js  → deine Zugangsdaten (zuerst laden!)
+    2. Shopify Buy SDK     → offizielles Shopify-Skript (nur aktiv, wenn du
+                             deine Daten eingetragen hast)
+    3. main.js             → unsere eigene Logik
+  -->
+  <script src="js/shopify-config.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>
