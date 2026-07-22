@@ -282,6 +282,12 @@ function shopifyAddToCart(produktKey, varianteText) {
   var c = window.SHOPIFY_CONFIG;
   var produktId = c.products[produktKey];
 
+  // Falls nur die reine Zahl eingetragen wurde (z. B. "15632196043092"),
+  // wandeln wir sie ins von Shopify erwartete Format ("gid://...") um.
+  if (/^\d+$/.test(produktId)) {
+    produktId = "gid://shopify/Product/" + produktId;
+  }
+
   // Produkt bei Shopify abrufen, passende Variante finden und hinzufügen
   shopifyClient.product.fetch(produktId).then(function (product) {
     var variantId = product.variants[0].id;  // Standard: erste Variante

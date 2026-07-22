@@ -60,10 +60,10 @@ window.SHOPIFY_CONFIG = {
   */
   products: {
     // >>> HIER SHOPIFY-DATEN EINTRAGEN  (Produkt-ID des Zip-Pullovers)
-    pullover: "",
+    pullover: "15632196043092",
 
     // >>> HIER SHOPIFY-DATEN EINTRAGEN  (Produkt-ID des Nackenkissens)
-    nackenkissen: ""
+    nackenkissen: "15633160733012"
   },
 
 
