@@ -1,0 +1,292 @@
+/*
+  ============================================================
+  STOWE STUDIO – intro.css  (Die 3D-Intro-Animation)
+  ============================================================
+  Das ist die kleine "Film-Szene", die abläuft, wenn jemand die
+  Seite betritt: Himmel mit Wolken, ein Flugzeug, ein/e Reisende/r
+  mit Rucksack – und in der Mitte dein Produkt als 3D-Objekt, das
+  sich dreht (Vorderseite mit Zip -> Rückseite mit Rucksack).
+
+  Danach löst sich das Intro auf und die eigentliche Seite erscheint.
+
+  WICHTIG für dich als Anfänger:
+  - Möchtest du das Intro NICHT? Dann lösche im index.html einfach
+    den <div id="intro"> ... </div>-Block sowie die zwei Zeilen, die
+    "intro.css" und "intro.js" laden. Der Rest der Seite bleibt heil.
+  - Alle Bewegungen sind mit "@keyframes" definiert (kleine
+    Bewegungs-Rezepte) und werden weiter unten den Elementen zugewiesen.
+  ============================================================
+*/
+
+
+/* Solange das Intro läuft, sperren wir das Scrollen der Seite dahinter */
+body.intro-active {
+  overflow: hidden;
+}
+
+
+/* ------------------------------------------------------------
+   Die Bühne: ein bildschirmfüllender Vollflächen-Layer
+   ------------------------------------------------------------ */
+.intro {
+  position: fixed;
+  inset: 0;                 /* deckt den ganzen Bildschirm ab */
+  z-index: 1000;            /* liegt über allem anderen */
+  overflow: hidden;
+  /* Sanfter, heller Himmel – hell & leicht futuristisch, kein Klischee-Blau */
+  background:
+    radial-gradient(120% 80% at 50% 20%, #ffffff 0%, #f2f3f5 45%, #e4e6ea 100%);
+  /* "perspective" macht aus flachen Elementen echten 3D-Raum */
+  perspective: 1400px;
+  perspective-origin: 50% 45%;
+  /* Wird beim Ausblenden per JS animiert */
+  transition: opacity 0.9s ease, visibility 0.9s ease;
+}
+
+/* Zustand, wenn das Intro fertig ist -> ausblenden */
+.intro.is-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+
+/* ------------------------------------------------------------
+   Wolken (mehrere Ebenen für Tiefe = Parallax)
+   ------------------------------------------------------------ */
+.intro__clouds {
+  position: absolute;
+  left: -20%;
+  width: 140%;
+  height: 200px;
+  /* Weiche, verwaschene Wolken aus mehreren radialen Verläufen */
+  background:
+    radial-gradient(closest-side, rgba(255,255,255,0.9), transparent 70%) 10% 40% / 220px 120px no-repeat,
+    radial-gradient(closest-side, rgba(255,255,255,0.8), transparent 70%) 45% 60% / 300px 150px no-repeat,
+    radial-gradient(closest-side, rgba(255,255,255,0.85), transparent 70%) 78% 35% / 260px 130px no-repeat;
+  filter: blur(2px);
+}
+/* Ferne Wolken: höher, kleiner, langsamer -> wirken weiter weg */
+.intro__clouds--far {
+  top: 16%;
+  opacity: 0.7;
+  transform: scale(0.8);
+  animation: wolkenZug 26s linear infinite;
+}
+/* Nahe Wolken: tiefer, größer, schneller -> wirken näher */
+.intro__clouds--near {
+  top: 55%;
+  opacity: 0.95;
+  animation: wolkenZug 16s linear infinite;
+}
+/* Bewegungs-Rezept: Wolken ziehen langsam nach rechts */
+@keyframes wolkenZug {
+  from { transform: translateX(0) scale(var(--s, 1)); }
+  to   { transform: translateX(12%) scale(var(--s, 1)); }
+}
+
+
+/* ------------------------------------------------------------
+   Das Flugzeug (SVG), schwebt sanft und fliegt am Ende weiter
+   ------------------------------------------------------------ */
+.intro__plane {
+  position: absolute;
+  top: 22%;
+  right: 8%;
+  width: clamp(140px, 24vw, 320px);
+  color: #2a2c30;                 /* Farbe des Flugzeugs */
+  animation: flugzeugSchweben 6s ease-in-out infinite;
+  will-change: transform;
+}
+.intro__plane svg { width: 100%; height: auto; display: block; }
+/* Leichtes Auf-und-Ab (Schweben) */
+@keyframes flugzeugSchweben {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50%      { transform: translateY(-14px) rotate(-2deg); }
+}
+
+
+/* ------------------------------------------------------------
+   3D-BÜHNE mit dem drehenden Produkt (Kernstück!)
+   ------------------------------------------------------------ */
+.intro__stage {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  width: clamp(220px, 42vw, 380px);
+  /* "preserve-3d" gibt den Kind-Elementen echten Raum */
+  transform-style: preserve-3d;
+}
+
+/* Das drehbare Produkt. Es hat zwei Seiten (Front & Rückseite). */
+.intro__product {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  transform-style: preserve-3d;
+  /* Das Dreh-Rezept "drehung" läuft einmal ab (siehe unten) */
+  animation: drehung 7s ease-in-out forwards;
+  will-change: transform;
+}
+
+/* Eine Seite des Produkts (Bild) */
+.intro__face {
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.22);
+  /* Die Rückseite eines gedrehten Elements bleibt unsichtbar,
+     damit sich Vorder- & Rückseite nicht überlagern */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: #eceef0;
+}
+.intro__face img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Die Rückseite (Rucksack-Foto) ist um 180° vorgedreht,
+   sodass sie erscheint, sobald sich das Produkt umdreht. */
+.intro__face--back {
+  transform: rotateY(180deg);
+}
+
+/*
+  Das Dreh-Rezept:
+  - Erst kurz die Vorderseite (Zip) zeigen
+  - dann zur Rückseite (Rucksack) drehen und halten
+  - am Ende ganz herumdrehen für einen runden Abschluss
+  Zusätzlich ein leichtes Kippen (rotateX) für einen edlen 3D-Look.
+*/
+@keyframes drehung {
+  0%   { transform: rotateX(6deg) rotateY(-25deg); }
+  18%  { transform: rotateX(6deg) rotateY(0deg); }     /* Vorderseite: Zip */
+  50%  { transform: rotateX(4deg) rotateY(180deg); }   /* dreht sich um -> Rucksack */
+  78%  { transform: rotateX(4deg) rotateY(180deg); }   /* hält Rückseite */
+  100% { transform: rotateX(6deg) rotateY(360deg); }   /* voller, runder Abschluss */
+}
+
+/* Weicher Schatten unter dem Produkt (liegt "am Boden") */
+.intro__shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -46px;
+  width: 62%;
+  height: 26px;
+  transform: translateX(-50%);
+  background: radial-gradient(closest-side, rgba(0,0,0,0.28), transparent 75%);
+  filter: blur(3px);
+  animation: schattenAtmen 7s ease-in-out infinite;
+}
+/* Der Schatten pulsiert leicht mit der Drehung */
+@keyframes schattenAtmen {
+  0%, 100% { transform: translateX(-50%) scaleX(1);   opacity: 0.7; }
+  50%      { transform: translateX(-50%) scaleX(0.82); opacity: 0.5; }
+}
+
+
+/* ------------------------------------------------------------
+   Reisende/r als Silhouette, geht Richtung Flugzeug ("einsteigen")
+   ------------------------------------------------------------ */
+.intro__traveler {
+  position: absolute;
+  bottom: 12%;
+  left: 14%;
+  width: clamp(70px, 12vw, 130px);
+  color: #33363b;
+  /* Läuft langsam nach rechts (Richtung Flugzeug) und verblasst */
+  animation: einsteigen 7s ease-in forwards;
+  will-change: transform, opacity;
+}
+.intro__traveler svg { width: 100%; height: auto; display: block; }
+@keyframes einsteigen {
+  0%   { transform: translateX(0) scale(1);     opacity: 0; }
+  15%  { opacity: 1; }
+  100% { transform: translateX(190%) scale(0.7); opacity: 0; }
+}
+/* Kleine Geh-Bewegung: die Beine schwingen leicht */
+.intro__leg { transform-origin: top center; animation: gehen 0.5s ease-in-out infinite; }
+.intro__leg--hinten { animation-delay: 0.25s; }
+@keyframes gehen {
+  0%, 100% { transform: rotate(14deg); }
+  50%      { transform: rotate(-14deg); }
+}
+
+
+/* ------------------------------------------------------------
+   Text: Markenname + Slogan, faden nacheinander ein
+   ------------------------------------------------------------ */
+.intro__text {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12%;
+  text-align: center;
+  padding: 0 24px;
+}
+.intro__brand {
+  display: block;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  color: #111;
+  opacity: 0;
+  animation: textRein 0.9s ease forwards;
+  animation-delay: 3.2s;
+}
+.intro__tag {
+  display: block;
+  margin-top: 10px;
+  font-size: clamp(0.85rem, 2vw, 1.05rem);
+  color: #6b6b6b;
+  opacity: 0;
+  animation: textRein 0.9s ease forwards;
+  animation-delay: 3.8s;
+}
+@keyframes textRein {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ------------------------------------------------------------
+   "Überspringen"-Button oben rechts
+   ------------------------------------------------------------ */
+.intro__skip {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 2;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 100px;
+  padding: 8px 18px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+.intro__skip:hover { background: #fff; transform: translateY(-1px); }
+/* Sichtbarer Fokus-Rahmen für Tastatur-Nutzer (Barrierefreiheit) */
+.intro__skip:focus-visible { outline: 2px solid #111; outline-offset: 2px; }
+
+
+/* ------------------------------------------------------------
+   Barrierefreiheit: "weniger Bewegung" -> Intro sofort ausblenden
+   ------------------------------------------------------------
+   Wenn jemand im System "reduzierte Bewegung" eingestellt hat,
+   zeigen wir keine Animation. Das JS blendet das Intro dann
+   sofort aus, und diese Regel unterbindet zusätzlich alle Bewegung.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .intro *,
+  .intro {
+    animation: none !important;
+    transition: opacity 0.3s ease !important;
+  }
+}
