@@ -308,17 +308,87 @@ function shopifyAddToCart(produktKey, varianteText) {
       if (passende) variantId = passende.id;
     }
 
-    // Artikel zum Shopify-Checkout hinzufügen
-    var lineItems = [{ variantId: variantId, quantity: 1 }];
+    // Artikel zum Shopify-Checkout hinzufügen. Wir kennzeichnen jede Zeile
+    // mit "_produkt", damit die Gratis-Kissen-Automatik weiß, was drin ist.
+    // (Schlüssel mit "_" am Anfang sind im Shopify-Checkout für Kunden unsichtbar.)
+    var lineItems = [{
+      variantId: variantId,
+      quantity: 1,
+      customAttributes: [{ key: "_produkt", value: produktKey }]
+    }];
     return shopifyClient.checkout.addLineItems(shopifyCheckout.id, lineItems);
   }).then(function (checkout) {
     shopifyCheckout = checkout;
-    rendereShopifyWarenkorb();   // Warenkorb-Anzeige mit echten Daten füllen
     zeigeToast("Zum Warenkorb hinzugefügt");
+    return pruefeGeschenk();        // ggf. Gratis-Nackenkissen automatisch dazulegen
+  }).then(function () {
+    rendereShopifyWarenkorb();       // Warenkorb-Anzeige mit echten Daten füllen
   }).catch(function (err) {
     console.error("Shopify-Fehler:", err);
     zeigeToast("Es gab ein Problem. Bitte später erneut versuchen.");
   });
+}
+
+
+/* ------------------------------------------------------------
+   GRATIS-KISSEN-AUTOMATIK ("2 Pullover = Nackenkissen gratis")
+   ------------------------------------------------------------
+   Der eigentliche Rabatt läuft in Shopify. Damit der Kunde nichts
+   tun muss, legt diese Funktion das Nackenkissen automatisch dazu,
+   sobald 2 Pullover im Warenkorb sind – und entfernt es wieder,
+   wenn es weniger werden.
+   ------------------------------------------------------------ */
+
+// Kleine Helfer: prüfen, welche Kennzeichnung eine Warenkorb-Zeile hat
+function liHatAttr(li, key, val) {
+  return (li.customAttributes || []).some(function (a) {
+    return a.key === key && (val === undefined || a.value === val);
+  });
+}
+function istGeschenk(li) { return liHatAttr(li, "_geschenk", "true"); }
+function istProdukt(li, key) { return liHatAttr(li, "_produkt", key); }
+
+function pruefeGeschenk() {
+  if (!shopifyCheckout) return Promise.resolve();
+  var items = shopifyCheckout.lineItems || [];
+
+  var pulloverAnzahl = 0;
+  var geschenkZeile = null;
+  var hatKissen = false;
+  items.forEach(function (li) {
+    if (istProdukt(li, "pullover")) pulloverAnzahl += li.quantity;
+    if (istProdukt(li, "nackenkissen")) hatKissen = true;
+    if (istGeschenk(li)) geschenkZeile = li;
+  });
+
+  // Fall 1: Genug Pullover, aber noch kein Kissen -> Gratis-Kissen dazulegen
+  if (pulloverAnzahl >= 2 && !hatKissen) {
+    var kissenId = window.SHOPIFY_CONFIG.products.nackenkissen;
+    if (/^\d+$/.test(kissenId)) kissenId = "gid://shopify/Product/" + kissenId;
+    return shopifyClient.product.fetch(kissenId).then(function (product) {
+      var vId = product.variants[0].id;
+      return shopifyClient.checkout.addLineItems(shopifyCheckout.id, [{
+        variantId: vId,
+        quantity: 1,
+        customAttributes: [
+          { key: "_produkt", value: "nackenkissen" },
+          { key: "_geschenk", value: "true" }
+        ]
+      }]);
+    }).then(function (checkout) {
+      shopifyCheckout = checkout;
+      zeigeToast("🎁 Gratis-Nackenkissen hinzugefügt!");
+    }).catch(function (err) { console.warn("Geschenk-Automatik:", err); });
+  }
+
+  // Fall 2: Zu wenige Pullover, aber Gratis-Kissen noch drin -> entfernen
+  if (pulloverAnzahl < 2 && geschenkZeile) {
+    return shopifyClient.checkout.removeLineItems(shopifyCheckout.id, [geschenkZeile.id])
+      .then(function (checkout) { shopifyCheckout = checkout; })
+      .catch(function (err) { console.warn("Geschenk-Automatik:", err); });
+  }
+
+  return Promise.resolve();
 }
 
 
@@ -385,13 +455,12 @@ function rendereShopifyWarenkorb() {
   countBadge.textContent = anzahl;
   countBadge.classList.toggle("is-visible", anzahl > 0);
 
-  // Zwischensumme: bevorzugt direkt von Shopify, sonst selbst berechnen
-  var summe = betragAusPreis(shopifyCheckout && (shopifyCheckout.subtotalPriceV2 || shopifyCheckout.subtotalPrice));
-  if (!summe) {
-    lineItems.forEach(function (li) {
-      summe += li.quantity * betragAusPreis(li.variant && (li.variant.priceV2 || li.variant.price));
-    });
-  }
+  // Zwischensumme: Gratis-Geschenke zählen NICHT mit (die sind 0 €)
+  var summe = 0;
+  lineItems.forEach(function (li) {
+    if (istGeschenk(li)) return;
+    summe += li.quantity * betragAusPreis(li.variant && (li.variant.priceV2 || li.variant.price));
+  });
   totalEl.textContent = formatiereEuro(summe);
 
   // Leeren-Hinweis
@@ -403,10 +472,27 @@ function rendereShopifyWarenkorb() {
     var el = document.createElement("div");
     el.className = "cart-item";
 
-    // Variante (z. B. "Grau / S"); "Default Title" bei Produkten ohne Optionen ausblenden
+    var einzelpreis = betragAusPreis(li.variant && (li.variant.priceV2 || li.variant.price));
+
+    // ---- Gratis-Geschenk (automatisch dazugelegtes Nackenkissen) ----
+    if (istGeschenk(li)) {
+      el.classList.add("cart-item--gift");
+      el.innerHTML =
+        '<div class="cart-item__info">' +
+          '<div class="cart-item__name">' + li.title +
+            ' <span class="cart-item__gift">🎁 Geschenk</span></div>' +
+          '<div class="cart-item__variant">Automatisch dazu – 2 Pullover im Warenkorb</div>' +
+        "</div>" +
+        '<div class="cart-item__price">' +
+          '<s>' + formatiereEuro(einzelpreis) + "</s> <strong>Gratis</strong>" +
+        "</div>";
+      itemsContainer.appendChild(el);
+      return;
+    }
+
+    // ---- Normaler Artikel (mit Mengen-Steuerung) ----
     var variante = (li.variant && li.variant.title && li.variant.title !== "Default Title") ? li.variant.title : "";
     var variantenZeile = variante ? '<div class="cart-item__variant">' + variante + "</div>" : "";
-    var einzelpreis = betragAusPreis(li.variant && (li.variant.priceV2 || li.variant.price));
 
     el.innerHTML =
       '<div class="cart-item__info">' +
@@ -438,6 +524,8 @@ function shopifyAendereMenge(lineItemId, neueMenge) {
   }
   anfrage.then(function (checkout) {
     shopifyCheckout = checkout;
+    return pruefeGeschenk();     // Gratis-Kissen ggf. dazu/entfernen
+  }).then(function () {
     rendereShopifyWarenkorb();
   }).catch(function (err) {
     console.error("Shopify-Fehler:", err);

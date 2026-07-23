@@ -1007,6 +1007,27 @@ h1, h2, h3, h4 {
 .cart-item__price {
   font-weight: 500;
   font-size: 0.95rem;
+  white-space: nowrap;
+}
+/* Gratis-Geschenk (automatisch dazugelegtes Nackenkissen) */
+.cart-item__gift {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-good);
+  background: rgba(47, 125, 91, 0.10);
+  padding: 2px 8px;
+  border-radius: 100px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.cart-item--gift .cart-item__price s {
+  color: var(--color-text-soft);
+  font-weight: 400;
+  margin-right: 4px;
+}
+.cart-item--gift .cart-item__price strong {
+  color: var(--color-good);
 }
 /* Mengen-Steuerung (– Anzahl +) */
 .cart-item__qty {
