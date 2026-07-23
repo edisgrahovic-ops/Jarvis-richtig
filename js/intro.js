@@ -74,7 +74,7 @@ var INTRO_NUR_EINMAL = false;
     // Dokument nehmen, damit es nicht mehr im Weg ist.
     setTimeout(function () {
       intro.parentNode && intro.parentNode.removeChild(intro);
-    }, 1150);
+    }, 1750);
   }
 
   // 1) Automatisch beenden, wenn die Szene durch ist

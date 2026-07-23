@@ -36,9 +36,10 @@ body.intro-active {
   overflow: hidden;
   /* Sanftes Studio-Licht: hell, edel, leicht futuristisch */
   background: radial-gradient(130% 100% at 50% 32%, #ffffff 0%, #f3f4f6 55%, #e8eaee 100%);
-  /* Übergang beim Beenden. Kleine Verzögerung (0.18s), damit das
-     Flugzeug zuerst losfliegt und das Intro dann "hinter sich herzieht". */
-  transition: transform 0.7s cubic-bezier(0.65, 0, 0.3, 1) 0.18s;
+  /* Übergang beim Beenden. Verzögerung (0.4s), damit das große
+     Flugzeug erst schön losfliegt und das Intro dann "hinter sich herzieht".
+     Etwas langsamer (1.2s), damit man den Swipe nach unten gut sieht. */
+  transition: transform 1.2s cubic-bezier(0.6, 0, 0.3, 1) 0.4s;
   will-change: transform;
 }
 
@@ -54,27 +55,27 @@ body.intro-active {
 .intro__jet {
   position: absolute;
   left: 50%;
-  top: -90px;              /* startet knapp oberhalb des sichtbaren Bereichs */
-  width: 48px;
-  margin-left: -24px;      /* horizontal zentrieren */
+  top: -180px;                 /* startet oberhalb des sichtbaren Bereichs */
+  width: clamp(110px, 22vw, 170px);   /* GROSS, damit man es klar erkennt */
   color: #111;
   opacity: 0;
   z-index: 3;
   pointer-events: none;
-  transform: rotate(180deg);   /* Nase zeigt nach unten = Flugrichtung */
+  /* translateX(-50%) hält es horizontal mittig, rotate(180deg) = Nase nach unten */
+  transform: translateX(-50%) rotate(180deg);
 }
 .intro__jet svg { width: 100%; height: auto; display: block; }
 
 /* Das Flugzeug startet erst, wenn das Intro endet (Klasse "is-done"),
-   und fliegt zügig nach unten aus dem Bild. */
+   und fliegt ruhig nach unten aus dem Bild. */
 .intro.is-done .intro__jet {
-  animation: jetDown 0.9s cubic-bezier(0.45, 0, 0.25, 1) forwards;
+  animation: jetDown 1.5s cubic-bezier(0.5, 0, 0.3, 1) forwards;
 }
 @keyframes jetDown {
-  0%   { opacity: 0; transform: translateY(0)     rotate(180deg) scale(0.85); }
-  18%  { opacity: 1; }
-  80%  { opacity: 1; }
-  100% { opacity: 0; transform: translateY(115vh) rotate(180deg) scale(1); }
+  0%   { opacity: 0; transform: translateX(-50%) translateY(0)     rotate(180deg) scale(0.9); }
+  14%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) translateY(125vh) rotate(180deg) scale(1); }
 }
 
 /* Inhalt (Produkt + Text) mittig gestapelt */
