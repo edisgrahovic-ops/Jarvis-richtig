@@ -514,6 +514,15 @@ function initOptionsAuswahl() {
       });
       // ... und den geklickten aktiv setzen
       e.target.classList.add("is-active");
+
+      // NEU: Wird beim Pullover die FARBE gewechselt, laden wir die
+      // passende Bildergalerie (graue oder schwarze Fotos).
+      if (gruppe.getAttribute("data-option") === "farbe") {
+        var karte = gruppe.closest(".product-card");
+        if (karte && karte.getAttribute("data-product") === "pullover") {
+          ladePulloverFarbe(e.target.getAttribute("data-value"));
+        }
+      }
     });
   });
 }
@@ -530,6 +539,123 @@ function leseVariante(produktKarte) {
     if (aktiv) werte.push(aktiv.getAttribute("data-value"));
   });
   return werte.join(" / ");
+}
+
+
+/* ============================================================
+   TEIL F2: BILDERGALERIEN (Hauptbild + Vorschaubilder)
+   ------------------------------------------------------------
+   Jede Galerie lädt automatisch die Bilder einer Serie, z. B.
+   "pullover-grau-1.jpg", "pullover-grau-2.jpg", ... Es werden nur
+   die Bilder gezeigt, die auch wirklich existieren. So kannst du
+   pro Farbe 4, 5 oder 6 Bilder hochladen – der Code passt sich an.
+   ============================================================ */
+
+/*
+  Sucht der Reihe nach die Bilder "<prefix>-1.jpg", "<prefix>-2.jpg" ...
+  bis maximal "maxAnzahl". Für jedes Bild wird geprüft, ob es existiert
+  (lädt es? -> ja). Am Ende ruft die Funktion "callback" mit der Liste
+  der gefundenen Bild-Pfade auf (in richtiger Reihenfolge).
+*/
+function findeBilder(prefix, maxAnzahl, callback) {
+  var ergebnisse = new Array(maxAnzahl).fill(null);
+  var offen = maxAnzahl;
+
+  for (var i = 1; i <= maxAnzahl; i++) {
+    (function (nummer) {
+      var pfad = "images/" + prefix + "-" + nummer + ".jpg";
+      var testBild = new Image();
+      testBild.onload = function () {
+        ergebnisse[nummer - 1] = pfad;   // Bild existiert -> merken
+        if (--offen === 0) fertig();
+      };
+      testBild.onerror = function () {
+        if (--offen === 0) fertig();     // Bild fehlt -> überspringen
+      };
+      testBild.src = pfad;
+    })(i);
+  }
+
+  function fertig() {
+    // Nur die tatsächlich gefundenen Bilder (Lücken entfernen)
+    var liste = ergebnisse.filter(function (x) { return x !== null; });
+    callback(liste);
+  }
+}
+
+/*
+  Baut eine Galerie auf: setzt das Hauptbild und erzeugt darunter
+  die kleinen Vorschaubilder zum Durchklicken.
+*/
+function baueGalerie(galerieEl, bilder) {
+  if (!galerieEl) return;
+  var haupt = galerieEl.querySelector(".gallery__main");
+  var thumbs = galerieEl.querySelector(".gallery__thumbs");
+
+  // Kein Bild gefunden? Dann Hauptbild so lassen (zeigt Platzhalter).
+  if (!bilder.length) {
+    if (thumbs) thumbs.innerHTML = "";
+    return;
+  }
+
+  // Erstes Bild als Hauptbild
+  haupt.src = bilder[0];
+
+  // Bei nur einem Bild brauchen wir keine Vorschau-Reihe
+  thumbs.innerHTML = "";
+  if (bilder.length < 2) {
+    thumbs.style.display = "none";
+    return;
+  }
+  thumbs.style.display = "flex";
+
+  // Für jedes Bild ein Vorschaubild erstellen
+  bilder.forEach(function (src, index) {
+    var t = document.createElement("img");
+    t.className = "gallery__thumb" + (index === 0 ? " is-active" : "");
+    t.src = src;
+    t.alt = "Ansicht " + (index + 1);
+    t.addEventListener("click", function () {
+      haupt.src = src;   // Hauptbild wechseln
+      thumbs.querySelectorAll(".gallery__thumb").forEach(function (x) {
+        x.classList.remove("is-active");
+      });
+      t.classList.add("is-active");
+    });
+    thumbs.appendChild(t);
+  });
+}
+
+/*
+  Schaltet die Pullover-Galerie auf eine Farbe um (Grau oder Schwarz)
+  und lädt die passenden Bilder.
+*/
+function ladePulloverFarbe(farbe) {
+  var galerie = document.getElementById("gallery-pullover");
+  if (!galerie) return;
+  var prefix = (farbe === "Schwarz")
+    ? galerie.getAttribute("data-schwarz")   // "pullover-schwarz"
+    : galerie.getAttribute("data-grau");     // "pullover-grau"
+
+  findeBilder(prefix, 8, function (bilder) {
+    baueGalerie(galerie, bilder);
+  });
+}
+
+/*
+  Startet alle Galerien beim Laden der Seite.
+*/
+function initGalerien() {
+  // Pullover: startet mit Grau (Standardauswahl)
+  ladePulloverFarbe("Grau");
+
+  // Nackenkissen: feste Bildserie (geschlossen, offen, ...)
+  var kissen = document.getElementById("gallery-nackenkissen");
+  if (kissen) {
+    findeBilder(kissen.getAttribute("data-set"), 6, function (bilder) {
+      baueGalerie(kissen, bilder);
+    });
+  }
 }
 
 
@@ -586,9 +712,10 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Stowe Studio: DEMO-MODUS aktiv. Trage deine Daten in js/shopify-config.js ein.");
   }
 
-  // 2) Animationen, Optionen und Menü aktivieren
+  // 2) Animationen, Optionen, Galerien und Menü aktivieren
   initScrollAnimationen();
   initOptionsAuswahl();
+  initGalerien();
   initHandyMenu();
 
   // 3) "In den Warenkorb"-Buttons verbinden

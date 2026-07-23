@@ -83,13 +83,13 @@
     <!-- 3D-Bühne mit dem drehenden Produkt -->
     <div class="intro__stage" aria-hidden="true">
       <div class="intro__product" id="intro-product">
-        <!-- Vorderseite: Zip-Pullover -->
+        <!-- Vorderseite: grauer Zip-Pullover von vorne -->
         <div class="intro__face intro__face--front">
-          <img src="images/pullover-1.jpg" alt="Stowe Studio Zip-Pullover, Vorderansicht">
+          <img src="images/pullover-grau-1.jpg" alt="Stowe Studio Zip-Pullover, Vorderansicht">
         </div>
-        <!-- Rückseite: Pullover mit integriertem Rucksack -->
+        <!-- Rückseite: Rucksack gefüllt mit Ausrüstung -->
         <div class="intro__face intro__face--back">
-          <img src="images/pullover-back.jpg" alt="Stowe Studio Pullover mit integriertem Rucksack, Rückansicht">
+          <img src="images/pullover-ausruestung.jpg" alt="Stowe Studio Pullover-Rucksack gefüllt mit Reise-Ausrüstung">
         </div>
       </div>
       <!-- Bodenschatten unter dem Produkt -->
@@ -217,7 +217,7 @@
 
       <!-- Großes Hero-Bild (Platzhalter). Ersetze "images/hero.jpg". -->
       <div class="hero__image reveal">
-        <img src="images/hero.jpg" alt="Reisende Person mit Stowe Studio Reisekleidung am Flughafen">
+        <img src="images/pullover-grau-1.jpg" alt="Stowe Studio Zip-Pullover mit integriertem Rucksack">
       </div>
     </div>
   </section>
@@ -292,9 +292,25 @@
 
         <!-- ---------- PRODUKT 1: ZIP-PULLOVER ---------- -->
         <article class="product-card reveal" data-product="pullover">
+          <!--
+            BILDERGALERIE mit Farbwechsel:
+            Das JavaScript (main.js) lädt automatisch die Bilder
+            "pullover-grau-1.jpg", "pullover-grau-2.jpg", ... bzw.
+            "pullover-schwarz-1.jpg", ... – je nachdem, welche Farbe
+            der Kunde wählt. Es werden so viele Bilder gezeigt, wie
+            vorhanden sind (du kannst also 4, 5 oder 6 hochladen).
+          -->
           <div class="product-card__media">
-            <!-- Platzhalter-Foto. Ersetze "images/pullover-1.jpg". -->
-            <img src="images/pullover-1.jpg" alt="Stowe Studio Zip-Pullover mit integriertem Rucksack">
+            <div class="gallery"
+                 id="gallery-pullover"
+                 data-grau="pullover-grau"
+                 data-schwarz="pullover-schwarz">
+              <img class="gallery__main" id="gallery-pullover-main"
+                   src="images/pullover-grau-1.jpg"
+                   alt="Stowe Studio Zip-Pullover mit integriertem Rucksack">
+              <!-- Hierhin schreibt das JavaScript die kleinen Vorschaubilder -->
+              <div class="gallery__thumbs" id="gallery-pullover-thumbs"></div>
+            </div>
             <span class="product-card__badge">Bestseller</span>
           </div>
 
@@ -342,9 +358,18 @@
 
         <!-- ---------- PRODUKT 2: NACKENKISSEN ---------- -->
         <article class="product-card reveal" data-product="nackenkissen">
+          <!--
+            BILDERGALERIE (ohne Farbwechsel):
+            Lädt automatisch "nackenkissen-1.jpg", "nackenkissen-2.jpg", ...
+            (z. B. geschlossen + offen).
+          -->
           <div class="product-card__media">
-            <!-- Platzhalter-Foto. Ersetze "images/nackenkissen-1.jpg". -->
-            <img src="images/nackenkissen-1.jpg" alt="Stowe Studio Nackenkissen mit Zip-Stauraum">
+            <div class="gallery" id="gallery-nackenkissen" data-set="nackenkissen">
+              <img class="gallery__main" id="gallery-nackenkissen-main"
+                   src="images/nackenkissen-1.jpg"
+                   alt="Stowe Studio Nackenkissen mit Zip-Stauraum">
+              <div class="gallery__thumbs" id="gallery-nackenkissen-thumbs"></div>
+            </div>
             <span class="product-card__badge product-card__badge--alt">Praktisch</span>
           </div>
 
@@ -509,7 +534,7 @@
 
       <!-- Bild rechts (Platzhalter) -->
       <div class="airport__image reveal">
-        <img src="images/flughafen-1.jpg" alt="Reisende Person am Flughafen spart Gepäckgebühren mit Stowe Studio">
+        <img src="images/pullover-ausruestung.jpg" alt="Stowe Studio Pullover-Rucksack gefüllt mit Reise-Ausrüstung">
       </div>
     </div>
   </section>

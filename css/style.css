@@ -466,11 +466,56 @@ h1, h2, h3, h4 {
   position: relative;
   background: var(--color-bg-soft);
 }
-.product-card__media img {
+/* Nur ein direktes Bild im Media-Bereich (die Galerie-Bilder werden
+   weiter unten eigens gestylt und dürfen davon NICHT betroffen sein). */
+.product-card__media > img {
   width: 100%;
   aspect-ratio: 1 / 1;   /* Quadratisches Produktbild */
   object-fit: cover;
 }
+
+/* ---------- BILDERGALERIE (Hauptbild + Vorschaubilder) ---------- */
+.gallery {
+  position: relative;
+}
+/* Das große Hauptbild */
+.gallery__main {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  background: var(--color-bg-soft);
+}
+/* Die Reihe kleiner Vorschaubilder unter dem Hauptbild */
+.gallery__thumbs {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  overflow-x: auto;          /* bei vielen Bildern seitlich scrollbar */
+  background: #fff;
+  border-top: 1px solid var(--color-line);
+}
+/* Ein einzelnes Vorschaubild */
+.gallery__thumb {
+  width: 54px;
+  height: 54px;
+  flex: 0 0 auto;
+  object-fit: cover;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  opacity: 0.6;
+  transition: opacity var(--transition), border-color var(--transition);
+}
+.gallery__thumb:hover {
+  opacity: 1;
+}
+/* Das aktuell gezeigte Vorschaubild ist hervorgehoben */
+.gallery__thumb.is-active {
+  opacity: 1;
+  border-color: var(--color-accent);
+}
+
 /* Kleines Etikett oben links auf dem Bild (z. B. "Bestseller") */
 .product-card__badge {
   position: absolute;
