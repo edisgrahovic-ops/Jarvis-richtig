@@ -160,21 +160,18 @@ body.intro-active {
 .intro__text {
   text-align: center;
 }
-.intro__brand {
+.intro__brand-img {
   display: block;
-  font-weight: 600;
-  font-size: clamp(1.5rem, 4.6vw, 2.4rem);
-  letter-spacing: 0.42em;
-  /* Ausgleich, damit der Text trotz Buchstabenabstand mittig bleibt */
-  text-indent: 0.42em;
-  color: #111;
+  width: clamp(170px, 42vw, 240px);
+  height: auto;
+  margin: 0 auto;
   opacity: 0;
-  animation: introBrand 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: introBrandImg 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   animation-delay: 0.45s;
 }
-@keyframes introBrand {
-  0%   { opacity: 0; transform: translateY(10px); letter-spacing: 0.22em; }
-  100% { opacity: 1; transform: translateY(0);    letter-spacing: 0.42em; }
+@keyframes introBrandImg {
+  0%   { opacity: 0; transform: translateY(10px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0)    scale(1); }
 }
 .intro__tag {
   display: block;
