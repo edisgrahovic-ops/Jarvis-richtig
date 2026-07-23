@@ -14,8 +14,8 @@
   Zwei einfache Einstellungen findest du direkt hier oben:
 */
 
-// Wie lange läuft die Intro-Szene (in Millisekunden)?  7000 = 7 Sekunden
-var INTRO_DAUER = 7000;
+// Wie lange läuft die Intro-Szene (in Millisekunden)?  3400 = 3,4 Sekunden
+var INTRO_DAUER = 3400;
 
 // Soll das Intro pro Besuch nur EINMAL laufen (nicht bei jedem Neuladen)?
 // true  = nur einmal je Browser-Sitzung (angenehmer für wiederkehrende Nutzer)

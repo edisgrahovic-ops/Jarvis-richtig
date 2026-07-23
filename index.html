@@ -44,81 +44,48 @@
 
   <!--
     ==========================================================
-    0. 3D-INTRO-ANIMATION (Boarding-Szene)
+    0. INTRO-ANIMATION (eleganter Studio-Reveal)
     ==========================================================
-    Diese "Film-Szene" läuft ab, sobald jemand die Seite betritt:
-    Himmel mit Wolken, ein Flugzeug, ein/e Reisende/r mit Rucksack –
-    und in der Mitte dein Produkt als 3D-Objekt, das sich dreht
-    (Vorderseite mit Zip -> Rückseite mit Rucksack).
+    Beim Betreten der Seite: ruhiger, heller Studio-Hintergrund;
+    dein Produkt dreht sich edel von vorne zur Rueckseite (mit
+    Ausruestung); der Markenname erscheint; dann faehrt alles wie
+    ein Vorhang nach oben weg und gibt die Seite frei. (~3,5 Sek.)
 
-    Danach blendet sich das Intro aus (siehe js/intro.js).
-
-    Möchtest du KEIN Intro? Lösche einfach diesen ganzen <div id="intro">
-    ...</div>-Block sowie die Zeilen, die "intro.css" und "intro.js" laden.
+    Dauer/Einstellungen: siehe js/intro.js (INTRO_DAUER).
+    Kein Intro gewuenscht? Loesche diesen <div id="intro">...</div>-Block
+    sowie die Zeilen, die "intro.css" und "intro.js" laden.
   -->
   <div class="intro" id="intro" role="dialog" aria-label="Willkommens-Animation">
 
-    <!-- Überspringen-Button (oben rechts) -->
-    <button class="intro__skip" id="intro-skip">Überspringen ✕</button>
+    <!-- Ueberspringen-Button (oben rechts) -->
+    <button class="intro__skip" id="intro-skip">Überspringen</button>
 
-    <!-- Wolken in zwei Ebenen (Tiefe / Parallax) -->
-    <div class="intro__clouds intro__clouds--far"></div>
-    <div class="intro__clouds intro__clouds--near"></div>
-
-    <!-- Flugzeug (stilisiert, als SVG) -->
-    <div class="intro__plane" aria-hidden="true">
-      <svg viewBox="0 0 512 220" fill="currentColor">
-        <!-- Rumpf -->
-        <path d="M40 120 C120 96 300 92 430 104 C462 107 486 112 486 118
-                 C486 124 462 129 430 132 C300 144 120 140 40 120 Z"/>
-        <!-- Nasen-Fenster -->
-        <circle cx="452" cy="115" r="4" fill="#fff" opacity="0.7"/>
-        <!-- Tragfläche -->
-        <path d="M210 120 L150 176 L196 176 L286 124 Z" opacity="0.85"/>
-        <!-- Leitwerk (Heck) -->
-        <path d="M70 118 L36 66 L70 66 L120 112 Z" opacity="0.9"/>
-      </svg>
-    </div>
-
-    <!-- 3D-Bühne mit dem drehenden Produkt -->
-    <div class="intro__stage" aria-hidden="true">
-      <div class="intro__product" id="intro-product">
-        <!-- Vorderseite: grauer Zip-Pullover von vorne -->
-        <div class="intro__face intro__face--front">
-          <img src="images/pullover-grau-1.jpg" alt="Stowe Studio Zip-Pullover, Vorderansicht">
+    <div class="intro__inner">
+      <!-- 3D-Buehne mit dem drehenden Produkt -->
+      <div class="intro__stage" aria-hidden="true">
+        <div class="intro__product" id="intro-product">
+          <!-- Vorderseite: grauer Zip-Pullover von vorne -->
+          <div class="intro__face intro__face--front">
+            <img src="images/pullover-grau-1.jpg" alt="Stowe Studio Zip-Pullover, Vorderansicht">
+          </div>
+          <!-- Rueckseite: Rucksack gefuellt mit Ausruestung -->
+          <div class="intro__face intro__face--back">
+            <img src="images/pullover-ausruestung.jpg" alt="Stowe Studio Pullover-Rucksack gefüllt mit Reise-Ausrüstung">
+          </div>
         </div>
-        <!-- Rückseite: Rucksack gefüllt mit Ausrüstung -->
-        <div class="intro__face intro__face--back">
-          <img src="images/pullover-ausruestung.jpg" alt="Stowe Studio Pullover-Rucksack gefüllt mit Reise-Ausrüstung">
-        </div>
+        <!-- weicher Bodenschatten -->
+        <div class="intro__shadow"></div>
       </div>
-      <!-- Bodenschatten unter dem Produkt -->
-      <div class="intro__shadow"></div>
+
+      <!-- Markenname + Slogan -->
+      <div class="intro__text">
+        <span class="intro__brand">STOWE STUDIO</span>
+        <span class="intro__tag">Reisen ohne Gepäckgebühren</span>
+      </div>
     </div>
 
-    <!-- Reisende/r als Silhouette, geht Richtung Flugzeug -->
-    <div class="intro__traveler" aria-hidden="true">
-      <svg viewBox="0 0 120 200" fill="currentColor">
-        <!-- Rucksack (liegt hinter dem Körper) -->
-        <rect x="26" y="70" width="30" height="46" rx="10" opacity="0.55"/>
-        <!-- Kopf -->
-        <circle cx="66" cy="30" r="13"/>
-        <!-- Körper -->
-        <path d="M52 50 h22 a8 8 0 0 1 8 8 v40 a10 10 0 0 1 -10 10 h-18
-                 a10 10 0 0 1 -10 -10 v-40 a8 8 0 0 1 8 -8 Z"/>
-        <!-- Arm -->
-        <rect x="74" y="58" width="9" height="42" rx="4.5"/>
-        <!-- Beine (schwingen beim Gehen) -->
-        <rect class="intro__leg intro__leg--vorne"  x="54" y="112" width="10" height="52" rx="5"/>
-        <rect class="intro__leg intro__leg--hinten" x="66" y="112" width="10" height="52" rx="5" opacity="0.85"/>
-      </svg>
-    </div>
-
-    <!-- Markenname + Slogan -->
-    <div class="intro__text">
-      <span class="intro__brand">STOWE STUDIO</span>
-      <span class="intro__tag">Reisen ohne Gepäckgebühren</span>
-    </div>
+    <!-- dezente Fortschrittslinie unten -->
+    <div class="intro__progress" aria-hidden="true"></div>
   </div>
 
 
