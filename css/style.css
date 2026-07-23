@@ -228,7 +228,7 @@ h1, h2, h3, h4 {
 .ticker__track {
   display: flex;
   width: max-content;               /* so breit wie der Inhalt */
-  /* Läuft durchgehend von links nach rechts */
+  /* Läuft durchgehend von rechts nach links */
   animation: tickerLauf 40s linear infinite;
 }
 .ticker__group {
@@ -260,10 +260,10 @@ h1, h2, h3, h4 {
 .ticker:hover .ticker__track {
   animation-play-state: paused;
 }
-/* Bewegungs-Rezept: von links (-50%) nach rechts (0) – nahtlos */
+/* Bewegungs-Rezept: von rechts nach links (0 -> -50%) – nahtlos */
 @keyframes tickerLauf {
-  from { transform: translateX(-50%); }
-  to   { transform: translateX(0); }
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 /* Barrierefreiheit: bei "reduzierter Bewegung" steht der Banner still */
 @media (prefers-reduced-motion: reduce) {
