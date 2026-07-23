@@ -55,27 +55,40 @@ body.intro-active {
 .intro__jet {
   position: absolute;
   left: 50%;
-  top: -180px;                 /* startet oberhalb des sichtbaren Bereichs */
-  width: clamp(110px, 22vw, 170px);   /* GROSS, damit man es klar erkennt */
+  top: -240px;                        /* startet oberhalb des sichtbaren Bereichs */
+  width: clamp(160px, 32vw, 240px);   /* NOCH GRÖSSER, klar erkennbar */
   color: #111;
   opacity: 0;
   z-index: 3;
   pointer-events: none;
-  /* translateX(-50%) hält es horizontal mittig, rotate(180deg) = Nase nach unten */
-  transform: translateX(-50%) rotate(180deg);
+  transform: translateX(-50%);        /* horizontal mittig (Nase zeigt via SVG nach unten) */
 }
 .intro__jet svg { width: 100%; height: auto; display: block; }
 
+/* Kondensstreifen (Schweif): dünne, nach oben verblassende Linie hinter
+   dem Flugzeug. Da das Flugzeug nach unten fliegt, liegt der Schweif oben. */
+.intro__jet::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 100%;                       /* direkt oberhalb des Flugzeugs */
+  transform: translateX(-50%);
+  width: 3px;
+  height: 80vh;                       /* langer Schweif */
+  background: linear-gradient(to top, rgba(17, 17, 17, 0.30), rgba(17, 17, 17, 0));
+  border-radius: 3px;
+}
+
 /* Das Flugzeug startet erst, wenn das Intro endet (Klasse "is-done"),
-   und fliegt ruhig nach unten aus dem Bild. */
+   und fliegt ruhig nach unten aus dem Bild – der Schweif zieht mit. */
 .intro.is-done .intro__jet {
-  animation: jetDown 1.5s cubic-bezier(0.5, 0, 0.3, 1) forwards;
+  animation: jetDown 1.7s cubic-bezier(0.5, 0, 0.3, 1) forwards;
 }
 @keyframes jetDown {
-  0%   { opacity: 0; transform: translateX(-50%) translateY(0)     rotate(180deg) scale(0.9); }
-  14%  { opacity: 1; }
+  0%   { opacity: 0; transform: translateX(-50%) translateY(0)     scale(0.92); }
+  12%  { opacity: 1; }
   85%  { opacity: 1; }
-  100% { opacity: 0; transform: translateX(-50%) translateY(125vh) rotate(180deg) scale(1); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(135vh) scale(1); }
 }
 
 /* Inhalt (Produkt + Text) mittig gestapelt */
