@@ -214,6 +214,62 @@ h1, h2, h3, h4 {
    4. DIE EINZELNEN ABSCHNITTE
    ============================================================ */
 
+/* ---------- ANGEBOTS-BANNER (laufender Ticker) ---------- */
+.ticker {
+  overflow: hidden;                 /* alles außerhalb wird abgeschnitten */
+  /* Edler Verlauf von Dunkelgrau (links) nach Hellgrau (rechts).
+     Das helle Ende ist ein mittleres Grau, damit die weiße Schrift
+     überall gut lesbar bleibt. */
+  background: linear-gradient(90deg, #1a1a1c 0%, #45484d 55%, #8b8f95 100%);
+  position: relative;
+  z-index: 90;                      /* unter dem Header, über dem Inhalt */
+}
+/* Die laufende Spur (zwei identische Gruppen für die nahtlose Schleife) */
+.ticker__track {
+  display: flex;
+  width: max-content;               /* so breit wie der Inhalt */
+  /* Läuft durchgehend von links nach rechts */
+  animation: tickerLauf 40s linear infinite;
+}
+.ticker__group {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+/* Ein einzelner Angebots-Text */
+.ticker__item {
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 11px 0;
+  /* Leichter Schatten, damit der weiße Text auch über dem hellen
+     Verlaufsende gut lesbar bleibt */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+/* Kleiner Flugzeug-Trenner zwischen den Texten */
+.ticker__sep {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.8rem;
+  margin: 0 30px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+/* Beim Drüberfahren mit der Maus hält der Banner an (angenehmer zum Lesen) */
+.ticker:hover .ticker__track {
+  animation-play-state: paused;
+}
+/* Bewegungs-Rezept: von links (-50%) nach rechts (0) – nahtlos */
+@keyframes tickerLauf {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+/* Barrierefreiheit: bei "reduzierter Bewegung" steht der Banner still */
+@media (prefers-reduced-motion: reduce) {
+  .ticker__track { animation: none; transform: translateX(0); }
+}
+
 /* ---------- 1. HEADER ---------- */
 .header {
   position: sticky;   /* Bleibt beim Scrollen oben kleben */

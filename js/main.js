@@ -748,6 +748,42 @@ function initGalerien() {
 
 
 /* ============================================================
+   TEIL F3: ANGEBOTS-BANNER (laufender Ticker)
+   ------------------------------------------------------------
+   Füllt den Ticker ganz oben mit den Angebots-Texten. Die Texte
+   kannst du hier in "TICKER_MELDUNGEN" ändern. Damit die Schleife
+   nahtlos läuft, bauen wir zwei identische Gruppen nebeneinander.
+   ============================================================ */
+
+// >>> HIER kannst du die Banner-Texte anpassen:
+var TICKER_MELDUNGEN = [
+  "🚚 Kostenloser Versand",
+  "🎁 2 Pullover kaufen – Nackenkissen im Wert von 19,90 € gratis dazu"
+];
+
+function initTicker() {
+  var track = document.getElementById("ticker-track");
+  if (!track) return;
+
+  // Aus den Meldungen eine "Einheit" bauen (Text + kleines Flugzeug als Trenner)
+  var einheit = "";
+  TICKER_MELDUNGEN.forEach(function (text) {
+    einheit +=
+      '<span class="ticker__item">' + text + "</span>" +
+      '<span class="ticker__sep" aria-hidden="true">✈</span>';
+  });
+
+  // Die Einheit mehrfach wiederholen, damit sie den Bildschirm sicher füllt
+  var gruppe = einheit.repeat(4);
+
+  // Zwei identische Gruppen = nahtlose Endlos-Schleife
+  track.innerHTML =
+    '<div class="ticker__group">' + gruppe + "</div>" +
+    '<div class="ticker__group">' + gruppe + "</div>";
+}
+
+
+/* ============================================================
    TEIL G: HANDY-MENÜ
    ============================================================ */
 function initHandyMenu() {
@@ -804,6 +840,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initScrollAnimationen();
   initOptionsAuswahl();
   initGalerien();
+  initTicker();
   initHandyMenu();
 
   // 3) "In den Warenkorb"-Buttons verbinden
