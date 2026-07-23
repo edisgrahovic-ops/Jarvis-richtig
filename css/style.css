@@ -238,8 +238,9 @@ h1, h2, h3, h4 {
   gap: 10px;
 }
 .header__logo-img {
-  height: 32px;
+  height: 42px;   /* Wortmarke (zweizeilig) – gut lesbar im Header */
   width: auto;
+  display: block;
 }
 .header__logo-text {
   font-weight: 700;
