@@ -73,6 +73,11 @@ html {
   scroll-behavior: smooth;
   /* Abstand nach oben, damit der sticky Header nicht den Titel verdeckt */
   scroll-padding-top: 90px;
+  /* WICHTIG (Handy/iOS): verhindert, dass Safari die Schrift bei manchen
+     Text-Blöcken automatisch vergrößert -> dadurch wirken Texte sonst
+     "unterschiedlich groß". So bleibt überall die vorgesehene Größe. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
