@@ -36,14 +36,45 @@ body.intro-active {
   overflow: hidden;
   /* Sanftes Studio-Licht: hell, edel, leicht futuristisch */
   background: radial-gradient(130% 100% at 50% 32%, #ffffff 0%, #f3f4f6 55%, #e8eaee 100%);
-  /* Der "Vorhang nach oben" beim Beenden */
-  transition: transform 0.85s cubic-bezier(0.76, 0, 0.24, 1);
+  /* Übergang beim Beenden. Kleine Verzögerung (0.18s), damit das
+     Flugzeug zuerst losfliegt und das Intro dann "hinter sich herzieht". */
+  transition: transform 0.7s cubic-bezier(0.65, 0, 0.3, 1) 0.18s;
   will-change: transform;
 }
 
-/* Zustand am Ende: Intro fährt nach oben aus dem Bild */
+/* Zustand am Ende: Intro wird nach UNTEN weggewischt (Webseite erscheint) */
 .intro.is-done {
-  transform: translateY(-100%);
+  transform: translateY(100%);
+}
+
+
+/* ------------------------------------------------------------
+   Flugzeug-Übergang: fliegt nach unten und "wischt" das Intro weg
+   ------------------------------------------------------------ */
+.intro__jet {
+  position: absolute;
+  left: 50%;
+  top: -90px;              /* startet knapp oberhalb des sichtbaren Bereichs */
+  width: 48px;
+  margin-left: -24px;      /* horizontal zentrieren */
+  color: #111;
+  opacity: 0;
+  z-index: 3;
+  pointer-events: none;
+  transform: rotate(180deg);   /* Nase zeigt nach unten = Flugrichtung */
+}
+.intro__jet svg { width: 100%; height: auto; display: block; }
+
+/* Das Flugzeug startet erst, wenn das Intro endet (Klasse "is-done"),
+   und fliegt zügig nach unten aus dem Bild. */
+.intro.is-done .intro__jet {
+  animation: jetDown 0.9s cubic-bezier(0.45, 0, 0.25, 1) forwards;
+}
+@keyframes jetDown {
+  0%   { opacity: 0; transform: translateY(0)     rotate(180deg) scale(0.85); }
+  18%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(115vh) rotate(180deg) scale(1); }
 }
 
 /* Inhalt (Produkt + Text) mittig gestapelt */

@@ -70,11 +70,11 @@ var INTRO_NUR_EINMAL = false;
       sessionStorage.setItem("stowe_intro_gesehen", "ja");
     }
 
-    // Nach der Ausblend-Animation (0.9s) das Element ganz aus dem
+    // Nach der Flugzeug-/Wisch-Animation das Element ganz aus dem
     // Dokument nehmen, damit es nicht mehr im Weg ist.
     setTimeout(function () {
       intro.parentNode && intro.parentNode.removeChild(intro);
-    }, 950);
+    }, 1150);
   }
 
   // 1) Automatisch beenden, wenn die Szene durch ist
