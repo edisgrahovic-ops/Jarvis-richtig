@@ -28,6 +28,12 @@ var INTRO_NUR_EINMAL = false;
   // Falls es keinen Intro-Block gibt (z. B. du hast ihn entfernt): nichts tun.
   if (!intro) return;
 
+  // WICHTIG: Verhindern, dass der Browser beim Neuladen zu einer alten
+  // Scroll-Position springt. So startet der Kunde nach dem Intro immer
+  // ganz OBEN auf der Seite (und nicht mittendrin).
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+  window.scrollTo(0, 0);
+
   // Prüfen, ob der/die Nutzer/in "reduzierte Bewegung" bevorzugt
   var wenigerBewegung = window.matchMedia &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -56,6 +62,9 @@ var INTRO_NUR_EINMAL = false;
 
     intro.classList.add("is-done");            // startet das Ausblenden (CSS)
     document.body.classList.remove("intro-active");
+
+    // Sicherstellen, dass der Kunde ganz oben auf der Seite startet
+    window.scrollTo(0, 0);
 
     if (INTRO_NUR_EINMAL) {
       sessionStorage.setItem("stowe_intro_gesehen", "ja");
