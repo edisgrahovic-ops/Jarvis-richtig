@@ -272,11 +272,18 @@
               trage alles bequem am Körper.
             </p>
 
-            <!-- Preis (Platzhalter – später anpassen) -->
+            <!-- Preis inkl. MwSt. + versandkostenfrei (PAngV) -->
             <div class="product-card__price">
               <span class="product-card__price-now">49,90 €</span>
-              <span class="product-card__price-note">inkl. MwSt.</span>
+              <span class="product-card__price-note">inkl. MwSt. ·
+                <a href="/versand-zahlung">versandkostenfrei</a></span>
             </div>
+
+            <!-- Pflicht-Kurzinfos direkt sichtbar (Material, Lieferzeit) -->
+            <ul class="product-card__facts">
+              <li><strong>Material:</strong> 100 % Polyester</li>
+              <li><strong>Lieferzeit:</strong> 10–14 Werktage</li>
+            </ul>
 
             <!-- AUSWAHL: Farbe -->
             <div class="option">
@@ -288,9 +295,11 @@
               </div>
             </div>
 
-            <!-- AUSWAHL: Größe -->
+            <!-- AUSWAHL: Größe (+ Link zur Größentabelle) -->
             <div class="option">
-              <label class="option__label">Größe</label>
+              <label class="option__label">Größe
+                <button type="button" class="size-guide-link" data-open-sizeguide>Größentabelle</button>
+              </label>
               <div class="option__choices" data-option="groesse">
                 <button type="button" class="chip is-active" data-value="S">S</button>
                 <button type="button" class="chip" data-value="M">M</button>
@@ -303,6 +312,35 @@
             <button class="btn btn--primary btn--full add-to-cart" data-product="pullover">
               In den Warenkorb
             </button>
+
+            <!-- Versand-/Dropshipping-Hinweis (Transparenz) -->
+            <p class="product-card__ship">
+              Versand direkt von unserem Produktionspartner in China. Zoll und
+              Einfuhrumsatzsteuer sind im Preis enthalten – bei Zustellung
+              entstehen keine Zusatzkosten. Lieferzeit 10–14 Werktage.
+            </p>
+
+            <!-- GPSR: Hersteller- & Sicherheitsinformationen (EU 2023/988) -->
+            <details class="gpsr">
+              <summary>Hersteller- &amp; Sicherheitsinformationen</summary>
+              <div class="gpsr__body">
+                <p><strong>Hersteller:</strong><br>
+                  <span class="todo-marker">[[ AUSFÜLLEN: Firmenname der Fabrik ]]</span><br>
+                  <span class="todo-marker">[[ AUSFÜLLEN: vollständige Anschrift des Herstellers ]]</span><br>
+                  <span class="todo-marker">[[ AUSFÜLLEN: E-Mail-Adresse des Herstellers ]]</span>
+                </p>
+                <p><strong>Importeur / Verantwortlicher Wirtschaftsakteur in der EU:</strong><br>
+                  Edis Grahovic<br>Oberforstbacher Str. 409<br>52076 Aachen<br>
+                  Deutschland<br>hallo@stowestudio.de
+                </p>
+                <p><strong>Modell-/Chargennummer:</strong>
+                  <span class="todo-marker">[[ AUSFÜLLEN: Chargennummer ]]</span>
+                </p>
+                <p><strong>Sicherheits- und Warnhinweise:</strong><br>
+                  <span class="todo-marker">[[ AUSFÜLLEN: Warnhinweise vom Lieferanten anfordern ]]</span>
+                </p>
+              </div>
+            </details>
           </div>
         </article>
 
@@ -326,23 +364,74 @@
           <div class="product-card__body">
             <h3 class="product-card__name">Nackenkissen mit Stauraum</h3>
             <p class="product-card__desc">
-              Bequemes Reise-Nackenkissen, das sich per Zip öffnen lässt.
-              Verstaue zusätzliche Kleidung im Inneren – und nutze es unterwegs
-              als kuscheliges Kissen für deinen Nacken.
+              Reise-Nackenkissen mit Reißverschluss, das sich per Zip öffnen lässt.
+              Verstaue zusätzliche Kleidung im Inneren – dadurch wird der Bezug
+              zum Kissen für deinen Nacken und du sparst Gepäckplatz.
             </p>
 
-            <!-- Preis (Platzhalter – später anpassen) -->
+            <!-- Preis inkl. MwSt. + versandkostenfrei (PAngV) -->
             <div class="product-card__price">
               <span class="product-card__price-now">19,90 €</span>
-              <span class="product-card__price-note">inkl. MwSt.</span>
+              <span class="product-card__price-note">inkl. MwSt. ·
+                <a href="/versand-zahlung">versandkostenfrei</a></span>
             </div>
 
-            <!-- Das Nackenkissen hat keine Farb-/Größenauswahl (Einheitsgröße) -->
-            <p class="product-card__meta">Einheitsgröße · Farbe: Grau</p>
+            <!-- Pflicht-Kurzinfos direkt sichtbar (Material, Maße, Lieferzeit) -->
+            <ul class="product-card__facts">
+              <li><strong>Material:</strong> 100 % Polyester</li>
+              <li><strong>Maße:</strong> 90 × 18 cm · inkl. verstellbarem Schultergurt (35–88 cm)</li>
+              <li><strong>Lieferzeit:</strong> 10–14 Werktage</li>
+            </ul>
+
+            <!-- AUSWAHL: Farbe (Grau/Schwarz) -->
+            <div class="option">
+              <label class="option__label">Farbe</label>
+              <div class="option__choices" data-option="farbe">
+                <button type="button" class="chip is-active" data-value="Grau">Grau</button>
+                <button type="button" class="chip" data-value="Schwarz">Schwarz</button>
+              </div>
+            </div>
+
+            <!-- WICHTIGER Hinweis: wird ungefüllt geliefert (Sachmangel vermeiden) -->
+            <div class="notice-box">
+              <strong>Wird ungefüllt geliefert.</strong> Das Nackenkissen besteht
+              aus einem Bezug mit Reißverschluss und enthält keine Füllung. Du
+              befüllst es selbst mit Kleidung – dadurch wird es zum Kissen und du
+              sparst gleichzeitig Gepäckplatz.
+            </div>
 
             <button class="btn btn--primary btn--full add-to-cart" data-product="nackenkissen">
               In den Warenkorb
             </button>
+
+            <!-- Versand-/Dropshipping-Hinweis (Transparenz) -->
+            <p class="product-card__ship">
+              Versand direkt von unserem Produktionspartner in China. Zoll und
+              Einfuhrumsatzsteuer sind im Preis enthalten – bei Zustellung
+              entstehen keine Zusatzkosten. Lieferzeit 10–14 Werktage.
+            </p>
+
+            <!-- GPSR: Hersteller- & Sicherheitsinformationen (EU 2023/988) -->
+            <details class="gpsr">
+              <summary>Hersteller- &amp; Sicherheitsinformationen</summary>
+              <div class="gpsr__body">
+                <p><strong>Hersteller:</strong><br>
+                  <span class="todo-marker">[[ AUSFÜLLEN: Firmenname der Fabrik ]]</span><br>
+                  <span class="todo-marker">[[ AUSFÜLLEN: vollständige Anschrift des Herstellers ]]</span><br>
+                  <span class="todo-marker">[[ AUSFÜLLEN: E-Mail-Adresse des Herstellers ]]</span>
+                </p>
+                <p><strong>Importeur / Verantwortlicher Wirtschaftsakteur in der EU:</strong><br>
+                  Edis Grahovic<br>Oberforstbacher Str. 409<br>52076 Aachen<br>
+                  Deutschland<br>hallo@stowestudio.de
+                </p>
+                <p><strong>Modell-/Chargennummer:</strong>
+                  <span class="todo-marker">[[ AUSFÜLLEN: Chargennummer ]]</span>
+                </p>
+                <p><strong>Sicherheits- und Warnhinweise:</strong><br>
+                  <span class="todo-marker">[[ AUSFÜLLEN: Warnhinweise vom Lieferanten anfordern ]]</span>
+                </p>
+              </div>
+            </details>
           </div>
         </article>
 
@@ -809,6 +898,50 @@
     der Demo-Modus-Hinweis. Wird per JavaScript ein-/ausgeblendet.
   -->
   <div class="toast" id="toast"></div>
+
+
+  <!--
+    ==========================================================
+    GRÖSSENTABELLE-MODAL (öffnet über den Link "Größentabelle")
+    ==========================================================
+    Alle Angaben sind Flachmaße in cm (exakt wie vom Hersteller).
+  -->
+  <div class="modal-overlay" id="sizeguide-overlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Größentabelle Zip-Pullover">
+      <div class="modal__head">
+        <h3 class="modal__title">Größentabelle – Zip-Pullover</h3>
+        <button class="modal__close" id="sizeguide-close" aria-label="Schließen">&times;</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="size-table">
+          <thead>
+            <tr>
+              <th>Größe</th><th>Rückenlänge</th><th>Schulterbreite</th>
+              <th>Brustumfang</th><th>Ärmellänge</th><th>Saumweite</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>S</td><td>66</td><td>62</td><td>64</td><td>54</td><td>56</td></tr>
+            <tr><td>M</td><td>68</td><td>64</td><td>66</td><td>54</td><td>58</td></tr>
+            <tr><td>L</td><td>70</td><td>66</td><td>68</td><td>55</td><td>60</td></tr>
+            <tr><td>XL</td><td>72</td><td>68</td><td>70</td><td>56</td><td>62</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="size-note">
+        Alle Angaben sind Flachmaße in Zentimetern. Lege ein gut sitzendes
+        Kleidungsstück flach auf eine ebene Fläche und miss nach – so findest du
+        deine passende Größe am zuverlässigsten. Abweichungen von 1–2 cm sind
+        produktionsbedingt möglich.
+      </p>
+      <p class="size-fit">
+        <strong>Hinweis zur Passform:</strong> Unsere Pullover sind bewusst weit
+        geschnitten, damit im integrierten Stauraum genug Platz für deine Kleidung
+        bleibt. Bitte orientiere dich an den Flachmaßen in der Tabelle und nicht
+        an deiner gewohnten Konfektionsgröße.
+      </p>
+    </div>
+  </div>
 
 
   <!--

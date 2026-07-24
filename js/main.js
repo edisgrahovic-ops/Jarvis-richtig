@@ -348,6 +348,56 @@ function liHatAttr(li, key, val) {
 function istGeschenk(li) { return liHatAttr(li, "_geschenk", "true"); }
 function istProdukt(li, key) { return liHatAttr(li, "_produkt", key); }
 
+// Liest die Pullover-Farbe aus einer Warenkorb-Zeile ("Grau / S" -> "Grau")
+function pulloverFarbe(li) {
+  var t = (li.variant && li.variant.title) || "";
+  if (t.indexOf("Schwarz") !== -1) return "Schwarz";
+  if (t.indexOf("Grau") !== -1) return "Grau";
+  return null;
+}
+
+/*
+  Bestimmt die Farbe des Gratis-Kissens nach der Pullover-Farbe:
+  2× Grau -> Grau, 2× Schwarz -> Schwarz, gemischt -> Grau (Kunde kann umschalten).
+*/
+function geschenkFarbeAusWarenkorb(items) {
+  var grau = 0, schwarz = 0;
+  items.forEach(function (li) {
+    if (!istProdukt(li, "pullover")) return;
+    var f = pulloverFarbe(li);
+    if (f === "Grau") grau += li.quantity;
+    else if (f === "Schwarz") schwarz += li.quantity;
+  });
+  if (schwarz >= 2 && grau < 2) return "Schwarz";
+  return "Grau";
+}
+
+// Findet die Nackenkissen-Variante einer Farbe
+function nackenkissenVarianteId(product, farbe) {
+  var v = product.variants.find(function (x) {
+    return x.selectedOptions.some(function (o) { return o.value === farbe; });
+  });
+  return v ? v.id : product.variants[0].id;
+}
+
+// Legt ein Gratis-Nackenkissen in der gewünschten Farbe dazu
+function fuegeGeschenkHinzu(farbe) {
+  var kissenId = window.SHOPIFY_CONFIG.products.nackenkissen;
+  if (/^\d+$/.test(kissenId)) kissenId = "gid://shopify/Product/" + kissenId;
+  return shopifyClient.product.fetch(kissenId).then(function (product) {
+    var vId = nackenkissenVarianteId(product, farbe);
+    return shopifyClient.checkout.addLineItems(shopifyCheckout.id, [{
+      variantId: vId,
+      quantity: 1,
+      customAttributes: [
+        { key: "_produkt", value: "nackenkissen" },
+        { key: "_geschenk", value: "true" },
+        { key: "_geschenkfarbe", value: farbe }
+      ]
+    }]);
+  }).then(function (checkout) { shopifyCheckout = checkout; });
+}
+
 function pruefeGeschenk() {
   if (!shopifyCheckout) return Promise.resolve();
   var items = shopifyCheckout.lineItems || [];
@@ -361,22 +411,9 @@ function pruefeGeschenk() {
     if (istGeschenk(li)) geschenkZeile = li;
   });
 
-  // Fall 1: Genug Pullover, aber noch kein Kissen -> Gratis-Kissen dazulegen
+  // Fall 1: Genug Pullover, aber noch kein Kissen -> Gratis-Kissen (passende Farbe)
   if (pulloverAnzahl >= 2 && !hatKissen) {
-    var kissenId = window.SHOPIFY_CONFIG.products.nackenkissen;
-    if (/^\d+$/.test(kissenId)) kissenId = "gid://shopify/Product/" + kissenId;
-    return shopifyClient.product.fetch(kissenId).then(function (product) {
-      var vId = product.variants[0].id;
-      return shopifyClient.checkout.addLineItems(shopifyCheckout.id, [{
-        variantId: vId,
-        quantity: 1,
-        customAttributes: [
-          { key: "_produkt", value: "nackenkissen" },
-          { key: "_geschenk", value: "true" }
-        ]
-      }]);
-    }).then(function (checkout) {
-      shopifyCheckout = checkout;
+    return fuegeGeschenkHinzu(geschenkFarbeAusWarenkorb(items)).then(function () {
       zeigeToast("🎁 Gratis-Nackenkissen hinzugefügt!");
     }).catch(function (err) { console.warn("Geschenk-Automatik:", err); });
   }
@@ -389,6 +426,20 @@ function pruefeGeschenk() {
   }
 
   return Promise.resolve();
+}
+
+/*
+  Wechselt die Farbe des Gratis-Kissens. Wird gebraucht, wenn der Kunde
+  z. B. bei gemischten Pullover-Farben die Kissen-Farbe selbst wählt.
+*/
+function tauscheGeschenkFarbe(farbe) {
+  if (!shopifyCheckout) return;
+  var geschenk = (shopifyCheckout.lineItems || []).find(istGeschenk);
+  if (!geschenk) return;
+  shopifyClient.checkout.removeLineItems(shopifyCheckout.id, [geschenk.id])
+    .then(function (checkout) { shopifyCheckout = checkout; return fuegeGeschenkHinzu(farbe); })
+    .then(function () { rendereShopifyWarenkorb(); })
+    .catch(function (err) { console.warn("Geschenk-Farbe:", err); });
 }
 
 
@@ -477,11 +528,19 @@ function rendereShopifyWarenkorb() {
     // ---- Gratis-Geschenk (automatisch dazugelegtes Nackenkissen) ----
     if (istGeschenk(li)) {
       el.classList.add("cart-item--gift");
+      // Aktuelle Farbe des Geschenks (aus dem Varianten-Titel, z. B. "Grau")
+      var gfarbe = (li.variant && li.variant.title && li.variant.title !== "Default Title")
+        ? li.variant.title : "Grau";
       el.innerHTML =
         '<div class="cart-item__info">' +
           '<div class="cart-item__name">' + li.title +
             ' <span class="cart-item__gift">🎁 Geschenk</span></div>' +
-          '<div class="cart-item__variant">Automatisch dazu – 2 Pullover im Warenkorb</div>' +
+          '<div class="cart-item__variant">Automatisch dazu, weil 2 Pullover im Warenkorb sind.</div>' +
+          '<div class="gift-color">' +
+            '<span>Farbe des Gratis-Kissens:</span> ' +
+            '<button type="button" class="gift-color__btn' + (gfarbe === "Grau" ? " is-active" : "") + '" data-gift-color="Grau">Grau</button>' +
+            '<button type="button" class="gift-color__btn' + (gfarbe === "Schwarz" ? " is-active" : "") + '" data-gift-color="Schwarz">Schwarz</button>' +
+          "</div>" +
         "</div>" +
         '<div class="cart-item__price">' +
           '<s>' + formatiereEuro(einzelpreis) + "</s> <strong>Gratis</strong>" +
@@ -784,6 +843,27 @@ function initTicker() {
 
 
 /* ============================================================
+   TEIL F4: GRÖSSENTABELLE-MODAL
+   ============================================================ */
+function initSizeGuide() {
+  var overlay = document.getElementById("sizeguide-overlay");
+  if (!overlay) return;
+  var closeBtn = document.getElementById("sizeguide-close");
+
+  function auf() { overlay.classList.add("is-open"); }
+  function zu()  { overlay.classList.remove("is-open"); }
+
+  document.querySelectorAll("[data-open-sizeguide]").forEach(function (btn) {
+    btn.addEventListener("click", auf);
+  });
+  if (closeBtn) closeBtn.addEventListener("click", zu);
+  // Klick auf den dunklen Hintergrund schließt das Modal
+  overlay.addEventListener("click", function (e) { if (e.target === overlay) zu(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") zu(); });
+}
+
+
+/* ============================================================
    TEIL G: HANDY-MENÜ
    ============================================================ */
 function initHandyMenu() {
@@ -841,6 +921,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initOptionsAuswahl();
   initGalerien();
   initTicker();
+  initSizeGuide();
   initHandyMenu();
 
   // 3) "In den Warenkorb"-Buttons verbinden
@@ -877,6 +958,13 @@ document.addEventListener("DOMContentLoaded", function () {
     var plus = e.target.getAttribute("data-plus");
     var minus = e.target.getAttribute("data-minus");
     var remove = e.target.getAttribute("data-remove");
+
+    // Farb-Umschalter des Gratis-Kissens (nur Shopify-Modus)
+    var giftColor = e.target.getAttribute("data-gift-color");
+    if (giftColor) {
+      tauscheGeschenkFarbe(giftColor);
+      return;
+    }
 
     if (window.isShopifyConfigured() && shopifyCheckout) {
       // ---- ECHTER Shopify-Warenkorb ----
