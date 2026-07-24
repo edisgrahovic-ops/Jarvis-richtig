@@ -109,6 +109,27 @@ h1, h2, h3, h4 {
   letter-spacing: -0.02em;
 }
 
+/* ------------------------------------------------------------
+   TODO-MARKER – knallrote Kennzeichnung für fehlende Daten.
+   Soll unmöglich zu übersehen sein. Vor dem Livegang müssen
+   ALLE verschwinden (prüfe mit: npm run check-todos).
+   ------------------------------------------------------------ */
+.todo-marker {
+  display: inline-block;
+  background: #e60000;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.9em;
+  line-height: 1.4;
+  padding: 3px 10px;
+  margin: 2px 0;
+  border: 2px dashed #ffe600;
+  border-radius: 4px;
+  text-transform: none;
+  letter-spacing: 0;
+  text-shadow: none;
+}
+
 
 /* ============================================================
    3. WIEDERVERWENDBARE BAUSTEINE

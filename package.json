@@ -1,0 +1,9 @@
+{
+  "name": "stowe-studio",
+  "version": "1.0.0",
+  "description": "Statische Webseite Stowe Studio",
+  "private": true,
+  "scripts": {
+    "check-todos": "bash scripts/check-todos.sh"
+  }
+}
