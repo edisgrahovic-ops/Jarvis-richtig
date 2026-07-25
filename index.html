@@ -28,6 +28,26 @@
   <!-- Kurze Beschreibung für Google (SEO) -->
   <meta name="description" content="Stowe Studio: Clevere Reisekleidung mit integriertem Stauraum. Spare teure Gepäckgebühren – trage deine Kleidung einfach am Körper.">
 
+  <!--
+    Content-Security-Policy (Sicherheits-Regel):
+    Legt fest, von welchen Quellen der Browser Inhalte laden darf.
+    So kann fremder Schadcode nicht einfach von überall nachgeladen werden.
+    Erlaubt: unsere eigene Seite ('self') und die nötigen Shopify-Dienste
+    (SDK-Skript, Storefront-API, Bezahl-Seite, Produktbilder).
+  -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' https://sdks.shopifycdn.com;
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: https://cdn.shopify.com https://*.shopifycdn.com;
+    font-src 'self';
+    connect-src 'self' https://*.myshopify.com https://sdks.shopifycdn.com;
+    frame-src https://*.myshopify.com https://*.shopify.com;
+    form-action 'self' https://*.myshopify.com https://*.shopify.com;
+    base-uri 'self';
+    object-src 'none';
+  ">
+
   <!-- Favicon (kleines Icon im Browser-Tab) + Symbol beim Speichern auf dem Homescreen -->
   <link rel="icon" type="image/png" href="images/icon.png">
   <link rel="apple-touch-icon" href="images/icon.png">
@@ -38,10 +58,9 @@
   <!-- Design der 3D-Intro-Animation (Boarding-Szene beim Betreten) -->
   <link rel="stylesheet" href="css/intro.css">
 
-  <!-- Schöne Schriftart von Google Fonts (Inter = clean & modern) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Schrift "Inter" wird lokal geladen (siehe @font-face in css/style.css).
+       Kein Google-Fonts-Link mehr = DSGVO-konform, keine IP-Weitergabe an Google. -->
+  <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 </head>
 
 <body>
@@ -828,6 +847,7 @@
           <li><a href="/agb">AGB</a></li>
           <li><a href="/widerruf">Widerrufsbelehrung</a></li>
           <li><a href="/versand-zahlung">Versand &amp; Zahlung</a></li>
+          <li><a href="#" id="cookie-settings-link">Cookie-Einstellungen</a></li>
         </ul>
       </div>
 
@@ -886,6 +906,12 @@
       <button class="btn btn--primary btn--full" id="checkout-btn">
         Zur Kasse
       </button>
+      <!-- Pflicht-Hinweis: Der eigentliche Bezahlvorgang läuft bei Shopify.
+           Der Kunde muss vorher wissen, welche Bedingungen gelten. -->
+      <p class="cart-drawer__legal">
+        Der Bezahlvorgang wird über Shopify abgewickelt. Es gelten unsere
+        <a href="/agb">AGB</a> und die <a href="/widerruf">Widerrufsbelehrung</a>.
+      </p>
     </div>
   </aside>
 
@@ -898,6 +924,80 @@
     der Demo-Modus-Hinweis. Wird per JavaScript ein-/ausgeblendet.
   -->
   <div class="toast" id="toast"></div>
+
+
+  <!--
+    ==========================================================
+    COOKIE-CONSENT (Einwilligungs-Banner)
+    ==========================================================
+    Pflicht nach TDDDG/DSGVO: Vor dem Setzen nicht notwendiger
+    Cookies (Statistik/Marketing) MUSS der Besucher aktiv
+    zustimmen. Alle drei Buttons sind gleichwertig gestaltet
+    ("Ablehnen" darf nicht versteckt sein). Voreinstellung:
+    alles AUS außer "Notwendig". Die Entscheidung wird lokal
+    gespeichert (siehe js/consent.js).
+
+    Marketing-/Statistik-Skripte werden erst NACH Zustimmung
+    geladen. Dafür schreibt man solche Skripte als
+    <script type="text/plain" data-consent="marketing"> … </script>
+    – js/consent.js aktiviert sie dann bei Einwilligung.
+  -->
+  <div class="consent-banner" id="consent-banner" role="dialog"
+       aria-modal="false" aria-label="Cookie-Einwilligung" hidden>
+    <div class="consent-banner__inner">
+      <div class="consent-banner__text">
+        <strong>Wir respektieren deine Privatsphäre</strong>
+        <p>
+          Wir nutzen Cookies. Notwendige Cookies sind für den Betrieb des
+          Shops erforderlich. Für Statistik und Marketing brauchen wir deine
+          Einwilligung. Mehr dazu in der
+          <a href="/datenschutz">Datenschutzerklärung</a>.
+        </p>
+      </div>
+      <div class="consent-banner__actions">
+        <button type="button" class="btn consent-btn" id="consent-reject">Alle ablehnen</button>
+        <button type="button" class="btn consent-btn" id="consent-settings">Einstellungen</button>
+        <button type="button" class="btn btn--primary consent-btn" id="consent-accept">Alle akzeptieren</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail-Einstellungen (öffnet über "Einstellungen" oder "Cookie-Einstellungen" im Footer) -->
+  <div class="modal-overlay" id="consent-settings-overlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Cookie-Einstellungen">
+      <div class="modal__head">
+        <h3 class="modal__title">Cookie-Einstellungen</h3>
+        <button class="modal__close" id="consent-settings-close" aria-label="Schließen">&times;</button>
+      </div>
+      <div class="consent-cat">
+        <label class="consent-cat__row">
+          <span>
+            <strong>Notwendig</strong>
+            <small>Für den Betrieb des Shops und den Bezahlvorgang erforderlich. Immer aktiv.</small>
+          </span>
+          <input type="checkbox" checked disabled>
+        </label>
+        <label class="consent-cat__row">
+          <span>
+            <strong>Statistik</strong>
+            <small>Hilft uns zu verstehen, wie der Shop genutzt wird (z. B. Reichweitenmessung).</small>
+          </span>
+          <input type="checkbox" id="consent-cat-statistik">
+        </label>
+        <label class="consent-cat__row">
+          <span>
+            <strong>Marketing</strong>
+            <small>Ermöglicht personalisierte Werbung (z. B. Meta Pixel).</small>
+          </span>
+          <input type="checkbox" id="consent-cat-marketing">
+        </label>
+      </div>
+      <div class="consent-cat__foot">
+        <button type="button" class="btn consent-btn" id="consent-save">Auswahl speichern</button>
+        <button type="button" class="btn btn--primary consent-btn" id="consent-accept-all">Alle akzeptieren</button>
+      </div>
+    </div>
+  </div>
 
 
   <!--
@@ -955,6 +1055,7 @@
     3. main.js             → unsere eigene Logik
   -->
   <script src="js/shopify-config.js"></script>
+  <script src="js/consent.js"></script>
   <script src="js/main.js"></script>
 
   <!-- Steuerung der 3D-Intro-Animation (kann bei Bedarf entfernt werden) -->

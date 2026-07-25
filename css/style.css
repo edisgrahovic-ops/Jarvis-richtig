@@ -18,6 +18,29 @@
 
 
 /* ============================================================
+   0. SCHRIFT (lokal gehostet – DSGVO-konform)
+   ------------------------------------------------------------
+   Wir laden die Schrift "Inter" von unserem eigenen Server
+   (Ordner /fonts) statt von Google. So werden KEINE Daten der
+   Besucher (z. B. IP-Adresse) an Google übertragen – das ist in
+   Deutschland Pflicht (DSGVO / LG-München-Urteil zu Google Fonts).
+
+   Es ist eine "Variable Font": EINE Datei enthält alle Schrift-
+   staerken von 100 (duenn) bis 900 (fett). Deshalb reicht ein
+   einziger @font-face-Block mit "font-weight: 100 900".
+   "font-display: swap" = Text sofort sichtbar, Schrift wird
+   nachgeladen (kein leerer Bildschirm).
+   ============================================================ */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin.woff2') format('woff2');
+}
+
+
+/* ============================================================
    1. VARIABLEN
    ------------------------------------------------------------
    ":root" ist die "Wurzel" der Seite. Hier legen wir Farben und
@@ -1358,6 +1381,95 @@ h1, h2, h3, h4 {
   padding: 10px 14px;
   border-radius: var(--radius);
   margin-bottom: 16px;
+}
+/* Pflicht-Hinweis unter dem Checkout-Button (Shopify + AGB/Widerruf) */
+.cart-drawer__legal {
+  font-size: 0.78rem;
+  color: var(--color-text-soft);
+  text-align: center;
+  margin-top: 12px;
+  line-height: 1.5;
+}
+.cart-drawer__legal a { color: inherit; text-decoration: underline; }
+
+
+/* ---------- COOKIE-CONSENT ---------- */
+/* Banner unten am Bildschirm, bleibt beim Scrollen sichtbar */
+.consent-banner {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 400;              /* über allem, damit man zuerst entscheidet */
+  background: #1a1a1c;
+  color: #fff;
+  box-shadow: 0 -8px 30px rgba(0,0,0,0.25);
+}
+.consent-banner[hidden] { display: none; }
+.consent-banner__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 24px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.consent-banner__text { flex: 1 1 340px; }
+.consent-banner__text strong { display: block; margin-bottom: 4px; font-size: 1rem; }
+.consent-banner__text p { font-size: 0.85rem; color: #d3d3d6; margin: 0; line-height: 1.5; }
+.consent-banner__text a { color: #fff; text-decoration: underline; }
+.consent-banner__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+/* Alle drei Buttons gleich groß – "Ablehnen" darf nicht benachteiligt sein */
+.consent-btn {
+  padding: 12px 20px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+/* Neutraler Button (Ablehnen / Einstellungen) heller Rahmen auf dunkel */
+.consent-banner .consent-btn:not(.btn--primary) {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.5);
+}
+.consent-banner .consent-btn:not(.btn--primary):hover {
+  background: rgba(255,255,255,0.12);
+}
+
+/* Kategorien im Einstellungs-Modal */
+.consent-cat { margin: 8px 0 4px; }
+.consent-cat__row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+.consent-cat__row small {
+  display: block;
+  color: var(--color-text-soft);
+  font-size: 0.82rem;
+  margin-top: 3px;
+  line-height: 1.45;
+}
+.consent-cat__row input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+.consent-cat__foot {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-top: 18px;
 }
 
 
