@@ -1,22 +1,44 @@
-# 📧 Shopify-Mails einrichten – Stowe Studio
+# 📧 Shopify-Mails einrichten – Stowe Studio (klickgenaue Anleitung)
 
-Diese Datei enthält die **fertigen Texte** und eine **Schritt-für-Schritt-Anleitung**.
-Es ist kein Code – du kopierst die Texte direkt in Shopify.
+Diese Anleitung ist für die **Web-Version von Shopify** am **MacBook** (Browser:
+Safari oder Chrome) und für das **aktuelle Shopify-Design (2026)**. Es ist kein
+Code – du kopierst nur fertige Texte an die richtige Stelle.
 
-Es geht um zwei Mails:
+Wir richten zwei Mails ein:
 
-- **Mail 1 – Dankes-Mail** direkt nach dem Kauf (unproblematisch, keine Einwilligung nötig)
+- **Mail 1 – Dankes-Mail** direkt nach dem Kauf (unproblematisch)
 - **Mail 2 – Bewertungsbitte** zeitversetzt (Werbung → nur mit Einwilligung, § 7 UWG)
+
+> **Immer zuerst:** Melde dich am Mac im Browser bei **admin.shopify.com** an.
+> Unten **links** ist das Zahnrad **„Einstellungen"** – das brauchst du fast überall.
+
+---
+
+## 🔑 Schritt 0 — Absender-E-Mail bestätigen (einmalig, Pflicht)
+
+Bevor Shopify dich Mails bearbeiten lässt, musst du deine Absenderadresse bestätigen.
+
+1. **Einstellungen** (Zahnrad unten links).
+2. Im linken Menü **„Benachrichtigungen"** anklicken.
+3. Ganz oben/rechts gibt es den Bereich **„Absender-E-Mail"** (Sender email).
+   Trage dort **stowestudioofficial@gmail.com** ein und klicke **Speichern**.
+4. Shopify schickt dir an diese Gmail-Adresse eine Mail mit einem Bestätigungslink.
+   Öffne dein Gmail, klick den Link → fertig, die Adresse ist verifiziert.
+
+> Hinweis: Mit einer Gmail-Adresse versendet Shopify technisch „im Auftrag" über
+> seine eigenen Server – das ist zum Start völlig okay. (Später kann man für noch
+> bessere Zustellbarkeit eine eigene Domain-Adresse wie kontakt@stowestudio.de
+> einrichten – muss aber jetzt nicht sein.)
 
 ---
 
 ## ✅ Mail 1 — Dankestext in der Bestellbestätigung
 
-**Was das ist:** Die Bestätigung, die Shopify sowieso automatisch nach jedem Kauf
-verschickt. Wir ergänzen oben nur einen persönlichen Dank. **Keine Bewertungsbitte**
-in diese Mail – sonst wird aus der Transaktionsmail eine Werbemail (abmahnbar).
+**Was das ist:** Die Bestätigung, die Shopify automatisch nach jedem Kauf sendet.
+Wir tauschen nur den Begrüßungstext oben gegen unseren freundlichen Dank aus.
+**Keine Bewertungsbitte** hier rein (sonst wird’s eine Werbemail → abmahnbar).
 
-### Text zum Einfügen (oben in die Mail)
+### Dein Text (zum Einfügen)
 
 ```
 Vielen Dank für deine Bestellung bei Stowe Studio! 🎒
@@ -29,57 +51,113 @@ mit der Sendungsnummer.
 Gute Reise wünscht dir das Team von Stowe Studio ✈️
 ```
 
-### Was du genau tun musst
+### Klick-für-Klick
 
-1. Shopify Admin öffnen → **Einstellungen** (unten links) → **Benachrichtigungen**.
-2. Im Bereich **Kundenbenachrichtigungen** die **„Bestellbestätigung"** anklicken.
-3. Auf **„E-Mail-Vorlage bearbeiten"** (bzw. „Code bearbeiten") gehen.
-4. Ganz oben im Textbereich (vor der Bestellübersicht) den Dankestext von oben einfügen.
-   - Tipp: Schreib ihn als einfachen Absatz. Wenn du im HTML-Editor bist, umschließe
-     jeden Absatz mit `<p>…</p>`.
-5. **Wichtig:** Die bestehende **Bestellübersicht** (Artikel, Preise, Adresse) darunter
-   **stehen lassen** – die ist gesetzlich Pflicht.
-6. **Speichern.** Danach oben rechts auf **„Testbenachrichtigung senden"** klicken und
-   in deinem Postfach prüfen, ob es gut aussieht.
+1. **Einstellungen** → **Benachrichtigungen**.
+2. Runterscrollen zum Abschnitt **„Kundenbenachrichtigungen"**.
+3. In der Liste **„Bestellbestätigung"** anklicken.
+4. Oben rechts auf **„Code bearbeiten"** klicken. Jetzt siehst du ein großes Feld
+   **„E-Mail-Text (HTML)"** mit vielen Zeilen Code. **Keine Angst** – wir ändern nur
+   eine Stelle, und es gibt unten den Knopf **„Auf Standard zurücksetzen"** als
+   Sicherheitsnetz (macht alles rückgängig).
+5. In diesem Code steht schon ein **Begrüßungssatz**, den der Kunde zuerst liest –
+   ungefähr so:
+   `Hallo {{ customer.first_name }}, wir bereiten deine Bestellung gerade vor …`
+   Diesen Satz suchen. Er steht meist recht weit oben zwischen zwei `<p>…</p>`-
+   Zeichen.
+6. **Nur den Text zwischen den `<p>` und `</p>` austauschen** gegen unseren Text von
+   oben. Die spitzen Klammern `<p>` … `</p>` **stehen lassen**. Wenn du mehrere
+   Absätze willst, mach pro Absatz ein eigenes `<p>…</p>`, z. B.:
+
+   ```html
+   <p>Vielen Dank für deine Bestellung bei Stowe Studio! 🎒</p>
+   <p>Wir freuen uns riesig, dass du mit dabei bist. Deine Bestellung wird jetzt für
+   dich vorbereitet und von unserem Produktionspartner verschickt. Die Lieferzeit
+   beträgt 10–14 Werktage — sobald dein Paket unterwegs ist, bekommst du von uns eine
+   E-Mail mit der Sendungsnummer.</p>
+   <p>Gute Reise wünscht dir das Team von Stowe Studio ✈️</p>
+   ```
+
+7. **Wichtig:** Alles **darunter** (die Tabelle mit Artikeln, Preisen, Adresse) **nicht
+   anfassen** – die ist gesetzlich Pflicht.
+8. Oben rechts **„Vorschau"** klicken und schauen, ob es gut aussieht. Dann
+   **„Speichern"**.
+9. Zum Testen oben (im Drei-Punkte-Menü **„⋯"** bzw. als Button) **„Testbenachrichtigung
+   senden"** wählen – Shopify schickt dir die Mail an dein Gmail. Prüfen. Fertig.
+
+> **Wenn du die Begrüßungszeile im Code nicht findest:** Markiere im Code-Feld alles
+> (Cmd+A), kopiere es (Cmd+C) und **füge es hier in den Chat ein** – dann sage ich dir
+> die **genaue Zeile**, die du ändern musst. So kann nichts kaputtgehen.
 
 ---
 
 ## ✅ Mail 2 — Bewertungsbitte (zeitversetzt, nur mit Einwilligung)
 
-Diese Mail ist Werbung. Sie darf **nur** an Kunden gehen, die beim Kauf aktiv
-zugestimmt haben. Deshalb zwei Schritte: **erst** die Einwilligung einsammeln,
-**dann** die Mail zeitversetzt senden.
+Diese Mail ist rechtlich Werbung. Sie darf **nur** an Kunden gehen, die beim Kauf
+zugestimmt haben. Darum zwei Schritte: **erst** Einwilligung einsammeln (A), **dann**
+die Mail zeitversetzt senden (B).
 
-### Schritt A — Einwilligung im Checkout einholen
+### Schritt A — Einwilligungs-Häkchen im Checkout aktivieren
 
-**Text für die Checkbox:**
+1. **Einstellungen** → im linken Menü **„Checkout"**.
+2. Runterscrollen zum Abschnitt **„Marketing-Optionen"** (bzw. „Marketing" /
+   „E-Mail-Marketing"). Dort gibt es die Option, beim Bezahlen ein
+   **E-Mail-Marketing-Häkchen** anzuzeigen.
+3. Diese Anzeige **einschalten** (z. B. „Beim Checkout eine Anmeldeoption anzeigen").
+4. **Ganz wichtig für Deutschland:** Bei **„Vorauswahl"** / „vorausgewählt" die
+   Länder so einstellen, dass das Häkchen **NICHT vorausgewählt** ist (kein Häkchen
+   als Standard). Seit März 2025 kann Shopify das je Land vorauswählen – für
+   **Deutschland muss es leer** sein, der Kunde muss selbst anklicken.
+5. **Speichern.**
+
+> **Ehrliche Einordnung (wichtig):** Shopify beschriftet dieses Häkchen standardmäßig
+> allgemein mit „E-Mail mit Neuigkeiten und Angeboten" – den genauen Text auf
+> „…Bewertungsanfrage…" umzuformulieren geht im normalen Shopify **nicht frei**
+> (dafür bräuchte man Shopify Plus oder eine Zusatz-App). Für den Start ist das
+> allgemeine Marketing-Häkchen **ausreichend**: Wer zustimmt, darf Werbung/Reviews
+> per Mail bekommen. Nur Kunden **mit** Häkchen bekommen später Mail 2.
+
+### Schritt B — Die Bewertungsmail mit Shopify Flow zeitversetzt senden
+
+Dafür brauchst du zwei kostenlose Apps: **Shopify Flow** (Automatisierung) und
+**Shopify Email** (verschickt die Mail an Kunden). Beide sind gratis.
+
+**B1 – Apps installieren**
+
+1. Oben in der Shopify-Suche „**Shopify Flow**" eingeben → App öffnen → **installieren**.
+2. Ebenso „**Shopify Email**" suchen → **installieren** (falls noch nicht vorhanden).
+
+**B2 – Workflow bauen**
+
+1. Links im Menü **„Apps"** → **„Flow"** öffnen → **„Workflow erstellen"**.
+2. **Auslöser wählen** (Trigger): auf **„Auslöser hinzufügen"** klicken und
+   **„Order created"** / **„Bestellung erstellt"** auswählen.
+3. **Warten einbauen:** auf das **„+"** unter dem Auslöser → **„Wait"** / **„Warten"**
+   wählen → **21 Tage** eintragen.
+   - Grund: Bei 10–14 Werktagen Lieferzeit soll die Mail erst kommen, wenn die Ware
+     wirklich da ist. Frühestens 18, besser **21 Tage**. (Flow kann bis zu 90 Tage
+     warten – 21 ist also problemlos.)
+4. **Mail senden:** wieder **„+"** → Aktion **„Marketing-E-Mail senden"**
+   (*Send marketing email*) wählen.
+   - Diese Aktion sendet **nur an Kunden, die dem E-Mail-Marketing zugestimmt haben** –
+     genau das, was wir für § 7 UWG brauchen. (Kunden ohne Häkchen aus Schritt A
+     bekommen die Mail automatisch nicht.)
+   - Es öffnet sich ein **E-Mail-Editor** (Shopify Email). Dort **Betreff** und
+     **Text** von unten einsetzen und den Button auf **https://stowestudio.de/bewertung**
+     verlinken.
+5. Oben dem Workflow einen Namen geben (z. B. „Bewertungsbitte 21 Tage") und rechts
+   oben auf **„Aktivieren" / „Turn on"** klicken. Fertig.
+
+**Betreff:**
 
 ```
-Ja, ich möchte nach Erhalt meiner Bestellung eine E-Mail mit der Bitte um eine
-Produktbewertung erhalten. (Abmeldung jederzeit möglich.)
+Wie gefällt dir dein Stowe Studio Produkt?
 ```
-
-**Was du genau tun musst:**
-
-1. Shopify Admin → **Einstellungen** → **Checkout**.
-2. Runterscrollen zum Bereich **„Marketing-Zustimmung"** / **„Einwilligungen"**
-   (je nach Shopify-Version: „E-Mail-Marketing" beim Checkout).
-3. Die Option aktivieren, dass beim Checkout eine **Zustimmungs-Checkbox** angezeigt wird.
-4. Falls du den Text anpassen kannst, den Text von oben einsetzen.
-5. **Ganz wichtig:** Die Checkbox darf **NICHT vorausgewählt** sein (kein Häkchen als
-   Standard). Der Kunde muss selbst anklicken.
-6. **Speichern.**
-
-> Nur Kunden mit gesetztem Häkchen dürfen Mail 2 bekommen. Alle anderen nicht.
-
-### Schritt B — Die Bewertungsmail zeitversetzt senden (Shopify Flow)
 
 **Text der Mail:**
 
 ```
-Betreff: Wie gefällt dir dein Stowe Studio Produkt?
-
-Hallo [Vorname],
+Hallo,
 
 dein Paket sollte inzwischen bei dir angekommen sein — wir hoffen, es gefällt dir und
 leistet dir auf deiner nächsten Reise gute Dienste.
@@ -93,35 +171,18 @@ Vielen Dank und gute Reise! Dein Team von Stowe Studio ✈️
 
 —
 Du erhältst diese E-Mail, weil du beim Kauf einer Bewertungsanfrage zugestimmt hast.
-Wenn du keine solchen E-Mails mehr erhalten möchtest, antworte einfach mit „Abmelden".
+Wenn du keine solchen E-Mails mehr erhalten möchtest, klicke unten auf „Abmelden".
 ```
 
-> **„[Vorname]"** ist ein Platzhalter. In Shopify Flow fügst du dafür die Variable
-> des Kunden-Vornamens ein (in Flow heißt sie meist `{{ order.customer.firstName }}`
-> oder du wählst sie über den Variablen-Einfüger aus). Wenn das zu fummelig ist,
-> schreib einfach neutral **„Hallo,"** ohne Namen – das ist völlig okay.
+> **Zum Vornamen:** Ich habe oben bewusst neutral **„Hallo,"** geschrieben, weil das
+> immer funktioniert. Wenn du persönlich „Hallo Max," möchtest, nutze im
+> Shopify-Email-Editor den Einfüge-Button für den **Vornamen** des Kunden (im Editor
+> unter „Personalisieren"/„Variable einfügen"). Wenn dir das zu fummelig ist, lass
+> einfach „Hallo," stehen – das ist völlig in Ordnung.
 
-**Was du genau tun musst:**
-
-1. Im Shopify Admin die App **„Shopify Flow"** installieren (kostenlos, im Shopify App
-   Store). Alternativ geht es auch mit **Shopify Email** + einer Automation.
-2. In Flow einen neuen **Workflow** erstellen.
-3. **Auslöser (Trigger):** „Order created" (Bestellung erstellt).
-4. **Verzögerung (Delay) einbauen:** **21 Tage** warten.
-   - Grund: Bei 10–14 Werktagen Lieferzeit soll die Mail erst rausgehen, wenn die Ware
-     wirklich da ist. **Frühestens 18 Tage, besser 21.** Nie früher – sonst fragst du
-     nach einer Bewertung für ein noch nicht angekommenes Produkt.
-5. **Bedingung (Condition):** Nur weitermachen, wenn die **Marketing-/Bewertungs-
-   Einwilligung aus Schritt A gesetzt** ist (Kunde hat dem E-Mail-Empfang zugestimmt).
-   - In Flow z. B. die Bedingung auf „customer email marketing consent = subscribed"
-     bzw. das entsprechende Einwilligungsfeld setzen.
-6. **Aktion (Action):** „Send email" – Betreff und Text von oben einsetzen, den Button/
-   Link auf **https://stowestudio.de/bewertung** zeigen lassen.
-7. Workflow **aktivieren** (einschalten).
-
-> **Abmeldungen ernst nehmen:** Der Abmelde-Hinweis am Ende der Mail ist Pflicht. Wenn
-> jemand mit „Abmelden" antwortet, musst du ihn tatsächlich aus künftigen Bewertungs-
-> mails herausnehmen.
+> **Abmelden:** Shopify-Marketing-Mails haben unten automatisch einen
+> **Abmelde-Link** – der erfüllt die Pflicht. Wer sich abmeldet, wird von Shopify
+> automatisch aus künftigen Marketing-Mails herausgenommen. Du musst nichts von Hand tun.
 
 ---
 
@@ -130,21 +191,21 @@ Wenn du keine solchen E-Mails mehr erhalten möchtest, antworte einfach mit „A
 Jetzt noch nichts zu tun – nur zur Vormerkung:
 
 1. **Echtheit kennzeichnen (§ 5b Abs. 3 UWG).** Sobald du mit Bewertungen/Sternen
-   wirbst, musst du offenlegen, ob und wie du prüfst, dass sie von echten Käufern
-   stammen. Ein Satz wie „Alle Bewertungen stammen von Kunden, die das Produkt bei
-   uns gekauft haben" reicht – aber nur, wenn er stimmt.
-2. **Nicht filtern.** Du darfst nicht nur gute Bewertungen zeigen und schlechte
-   verschwinden lassen. Entweder alle oder nach einem neutralen, offengelegten
-   Kriterium. Selektives Anzeigen ist abmahnbar.
+   wirbst, offenlegen, ob/wie du prüfst, dass sie von echten Käufern stammen. Ein
+   Satz wie „Alle Bewertungen stammen von Kunden, die das Produkt bei uns gekauft
+   haben" reicht – aber nur, wenn er stimmt.
+2. **Nicht filtern.** Nicht nur gute Bewertungen zeigen und schlechte verschwinden
+   lassen. Entweder alle oder nach einem neutralen, offengelegten Kriterium.
 
 ---
 
 ## ☑️ Deine Kurz-Checkliste
 
-- [ ] **Mail 1:** Bestellbestätigung um den Dankestext ergänzt + Testmail geprüft
-- [ ] **Schritt A:** Einwilligungs-Checkbox im Checkout aktiviert (nicht vorausgewählt)
-- [ ] **Schritt B:** Shopify Flow angelegt: Trigger „Bestellung" → 21 Tage warten →
-      Bedingung „Einwilligung gesetzt" → Bewertungsmail senden → aktiviert
-- [ ] Bewertungsmail-Link zeigt auf https://stowestudio.de/bewertung
-- [ ] (Optional) Einmal selbst testen: Bestellung mit Häkchen → nach der Wartezeit
-      prüfen, ob die Bewertungsmail kommt
+- [ ] **Schritt 0:** Absender-E-Mail (stowestudioofficial@gmail.com) bestätigt
+- [ ] **Mail 1:** Begrüßungstext in der Bestellbestätigung ersetzt + Testmail geprüft
+- [ ] **Schritt A:** Marketing-Häkchen im Checkout aktiviert und **nicht** vorausgewählt
+- [ ] **Schritt B:** Shopify Flow + Shopify Email installiert
+- [ ] **Schritt B:** Workflow „Bestellung erstellt → 21 Tage warten → Marketing-E-Mail
+      senden" gebaut, Betreff/Text eingesetzt, Button auf stowestudio.de/bewertung,
+      Workflow **aktiviert**
+- [ ] (Optional) Selbst testen: Bestellung mit Häkchen → nach der Wartezeit prüfen
