@@ -94,8 +94,9 @@
 /* Sanftes Scrollen, wenn man auf einen Anker-Link klickt */
 html {
   scroll-behavior: smooth;
-  /* Abstand nach oben, damit der sticky Header nicht den Titel verdeckt */
-  scroll-padding-top: 90px;
+  /* Abstand nach oben, damit Banner (40px) + sticky Header (72px) den Titel
+     bei Anker-Sprüngen nicht verdecken */
+  scroll-padding-top: 120px;
   /* WICHTIG (Handy/iOS): verhindert, dass Safari die Schrift bei manchen
      Text-Blöcken automatisch vergrößert -> dadurch wirken Texte sonst
      "unterschiedlich groß". So bleibt überall die vorgesehene Größe. */
@@ -270,8 +271,14 @@ h1, h2, h3, h4 {
      Das helle Ende ist ein mittleres Grau, damit die weiße Schrift
      überall gut lesbar bleibt. */
   background: linear-gradient(90deg, #1a1a1c 0%, #45484d 55%, #8b8f95 100%);
-  position: relative;
-  z-index: 90;                      /* unter dem Header, über dem Inhalt */
+  /* Der Banner klebt beim Scrollen ganz oben und bleibt immer sichtbar.
+     Feste Höhe (40px), damit der Header sauber direkt darunter andocken kann. */
+  position: sticky;
+  top: 0;
+  z-index: 110;                     /* über dem Header, damit er oben bleibt */
+  height: 40px;
+  display: flex;
+  align-items: center;
 }
 /* Die laufende Spur (zwei identische Gruppen für die nahtlose Schleife) */
 .ticker__track {
@@ -293,7 +300,7 @@ h1, h2, h3, h4 {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
-  padding: 11px 0;
+  padding: 0;                       /* Höhe kommt jetzt vom .ticker (40px) */
   /* Leichter Schatten, damit der weiße Text auch über dem hellen
      Verlaufsende gut lesbar bleibt */
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
@@ -322,8 +329,8 @@ h1, h2, h3, h4 {
 /* ---------- 1. HEADER ---------- */
 .header {
   position: sticky;   /* Bleibt beim Scrollen oben kleben */
-  top: 0;
-  z-index: 100;       /* Liegt über anderen Inhalten */
+  top: 40px;          /* Direkt unter dem Banner (Banner ist 40px hoch) */
+  z-index: 100;       /* Liegt über anderen Inhalten, aber unter dem Banner */
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);   /* Leichter Milchglas-Effekt (futuristisch) */
   border-bottom: 1px solid var(--color-line);

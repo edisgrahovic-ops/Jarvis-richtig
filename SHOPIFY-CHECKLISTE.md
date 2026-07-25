@@ -52,7 +52,7 @@ erzwingen – es sind Einstellungen in deinem Shopify-Konto.
 ## E-Mails & Benachrichtigungen
 
 - [ ] Bestellbestätigung, Versandbestätigung, Stornomail auf Deutsch geprüft.
-- [ ] Absenderadresse (hallo@stowestudio.de) verifiziert.
+- [ ] Absenderadresse (stowestudioofficial@gmail.com) verifiziert.
 - [ ] Sendungsverfolgung: Tracking-Nummer wird an Kunden versendet.
 
 ## Domain & Technik
