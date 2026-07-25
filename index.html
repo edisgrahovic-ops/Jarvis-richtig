@@ -48,6 +48,22 @@
     object-src 'none';
   ">
 
+  <!-- Kanonische Adresse: sagt Google, welche URL die "echte" ist -->
+  <link rel="canonical" href="https://stowestudio.de/">
+
+  <!-- Open Graph: schöne Vorschau beim Teilen (WhatsApp, Facebook, ...) -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Stowe Studio">
+  <meta property="og:title" content="Stowe Studio – Reisen ohne Gepäckgebühren">
+  <meta property="og:description" content="Clevere Reisekleidung mit integriertem Stauraum. Spare teure Gepäckgebühren – trage deine Kleidung einfach am Körper.">
+  <meta property="og:url" content="https://stowestudio.de/">
+  <meta property="og:image" content="https://stowestudio.de/images/hero.jpg">
+  <meta property="og:locale" content="de_DE">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Stowe Studio – Reisen ohne Gepäckgebühren">
+  <meta name="twitter:description" content="Clevere Reisekleidung mit integriertem Stauraum. Spare teure Gepäckgebühren.">
+  <meta name="twitter:image" content="https://stowestudio.de/images/hero.jpg">
+
   <!-- Favicon (kleines Icon im Browser-Tab) + Symbol beim Speichern auf dem Homescreen -->
   <link rel="icon" type="image/png" href="images/icon.png">
   <link rel="apple-touch-icon" href="images/icon.png">
@@ -61,6 +77,72 @@
   <!-- Schrift "Inter" wird lokal geladen (siehe @font-face in css/style.css).
        Kein Google-Fonts-Link mehr = DSGVO-konform, keine IP-Weitergabe an Google. -->
   <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!--
+    Strukturierte Daten (JSON-LD) für Google.
+    Beschreibt Firma und Produkte maschinenlesbar -> bessere Darstellung
+    in der Google-Suche. WICHTIG: Hier stehen nur BESTÄTIGTE Angaben,
+    keine erfundenen Bewertungen (aggregateRating) oder Rezensionen.
+  -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://stowestudio.de/#organization",
+        "name": "Stowe Studio",
+        "url": "https://stowestudio.de/",
+        "logo": "https://stowestudio.de/images/logo-web.png",
+        "email": "hallo@stowestudio.de",
+        "telephone": "+49 15678 739723"
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://stowestudio.de/#website",
+        "url": "https://stowestudio.de/",
+        "name": "Stowe Studio",
+        "inLanguage": "de-DE",
+        "publisher": { "@id": "https://stowestudio.de/#organization" }
+      },
+      {
+        "@type": "Product",
+        "name": "Zip-Pullover mit integriertem Stauraum",
+        "image": [
+          "https://stowestudio.de/images/pullover-grau-1.jpg",
+          "https://stowestudio.de/images/pullover-schwarz-1.jpg"
+        ],
+        "description": "Reise-Pullover mit integriertem Stauraum – trage Kleidung am Körper und spare Gepäckgebühren. Farben: Grau und Schwarz. Größen: S, M, L, XL.",
+        "brand": { "@type": "Brand", "name": "Stowe Studio" },
+        "url": "https://stowestudio.de/#produkte",
+        "offers": {
+          "@type": "Offer",
+          "priceCurrency": "EUR",
+          "price": "49.90",
+          "availability": "https://schema.org/InStock",
+          "url": "https://stowestudio.de/#produkte",
+          "seller": { "@id": "https://stowestudio.de/#organization" }
+        }
+      },
+      {
+        "@type": "Product",
+        "name": "Reise-Nackenkissen",
+        "image": [ "https://stowestudio.de/images/nackenkissen-1.jpg" ],
+        "description": "Reise-Nackenkissen von Stowe Studio. Farben: Grau und Schwarz.",
+        "brand": { "@type": "Brand", "name": "Stowe Studio" },
+        "url": "https://stowestudio.de/#produkte",
+        "offers": {
+          "@type": "Offer",
+          "priceCurrency": "EUR",
+          "price": "19.90",
+          "availability": "https://schema.org/InStock",
+          "url": "https://stowestudio.de/#produkte",
+          "seller": { "@id": "https://stowestudio.de/#organization" }
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 
 <body>
