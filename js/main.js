@@ -761,7 +761,9 @@ function baueGalerie(galerieEl, bilder) {
     var t = document.createElement("img");
     t.className = "gallery__thumb" + (index === 0 ? " is-active" : "");
     t.src = src;
-    t.alt = "Ansicht " + (index + 1);
+    // Aussagekräftiger Alt-Text: Produktname vom Hauptbild + Ansichtsnummer
+    var basis = (haupt.alt || "Produktansicht").replace(/\s*[–-]\s*Ansicht.*$/, "");
+    t.alt = basis + " – Ansicht " + (index + 1);
     t.addEventListener("click", function () {
       haupt.src = src;   // Hauptbild wechseln
       thumbs.querySelectorAll(".gallery__thumb").forEach(function (x) {
