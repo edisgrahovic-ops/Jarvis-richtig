@@ -9,8 +9,8 @@ und Geld einnimmst. Sie ist in drei Stufen sortiert:
 
 > **Praktischer Tipp:** Führe vor dem Livegang das Prüfskript aus:
 > `npm run check-todos`
-> Es zeigt alle noch offenen `[[ AUSFÜLLEN … ]]`-Stellen im Code. Solange dort
-> etwas rot markiert ist, fehlen dir Pflichtangaben.
+> Es zeigt alle noch offenen Ausfüll-Stellen (rote `todo-marker`) im Code.
+> Solange dort etwas rot markiert ist, fehlen dir Pflichtangaben.
 
 ---
 
