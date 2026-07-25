@@ -838,6 +838,36 @@ h1, h2, h3, h4 {
 }
 .size-fit strong { color: var(--color-text); }
 
+/* ---------- RECHTSSEITEN (.legal-content) ---------- */
+.legal { padding: 56px 0 80px; }
+.legal-content { max-width: 760px; margin: 0 auto; }
+.legal-content h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin-bottom: 24px; }
+.legal-content h2 { font-size: 1.3rem; margin: 32px 0 12px; }
+.legal-content h3 { font-size: 1.05rem; margin: 24px 0 8px; }
+.legal-content p,
+.legal-content li { color: var(--color-text-soft); line-height: 1.7; margin-bottom: 12px; }
+.legal-content ul,
+.legal-content ol { padding-left: 22px; margin-bottom: 12px; }
+.legal-content strong { color: var(--color-text); }
+.legal-content a { text-decoration: underline; }
+.legal-content address { font-style: normal; color: var(--color-text); line-height: 1.7; }
+.legal-content table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.95rem; }
+.legal-content th,
+.legal-content td { border: 1px solid var(--color-line); padding: 8px 10px; text-align: left; }
+.legal-content th { background: var(--color-bg-soft); }
+.legal-content hr { border: none; border-top: 1px solid var(--color-line); margin: 32px 0; }
+
+/* Kompakter Footer für Rechtsseiten */
+.legal-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: center;
+}
+.legal-footer__nav { display: flex; flex-wrap: wrap; gap: 18px; }
+.legal-footer__nav a { font-size: 0.9rem; }
+
 
 /* ---------- 5. BUNDLE-HIGHLIGHT ---------- */
 .bundle__box {
