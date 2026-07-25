@@ -892,6 +892,112 @@ h1, h2, h3, h4 {
 .legal-footer__nav a { font-size: 0.9rem; }
 
 
+/* ---------- BEWERTUNGSFORMULAR ---------- */
+#review-form { margin-top: 28px; }
+.form-field { margin-bottom: 22px; }
+.form-label {
+  display: block;
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+.form-req { color: var(--color-bad); }
+.form-optional { color: var(--color-text-soft); font-weight: 400; font-size: 0.9rem; }
+
+/* Eingabefelder – gleiche Rundung/Linien wie der Rest der Seite */
+.form-input {
+  width: 100%;
+  padding: 13px 15px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.98rem;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-text);
+  box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.06);
+}
+textarea.form-input { resize: vertical; min-height: 120px; line-height: 1.6; }
+select.form-input { appearance: none; cursor: pointer; }
+
+.form-hint {
+  font-size: 0.85rem;
+  color: var(--color-text-soft);
+  margin: 6px 0 0;
+  line-height: 1.5;
+}
+.form-error {
+  font-size: 0.85rem;
+  color: var(--color-bad);
+  margin: 6px 0 0;
+  min-height: 0;
+  display: none;
+}
+.form-error.is-visible { display: block; }
+.form-error--global {
+  display: none;
+  background: #fdecea;
+  border: 1px solid var(--color-bad);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin: 0 0 18px;
+  min-height: 0;
+}
+.form-error--global:not([hidden]) { display: block; }
+
+/* Sterne-Bewertung */
+/* Ohne JavaScript: interaktive Sterne ausblenden, einfache Liste zeigen.
+   Mit JavaScript (html.js): Sterne zeigen, Liste ausblenden. */
+.no-js .star-rating { display: none; }
+.js .nojs-rating { display: none; }
+.nojs-rating { max-width: 220px; }
+.star-rating { display: inline-flex; gap: 4px; }
+.star {
+  background: none;
+  border: none;
+  padding: 2px 4px;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-line);
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+.star:hover { transform: scale(1.1); }
+.star.is-filled { color: #f5b301; }
+.star:focus-visible { outline: 2px solid var(--color-text); outline-offset: 2px; border-radius: 4px; }
+
+/* Einwilligungs-Checkbox */
+.form-consent {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--color-text-soft);
+  line-height: 1.6;
+}
+.form-consent input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  margin-top: 2px;
+  cursor: pointer;
+}
+.form-consent a { text-decoration: underline; color: var(--color-text); }
+
+/* Dankes-Zustand nach dem Absenden */
+.review-thanks {
+  text-align: center;
+  padding: 40px 20px;
+}
+.review-thanks h2 { font-size: 1.5rem; margin-bottom: 12px; color: var(--color-text); }
+.review-thanks p { color: var(--color-text-soft); line-height: 1.7; }
+
+
 /* ---------- 5. BUNDLE-HIGHLIGHT ---------- */
 .bundle__box {
   background: var(--color-accent);
