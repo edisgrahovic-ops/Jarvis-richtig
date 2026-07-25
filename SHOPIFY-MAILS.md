@@ -1,8 +1,13 @@
 # 📧 Shopify-Mails einrichten – Stowe Studio (klickgenaue Anleitung)
 
 Diese Anleitung ist für die **Web-Version von Shopify** am **MacBook** (Browser:
-Safari oder Chrome) und für das **aktuelle Shopify-Design (2026)**. Es ist kein
+Safari oder Chrome) und für das **aktuelle Shopify-Design (Stand 2026)**. Es ist kein
 Code – du kopierst nur fertige Texte an die richtige Stelle.
+
+> **Hinweis:** Shopify ändert seine Oberfläche häufig. Diese Anleitung bezieht sich
+> immer auf die **neueste** Shopify-Version. Wichtige Umbenennung 2026:
+> „Shopify Email" heißt jetzt **Shopify Messaging**. Falls ein Menüpunkt bei dir
+> anders heißt, mach einen Screenshot / kopier den Text – wir gleichen es ab.
 
 Wir richten zwei Mails ein:
 
@@ -131,34 +136,45 @@ die Mail zeitversetzt senden (B).
 
 ### Schritt B — Die Bewertungsmail mit Shopify Flow zeitversetzt senden
 
-Dafür brauchst du zwei kostenlose Apps: **Shopify Flow** (Automatisierung) und
-**Shopify Email** (verschickt die Mail an Kunden). Beide sind gratis.
+> **Stand Shopify 2026:** „Shopify Email" heißt jetzt **Shopify Messaging** – das ist
+> der E-Mail-Baustein. **Gesteuert** wird alles aus **Shopify Flow**. Beide Apps sind
+> gratis und müssen installiert sein.
 
-**B1 – Apps installieren**
+**B1 – Workflow starten**
 
-1. Oben in der Shopify-Suche „**Shopify Flow**" eingeben → App öffnen → **installieren**.
-2. Ebenso „**Shopify Email**" suchen → **installieren** (falls noch nicht vorhanden).
+1. Links **„Apps" → „Flow"** öffnen → oben rechts **„Workflow erstellen"** (Create workflow).
 
-**B2 – Workflow bauen**
+**B2 – Auslöser**
 
-1. Links im Menü **„Apps"** → **„Flow"** öffnen → **„Workflow erstellen"**.
-2. **Auslöser wählen** (Trigger): auf **„Auslöser hinzufügen"** klicken und
-   **„Order created"** / **„Bestellung erstellt"** auswählen.
-3. **Warten einbauen:** auf das **„+"** unter dem Auslöser → **„Wait"** / **„Warten"**
-   wählen → **21 Tage** eintragen.
+2. Auf die Kachel **„Auslöser auswählen"** klicken → suchen: **„Order created"**
+   („Bestellung erstellt") → auswählen.
+
+**B3 – 21 Tage warten**
+
+3. Unter dem Auslöser **„+"** → **„Aktion"** → suchen: **„Wait"** / **„Warten"** →
+   **21** eintragen, Einheit **„Tage/Days"**.
    - Grund: Bei 10–14 Werktagen Lieferzeit soll die Mail erst kommen, wenn die Ware
-     wirklich da ist. Frühestens 18, besser **21 Tage**. (Flow kann bis zu 90 Tage
-     warten – 21 ist also problemlos.)
-4. **Mail senden:** wieder **„+"** → Aktion **„Marketing-E-Mail senden"**
-   (*Send marketing email*) wählen.
-   - Diese Aktion sendet **nur an Kunden, die dem E-Mail-Marketing zugestimmt haben** –
-     genau das, was wir für § 7 UWG brauchen. (Kunden ohne Häkchen aus Schritt A
-     bekommen die Mail automatisch nicht.)
-   - Es öffnet sich ein **E-Mail-Editor** (Shopify Email). Dort **Betreff** und
-     **Text** von unten einsetzen und den Button auf **https://stowestudio.de/bewertung**
-     verlinken.
-5. Oben dem Workflow einen Namen geben (z. B. „Bewertungsbitte 21 Tage") und rechts
-   oben auf **„Aktivieren" / „Turn on"** klicken. Fertig.
+     wirklich da ist. Frühestens 18, besser **21 Tage**. (Flow kann bis 90 Tage.)
+
+**B4 – Sicherheitsbedingung (Einwilligung)** *(empfohlen)*
+
+4. **„+"** → **„Bedingung"** → prüfen auf **Customer → Email marketing consent →
+   „subscribed"**. Nur der **„Ja"-Zweig** führt weiter zur Mail.
+
+**B5 – Mail senden**
+
+5. Am „Ja"-Zweig **„+"** → **„Aktion"** → suchen: **„Send marketing email"**
+   (**„Marketing-E-Mail senden"**).
+   - Diese Aktion sendet ohnehin **nur an Kunden mit E-Mail-Marketing-Einwilligung** –
+     genau das, was wir für § 7 UWG brauchen.
+6. Bei **„Marketing-E-Mail"** auf **„Erstellen"** → der **Messaging-Editor** öffnet
+   sich. **Betreff** und **Text** (unten) eintragen, einen **Button** „Jetzt bewerten"
+   mit Link **https://stowestudio.de/bewertung** einfügen → speichern → zurück in Flow.
+
+**B6 – Aktivieren**
+
+7. Workflow benennen (z. B. „Bewertungsbitte 21 Tage") → oben rechts
+   **„Turn on / Aktivieren"**. Fertig.
 
 **Betreff:**
 
