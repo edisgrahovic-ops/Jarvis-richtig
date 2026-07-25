@@ -60,34 +60,46 @@ Gute Reise wünscht dir das Team von Stowe Studio ✈️
    **„E-Mail-Text (HTML)"** mit vielen Zeilen Code. **Keine Angst** – wir ändern nur
    eine Stelle, und es gibt unten den Knopf **„Auf Standard zurücksetzen"** als
    Sicherheitsnetz (macht alles rückgängig).
-5. In diesem Code steht schon ein **Begrüßungssatz**, den der Kunde zuerst liest –
-   ungefähr so:
-   `Hallo {{ customer.first_name }}, wir bereiten deine Bestellung gerade vor …`
-   Diesen Satz suchen. Er steht meist recht weit oben zwischen zwei `<p>…</p>`-
-   Zeichen.
-6. **Nur den Text zwischen den `<p>` und `</p>` austauschen** gegen unseren Text von
-   oben. Die spitzen Klammern `<p>` … `</p>` **stehen lassen**. Wenn du mehrere
-   Absätze willst, mach pro Absatz ein eigenes `<p>…</p>`, z. B.:
+5. Such im Code diese **zwei Zeilen** (sie stehen ziemlich weit oben im Inhaltsbereich):
+
+   ```
+   <h2>{{ email_title }}</h2>
+   <p>{{ email_body }}</p>
+   ```
+
+6. **Direkt UNTER die Zeile `<p>{{ email_body }}</p>`** diese zwei Zeilen einfügen:
 
    ```html
-   <p>Vielen Dank für deine Bestellung bei Stowe Studio! 🎒</p>
-   <p>Wir freuen uns riesig, dass du mit dabei bist. Deine Bestellung wird jetzt für
-   dich vorbereitet und von unserem Produktionspartner verschickt. Die Lieferzeit
-   beträgt 10–14 Werktage — sobald dein Paket unterwegs ist, bekommst du von uns eine
-   E-Mail mit der Sendungsnummer.</p>
+   <p>Wir freuen uns riesig, dass du mit dabei bist! 🎒 Deine Bestellung wird jetzt von unserem Produktionspartner vorbereitet – die Lieferzeit beträgt 10–14 Werktage. Sobald dein Paket unterwegs ist, bekommst du von uns eine E-Mail mit der Sendungsnummer.</p>
    <p>Gute Reise wünscht dir das Team von Stowe Studio ✈️</p>
    ```
 
-7. **Wichtig:** Alles **darunter** (die Tabelle mit Artikeln, Preisen, Adresse) **nicht
-   anfassen** – die ist gesetzlich Pflicht.
+   Danach sieht es so aus:
+
+   ```html
+   <h2>{{ email_title }}</h2>
+   <p>{{ email_body }}</p>
+   <p>Wir freuen uns riesig, dass du mit dabei bist! 🎒 Deine Bestellung wird jetzt von unserem Produktionspartner vorbereitet – die Lieferzeit beträgt 10–14 Werktage. Sobald dein Paket unterwegs ist, bekommst du von uns eine E-Mail mit der Sendungsnummer.</p>
+   <p>Gute Reise wünscht dir das Team von Stowe Studio ✈️</p>
+   ```
+
+   > Die Überschrift **„Vielen Dank für deine Bestellung!"** kommt schon automatisch
+   > aus `{{ email_title }}` (steht oben im Code bei `{% capture email_title %}`) – da
+   > musst du nichts tun.
+
+7. **NICHT anfassen:**
+   - den großen Block `{% capture email_body %} … {% endcapture %}` ganz oben
+     (regelt Sonderfälle automatisch),
+   - alles ab `{% assign transaction_count … %}` und darunter (Artikel, Preise,
+     Adresse) – das ist gesetzlich Pflicht.
 8. Oben rechts **„Vorschau"** klicken und schauen, ob es gut aussieht. Dann
    **„Speichern"**.
 9. Zum Testen oben (im Drei-Punkte-Menü **„⋯"** bzw. als Button) **„Testbenachrichtigung
    senden"** wählen – Shopify schickt dir die Mail an dein Gmail. Prüfen. Fertig.
 
-> **Wenn du die Begrüßungszeile im Code nicht findest:** Markiere im Code-Feld alles
-> (Cmd+A), kopiere es (Cmd+C) und **füge es hier in den Chat ein** – dann sage ich dir
-> die **genaue Zeile**, die du ändern musst. So kann nichts kaputtgehen.
+> **Wenn du unsicher bist:** Markiere im Code-Feld alles (Cmd+A), kopiere es (Cmd+C)
+> und **füge es hier in den Chat ein** – dann sage ich dir die **genaue Zeile**. Über
+> den Knopf **„Auf Standard zurücksetzen"** kann nichts dauerhaft kaputtgehen.
 
 ---
 
