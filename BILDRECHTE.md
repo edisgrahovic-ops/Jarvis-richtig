@@ -18,8 +18,8 @@ Diese Datei ist eine interne Dokumentation (kein Bestandteil der Webseite).
 | images/pullover-ausruestung.jpg | Pullover gefüllt mit Ausrüstung | Lieferant | Lieferant | ⚠️ Nutzungsrecht schriftlich bestätigen |
 | images/nackenkissen-1.jpg | Produktbild Nackenkissen | Lieferant | Lieferant | ⚠️ Nutzungsrecht schriftlich bestätigen |
 | images/nackenkissen-2.jpg | Produktbild Nackenkissen | Lieferant | Lieferant | ⚠️ Nutzungsrecht schriftlich bestätigen |
-| images/logo.png / logo.svg / logo-web.png / logo-web-white.png | Marken-Logo | eigen | Stowe Studio (Edis Grahovic) | ✅ eigenes Werk |
-| images/icon.png | Favicon | eigen | Stowe Studio (Edis Grahovic) | ✅ eigenes Werk |
+| images/logo.png / logo.svg / logo-web.png / logo-web-white.png | Marken-Logo | eigen | Stowe Studio | ✅ eigenes Werk |
+| images/icon.png | Favicon | eigen | Stowe Studio | ✅ eigenes Werk |
 | images/ueber-uns.jpg | „Über uns"-Bereich | **[[ AUSFÜLLEN: Bild existiert noch nicht – Quelle & Rechteinhaber eintragen, kein erfundenes Team-Foto ]]** | — | ❌ offen |
 
 ## Offene Punkte

@@ -17,7 +17,7 @@ und Geld einnimmst. Sie ist in drei Stufen sortiert:
 ## 🔴 Blocker (zwingend vor dem ersten Verkauf)
 
 - [ ] **Gewerbe anmelden.** Ein Online-Shop mit Gewinnabsicht ist ein Gewerbe.
-      Anmeldung beim Gewerbeamt deiner Stadt (Aachen). Kosten meist 20–60 €.
+      Anmeldung beim Gewerbeamt deiner Stadt. Kosten meist 20–60 €.
 - [ ] **Steuerliche Erfassung beim Finanzamt.** Nach der Gewerbeanmeldung bekommst
       du den Fragebogen zur steuerlichen Erfassung (über ELSTER). Danach erhältst
       du deine **Steuernummer**.
