@@ -37,6 +37,20 @@ Could you please answer the following questions?
 - How many days for **delivery to Germany** after shipping?
 - What is the **total delivery time** a customer should expect?
 
+**3b. Customs, import VAT & duties — VERY IMPORTANT**
+- Do you ship on a **DDP (Delivered Duty Paid)** basis, meaning all customs duties and import VAT are **prepaid** and the customer pays **nothing extra** on delivery?
+- Do you use an **IOSS number** to handle EU import VAT for orders under €150, so parcels clear customs without charging our customer?
+- Can you **confirm in writing** that our customers will **NEVER** be asked to pay additional customs duties, import VAT, or carrier handling/clearance fees on delivery?
+- Which **country do the parcels ship from** — China, or do you have an **EU / German warehouse**?
+- If you have an **EU/German warehouse**: what are the price and delivery time from there? (Faster, and no customs per order.)
+- What **customs value** will be declared on the parcel? Please declare it **correctly and legally** — we do not want under-declared or falsely marked "gift" parcels (this is illegal and risks our business).
+- What **HS / customs tariff code** do you use for these products?
+- What **customs paperwork / commercial invoice** is attached to the parcel, and does it stay **blind** (no supplier name and no wholesale price visible to the customer)?
+- Who is listed as the **importer of record**?
+- Do you offer both **standard and express** shipping? Please give **cost and delivery time for each**.
+- Is the tracking number **trackable with the German last-mile carrier** (e.g. DHL/Deutsche Post)?
+- How do you handle parcels that are **lost, stuck in customs, or heavily delayed** — refund or free reshipment?
+
 **4. Product & legal/compliance data (required by EU law)**
 - What is the exact **material composition** in %? (e.g. "100% polyester")
 - What are the exact **product dimensions and weight** for each item?
