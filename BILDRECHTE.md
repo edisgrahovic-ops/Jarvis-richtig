@@ -10,22 +10,23 @@ Diese Datei ist eine interne Dokumentation (kein Bestandteil der Webseite).
 
 | Datei | Verwendung | Quelle | Rechteinhaber | Nutzungsrecht |
 |-------|-----------|--------|---------------|---------------|
-| images/hero.jpg | Startbild (Hero) | Lieferant | Lieferant | ⚠️ Nutzungsrecht schriftlich bestätigen |
-| images/pullover-grau-1.jpg … -5.jpg | Produktgalerie Pullover Grau | Lieferant | Lieferant | ⚠️ Nutzungsrecht schriftlich bestätigen |
-| images/pullover-schwarz-1.jpg … -5.jpg | Produktgalerie Pullover Schwarz | Lieferant | Lieferant | ⚠️ Nutzungsrecht schriftlich bestätigen |
-| images/pullover-1.jpg | Produktbild Pullover | Lieferant | Lieferant | ⚠️ Nutzungsrecht schriftlich bestätigen |
-| images/pullover-back.jpg | Produktbild Pullover (Rückseite) | Lieferant | Lieferant | ⚠️ Nutzungsrecht schriftlich bestätigen |
-| images/pullover-ausruestung.jpg | Pullover gefüllt mit Ausrüstung | Lieferant | Lieferant | ⚠️ Nutzungsrecht schriftlich bestätigen |
-| images/nackenkissen-1.jpg | Produktbild Nackenkissen | Lieferant | Lieferant | ⚠️ Nutzungsrecht schriftlich bestätigen |
-| images/nackenkissen-2.jpg | Produktbild Nackenkissen | Lieferant | Lieferant | ⚠️ Nutzungsrecht schriftlich bestätigen |
+| images/hero.jpg | Startbild (Hero) | Lieferant | Lieferant | ✅ Nutzungsrecht bestätigt (Lieferant, WhatsApp 01.08.2026) |
+| images/pullover-grau-1.jpg … -5.jpg | Produktgalerie Pullover Grau | Lieferant | Lieferant | ✅ Nutzungsrecht bestätigt (Lieferant, WhatsApp 01.08.2026) |
+| images/pullover-schwarz-1.jpg … -5.jpg | Produktgalerie Pullover Schwarz | Lieferant | Lieferant | ✅ Nutzungsrecht bestätigt (Lieferant, WhatsApp 01.08.2026) |
+| images/pullover-1.jpg | Produktbild Pullover | Lieferant | Lieferant | ✅ Nutzungsrecht bestätigt (Lieferant, WhatsApp 01.08.2026) |
+| images/pullover-back.jpg | Produktbild Pullover (Rückseite) | Lieferant | Lieferant | ✅ Nutzungsrecht bestätigt (Lieferant, WhatsApp 01.08.2026) |
+| images/pullover-ausruestung.jpg | Pullover gefüllt mit Ausrüstung | Lieferant | Lieferant | ✅ Nutzungsrecht bestätigt (Lieferant, WhatsApp 01.08.2026) |
+| images/nackenkissen-1.jpg | Produktbild Nackenkissen | Lieferant | Lieferant | ✅ Nutzungsrecht bestätigt (Lieferant, WhatsApp 01.08.2026) |
+| images/nackenkissen-2.jpg | Produktbild Nackenkissen | Lieferant | Lieferant | ✅ Nutzungsrecht bestätigt (Lieferant, WhatsApp 01.08.2026) |
 | images/logo.png / logo.svg / logo-web.png / logo-web-white.png | Marken-Logo | eigen | Stowe Studio | ✅ eigenes Werk |
 | images/icon.png | Favicon | eigen | Stowe Studio | ✅ eigenes Werk |
 | images/ueber-uns.jpg | „Über uns"-Bereich | **[[ AUSFÜLLEN: Bild existiert noch nicht – Quelle & Rechteinhaber eintragen, kein erfundenes Team-Foto ]]** | — | ❌ offen |
 
 ## Offene Punkte
 
-- **Lieferantenbilder:** Von jedem Lieferanten eine schriftliche Bestätigung
-  einholen, dass die Produktbilder im eigenen Shop verwendet werden dürfen.
+- **Lieferantenbilder:** ✅ Nutzungsrecht vom Lieferanten schriftlich bestätigt
+  (WhatsApp, 01.08.2026 – Foto/Video für Website und Werbung erlaubt).
+  Chat-Nachweis als Screenshot aufbewahren.
 - **ueber-uns.jpg:** Existiert noch nicht. Erst ein echtes, rechtlich sauberes
   Bild einsetzen, dann hier dokumentieren.
 - **Nackenkissen:** Bilder müssen den Schultergurt und beide Farben zeigen
