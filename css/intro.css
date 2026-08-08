@@ -1,0 +1,287 @@
+/*
+  ============================================================
+  STOWE STUDIO – intro.css  (Eleganter Studio-Reveal)
+  ============================================================
+  Die kurze, hochwertige Eröffnungs-Animation beim Betreten der Seite:
+    1. Ruhiger, heller Studio-Hintergrund.
+    2. Dein Produkt schwebt herein und dreht sich edel von der
+       Vorderseite zur Rückseite (mit Ausrüstung).
+    3. Der Markenname "STOWE STUDIO" erscheint fein darunter.
+    4. Eine dünne Fortschrittslinie unten läuft mit.
+    5. Am Ende fährt alles wie ein Vorhang nach oben weg
+       und gibt die eigentliche Seite frei.
+
+  Dauer & Verhalten werden in js/intro.js gesteuert.
+  Möchtest du das Intro ganz entfernen? Siehe Hinweis in index.html.
+  ============================================================
+*/
+
+
+/* Solange das Intro läuft, sperren wir das Scrollen der Seite dahinter */
+body.intro-active {
+  overflow: hidden;
+}
+
+
+/* ------------------------------------------------------------
+   Die Bühne (bildschirmfüllend)
+   ------------------------------------------------------------ */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  /* Sanftes Studio-Licht: hell, edel, leicht futuristisch */
+  background: radial-gradient(130% 100% at 50% 32%, #ffffff 0%, #f3f4f6 55%, #e8eaee 100%);
+  /* Übergang beim Beenden. Verzögerung (0.4s), damit das große
+     Flugzeug erst schön losfliegt und das Intro dann "hinter sich herzieht".
+     Etwas langsamer (1.2s), damit man den Swipe nach unten gut sieht. */
+  transition: transform 1.2s cubic-bezier(0.6, 0, 0.3, 1) 0.4s;
+  will-change: transform;
+}
+
+/* Zustand am Ende: Intro wird nach UNTEN weggewischt (Webseite erscheint) */
+.intro.is-done {
+  transform: translateY(100%);
+}
+
+
+/* ------------------------------------------------------------
+   Flugzeug-Übergang: fliegt nach unten und "wischt" das Intro weg
+   ------------------------------------------------------------ */
+.intro__jet {
+  position: absolute;
+  left: 50%;
+  top: -240px;                        /* startet oberhalb des sichtbaren Bereichs */
+  width: clamp(160px, 32vw, 240px);   /* NOCH GRÖSSER, klar erkennbar */
+  color: #111;
+  opacity: 0;
+  z-index: 3;
+  pointer-events: none;
+  transform: translateX(-50%);        /* horizontal mittig (Nase zeigt via SVG nach unten) */
+}
+.intro__jet svg { width: 100%; height: auto; display: block; }
+
+/* Kondensstreifen (Schweif): dünne, nach oben verblassende Linie hinter
+   dem Flugzeug. Da das Flugzeug nach unten fliegt, liegt der Schweif oben. */
+.intro__jet::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 100%;                       /* direkt oberhalb des Flugzeugs */
+  transform: translateX(-50%);
+  width: 3px;
+  height: 80vh;                       /* langer Schweif */
+  background: linear-gradient(to top, rgba(17, 17, 17, 0.30), rgba(17, 17, 17, 0));
+  border-radius: 3px;
+}
+
+/* Das Flugzeug startet erst, wenn das Intro endet (Klasse "is-done"),
+   und fliegt ruhig nach unten aus dem Bild – der Schweif zieht mit. */
+.intro.is-done .intro__jet {
+  animation: jetDown 1.7s cubic-bezier(0.5, 0, 0.3, 1) forwards;
+}
+@keyframes jetDown {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(0)     scale(0.92); }
+  12%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-50%) translateY(135vh) scale(1); }
+}
+
+/* Inhalt (Produkt + Text) mittig gestapelt */
+.intro__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 42px;
+  padding: 0 24px;
+  /* WICHTIG: 3D-Tiefe durchreichen, damit die Produkt-Drehung
+     räumlich wirkt und die Rückseite korrekt sichtbar wird. */
+  transform-style: preserve-3d;
+}
+
+
+/* ------------------------------------------------------------
+   3D-Bühne mit dem drehenden Produkt
+   ------------------------------------------------------------ */
+.intro__stage {
+  position: relative;
+  width: clamp(190px, 38vw, 300px);
+  transform-style: preserve-3d;
+  /* Perspektive direkt hier, damit die Drehung des Produkts Tiefe hat */
+  perspective: 1400px;
+}
+
+/* Das drehbare Produkt (hat zwei Seiten) */
+.intro__product {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  transform-style: preserve-3d;
+  /* Bewegungs-Rezept "introProdukt": herein + drehen (siehe unten) */
+  animation: introProdukt 2.8s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  will-change: transform, opacity;
+}
+
+/* Eine Seite des Produkts */
+.intro__face {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  /* Sichtbarkeit steuern wir aktiv per Ein-/Ausblenden (introFront/introBack),
+     daher KEINE "Rückseiten-Ausblendung" – die wird von manchen Browsern
+     unsauber umgesetzt und würde die Rückseite verschwinden lassen. */
+  background: #f0f1f3;
+  /* Weicher, hochwertiger Schlagschatten */
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.30);
+}
+.intro__face img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*
+  Zusätzlich zur 3D-Drehung blenden wir die Seiten aktiv um – genau
+  im Moment, in dem das Produkt hochkant steht (unsichtbar dünn).
+  So sieht die Drehung auf JEDEM Gerät korrekt aus, auch wenn ein
+  Browser die "Rückseiten-Ausblendung" nicht sauber unterstützt.
+*/
+.intro__face--front {
+  animation: introFront 2.8s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+.intro__face--back {
+  transform: rotateY(180deg);
+  animation: introBack 2.8s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@keyframes introFront {
+  0%, 54%   { opacity: 1; }
+  60%, 100% { opacity: 0; }
+}
+@keyframes introBack {
+  0%, 54%   { opacity: 0; }
+  60%, 100% { opacity: 1; }
+}
+
+/*
+  Ablauf: Produkt schwebt herein (Front), hält kurz, dreht sich
+  geschmeidig zur Rückseite (Ausrüstung) und hält dort.
+*/
+@keyframes introProdukt {
+  0%   { opacity: 0; transform: translateY(26px) scale(0.9) rotateY(-14deg); }
+  16%  { opacity: 1; transform: translateY(0)    scale(1)   rotateY(0deg); }
+  42%  { opacity: 1; transform: translateY(0)    scale(1)   rotateY(0deg); }
+  70%  { opacity: 1; transform: translateY(-4px) scale(1.01) rotateY(180deg); }
+  100% { opacity: 1; transform: translateY(0)    scale(1)   rotateY(180deg); }
+}
+
+/* Weicher Bodenschatten unter dem Produkt */
+.intro__shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -32px;
+  width: 60%;
+  height: 20px;
+  transform: translateX(-50%);
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.22), transparent 72%);
+  filter: blur(3px);
+  animation: introSchatten 2.8s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+@keyframes introSchatten {
+  0%   { opacity: 0;    transform: translateX(-50%) scaleX(0.6); }
+  16%  { opacity: 0.8;  transform: translateX(-50%) scaleX(1); }
+  70%  { opacity: 0.55; transform: translateX(-50%) scaleX(0.82); }
+  100% { opacity: 0.7;  transform: translateX(-50%) scaleX(1); }
+}
+
+
+/* ------------------------------------------------------------
+   Markenname + Slogan
+   ------------------------------------------------------------ */
+.intro__text {
+  text-align: center;
+}
+.intro__brand-img {
+  display: block;
+  width: clamp(170px, 42vw, 240px);
+  height: auto;
+  margin: 0 auto;
+  opacity: 0;
+  animation: introBrandImg 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: 0.45s;
+}
+@keyframes introBrandImg {
+  0%   { opacity: 0; transform: translateY(10px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0)    scale(1); }
+}
+.intro__tag {
+  display: block;
+  margin-top: 16px;
+  font-size: clamp(0.78rem, 2vw, 0.92rem);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8a8a8a;
+  opacity: 0;
+  animation: introFade 0.9s ease forwards;
+  animation-delay: 1.0s;
+}
+@keyframes introFade {
+  to { opacity: 1; }
+}
+
+
+/* ------------------------------------------------------------
+   "Überspringen"-Button (dezent, oben rechts)
+   ------------------------------------------------------------ */
+.intro__skip {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  z-index: 2;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9a9a9a;
+  cursor: pointer;
+  padding: 8px 4px;
+  transition: color 0.3s ease;
+}
+.intro__skip:hover { color: #111; }
+.intro__skip:focus-visible { outline: 2px solid #111; outline-offset: 3px; }
+
+
+/* ------------------------------------------------------------
+   Dünne Fortschrittslinie am unteren Rand
+   ------------------------------------------------------------ */
+.intro__progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 0;
+  background: #111;
+  animation: introProgress 3.0s linear forwards;
+}
+@keyframes introProgress {
+  to { width: 100%; }
+}
+
+
+/* ------------------------------------------------------------
+   Barrierefreiheit: "weniger Bewegung" -> keine Animation
+   (js/intro.js blendet das Intro dann sofort aus)
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .intro *,
+  .intro {
+    animation: none !important;
+    transition: opacity 0.3s ease !important;
+  }
+}

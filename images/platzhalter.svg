@@ -1,0 +1,16 @@
+<!--
+  Neutrale Platzhalter-Grafik.
+  Diese Datei wird automatisch angezeigt, falls ein Produkt-/Hero-Foto
+  (z. B. pullover-1.jpg) noch nicht existiert. Sobald du deine echten
+  Fotos mit den richtigen Dateinamen in den Ordner "images" legst,
+  verschwindet dieser Platzhalter von selbst.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <rect width="600" height="600" fill="#f0f0ee"/>
+  <g fill="none" stroke="#c9c9c4" stroke-width="3">
+    <circle cx="300" cy="255" r="55"/>
+    <path d="M150 430c0-70 60-120 150-120s150 50 150 120" />
+  </g>
+  <text x="300" y="520" text-anchor="middle" font-family="Inter, sans-serif"
+        font-size="26" fill="#a0a09a">Foto folgt</text>
+</svg>

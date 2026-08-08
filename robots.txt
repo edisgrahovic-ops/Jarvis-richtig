@@ -1,0 +1,7 @@
+# robots.txt für Stowe Studio
+# Sagt Suchmaschinen, was sie durchsuchen dürfen.
+User-agent: *
+Allow: /
+
+# Adresse der Sitemap (Liste aller Seiten)
+Sitemap: https://stowestudio.de/sitemap.xml
